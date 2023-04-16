@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/auth_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/firebase_auth_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
@@ -113,6 +115,32 @@ class MyApp extends StatelessWidget {
         //BlocProvider(create: (context) => RegisterCubit()),
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
         BlocProvider(create: (context) => LoginCubit()),
+        BlocProvider(create: (context) => HomeCubit()
+        //  void getSchedules(String date) {
+        //     schedules = [];
+        //     FirebaseFirestore.instance
+        //         .collection('schedules')
+        //         .where('date', isEqualTo: Timestamp.fromDate(DateTime.parse(date)))
+        //         .where('coachId', isEqualTo: 'coachId')
+        //         .get()
+        //         .then((value) {
+        //       value.docs.forEach((element) {
+        //         schedules.add(SchedulesModel.fromJson(element.data()));
+        //       });
+        //       emit(GetSchedulesSuccessState());
+        //     }).catchError((error) {
+        //       print(error.toString());
+        //       emit(GetSchedulesErrorState(
+        //         error: error.toString(),
+        //       ));
+        //     });
+        //   }
+         ..getSchedules(specificDate:
+         DateTime.now()
+         )
+          //..addSchedule('rafik',
+           //       '3', '4', 7)
+    ),
         BlocProvider(create: (context) => SignUpCubit()),
        // BlocProvider(create: (context) => HomeCubit()
         //    ..searchCourse('mat')
@@ -161,7 +189,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.login,
+          initialRoute: AppRoutes.home,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

@@ -7,8 +7,8 @@
 // import '../../../core/constants/strings.dart';
 // import '../../../core/constants/styles_manager.dart';
 // import '../../../network_exceptions.dart';
-// import '../business_logic/auth_cubit/auth_cubit.dart';
-// import '../business_logic/auth_cubit/auth_state.dart';
+// import '../business_logic/auth_cubit/home_cubit.dart';
+// import '../business_logic/auth_cubit/home_state.dart';
 // import '../business_logic/auth_cubit/otp_cubit.dart';
 //
 // class NewPasswordScreen extends StatelessWidget {

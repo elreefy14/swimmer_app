@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swimmer_app/home/presenation/home_lauout.dart';
 import 'package:swimmer_app/registeration/presenation/SignUpScreen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
 
@@ -29,6 +30,8 @@ class RouteGenerator {
           return MaterialPageRoute(builder: (_) =>SignUpScreen());
         case AppRoutes.login:
           return MaterialPageRoute(builder: (_) =>LoginScreen());
+           case AppRoutes.home:
+             return MaterialPageRoute(builder: (_) =>HomeLayout());
     //    case AppRoutes.newPassword:
   //        return MaterialPageRoute(builder: (_) =>NewPasswordScreen());
   //      case AppRoutes.resetPassword:

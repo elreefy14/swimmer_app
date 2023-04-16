@@ -71,9 +71,7 @@ dependencies:
   shared_preferences_ios: 2.1.1
   shared_preferences_platform_interface: 2.2.0
   shared_preferences_web: 2.1.0
-  sign_in_with_apple: 4.1.0
-  sign_in_with_apple_platform_interface: 1.0.0
-  sign_in_with_apple_web: 1.0.1
+
   sqflite: 2.2.0+2
   timeago: 3.2.2
   url_launcher: 6.1.5
@@ -91,6 +89,8 @@ dependencies:
   toast:
   conditional_builder_null_safety:
   bot_toast:
+  json_annotation: ^4.8.0
+  flutterfire_ui: ^0.4.3+20
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
