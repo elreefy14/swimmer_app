@@ -1,10 +1,14 @@
+import 'dart:ffi';
+
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/cashe_helper.dart';
 import '../../data/userModel.dart';
@@ -17,7 +21,9 @@ class LoginCubit extends Cubit<LoginState> {
       ) : super(LoginInitial());
 
   static LoginCubit get(context) => BlocProvider.of(context);
- void signIn({
+
+  final FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  void signIn({
     required String email,
     required String password,
   }) {
@@ -29,13 +35,24 @@ class LoginCubit extends Cubit<LoginState> {
     FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password
-    ).then((userCredential) {
+    ).then((userCredential) async {
       var user = userCredential.user!;
+      //get deviceId from flutter_blue_plus for current device
+      String deviceId = '';
+      try {
+        List<BluetoothDevice> devices = await flutterBlue.connectedDevices;
+        if (devices.isNotEmpty) {
+          deviceId = devices.first.id.id;
+        }
+      } catch (e) {
+        print(e);
+      }
       FirebaseMessaging.instance.getToken().then((token) {
         FirebaseFirestore.instance.collection('users')
             .doc(user.uid)
             .update({
-          'deviceToken': FieldValue.arrayUnion([token])
+          'deviceToken': FieldValue.arrayUnion([token]),
+          'deviceId': deviceId, // Save deviceId to user collection
         }).then((_) {
           FirebaseFirestore.instance
               .collection('users')
@@ -45,21 +62,15 @@ class LoginCubit extends Cubit<LoginState> {
             if (doc.exists) {
               var data = doc.data();
               if (data!['deviceToken'].length < 3) {
-                //i want to save user token,uid,email,name,phone in cache for future use
+                // Save user token, uid, email, name, phone in cache for future use
                 var userCacheModel = UserCacheModel(
-                    token: token??'',
-                    uid: user.uid??'',
-                    email: user.email??'${
-                        data['email']
-                    }',
-                    name: user.displayName??'${
-                        data['name']
-                    }',
-                    phone: user.phoneNumber??'${
-                        data['phone']
-                    }'
+                    token: token ?? '',
+                    uid: user.uid ?? '',
+                    email: user.email ?? '${data['email']}',
+                    name: user.displayName ?? '${data['name']}',
+                    phone: user.phoneNumber ?? '${data['phone']}'
                 );
-               CacheHelper.saveUser(userCacheModel);
+                CacheHelper.saveUser(userCacheModel);
 
                 emit(LoginSuccessState(user.uid));
               } else {

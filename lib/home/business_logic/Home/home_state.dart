@@ -10,5 +10,18 @@ class GetSchedulesErrorState extends HomeState {
   final String error;
   GetSchedulesErrorState({required this.error});
 }
+//detectedBeaconsSuccessState
+class DetectedBeaconsSuccessState extends HomeState {}
+//ClearDetectedBeaconsSuccessState
+class ClearDetectedBeaconsSuccessState extends HomeState {}
+//ChangePasswordVisibilityState
+class ChangePasswordVisibilityState extends HomeState {}
+//PeriodicAlarmSuccessState
+class PeriodicAlarmSuccessState extends HomeState {}
+//StartScanningLoadingState
+class StartScanningLoadingState extends HomeState {}
+//StartScanningSuccessState
+class StartScanningSuccessState extends HomeState {}
+
 
 

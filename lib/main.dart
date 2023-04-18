@@ -1,6 +1,8 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:bloc/bloc.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,8 @@ Future<void> main() async {
 
   //wait widget tree to be built
   WidgetsFlutterBinding.ensureInitialized();
+  await AndroidAlarmManager.initialize();
+
   //init git it
   //initGetIt();
   //init shared pref
@@ -90,13 +94,6 @@ Future<void> main() async {
   BlocOverrides.runZoned(() => runApp(const MyApp()),
       blocObserver: MyBlocObserver());
 
-  // WebServices webServices = getIt<WebServices>();
-  //  webServices.getNowPlaying('c3435cfe40aeb079689227d82bf921d3').then((value) {
-  //    print(value.results![0].title);
-  //    print(value.results![0].posterPath);
-  //    print(value.results![0].overview);
-  //    print(value.results![0].releaseDate);
-  //  });
 }
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -116,28 +113,11 @@ class MyApp extends StatelessWidget {
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
         BlocProvider(create: (context) => LoginCubit()),
         BlocProvider(create: (context) => HomeCubit()
-        //  void getSchedules(String date) {
-        //     schedules = [];
-        //     FirebaseFirestore.instance
-        //         .collection('schedules')
-        //         .where('date', isEqualTo: Timestamp.fromDate(DateTime.parse(date)))
-        //         .where('coachId', isEqualTo: 'coachId')
-        //         .get()
-        //         .then((value) {
-        //       value.docs.forEach((element) {
-        //         schedules.add(SchedulesModel.fromJson(element.data()));
-        //       });
-        //       emit(GetSchedulesSuccessState());
-        //     }).catchError((error) {
-        //       print(error.toString());
-        //       emit(GetSchedulesErrorState(
-        //         error: error.toString(),
-        //       ));
-        //     });
-        //   }
-         ..getSchedules(specificDate:
-         DateTime.now()
-         )
+        //..setUpPeriodicAlarm()
+        //   ..startScanning()
+        // ..getSchedules(specificDate:
+        // DateTime.now()
+       //  )
           //..addSchedule('rafik',
            //       '3', '4', 7)
     ),
@@ -196,3 +176,16 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+//
+//You can listen for connectivity changes and call the syncOfflineAttendanceData() function when the device reconnects to the internet.
+//
+// import 'package:connectivity/connectivity.dart';
+//
+// void main() {
+//   runApp(MyApp());
+//   Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
+//     if (result != ConnectivityResult.none) {
+//       await syncOfflineAttendanceData();
+//     }
+//   });
+// }

@@ -1,8 +1,20 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:dash_chat/dash_chat.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
@@ -14,20 +26,182 @@ import 'home_state.dart';
 // 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
 // 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
 
-// **Workflow:**
-// 1. When a coach logs in, retrieve their information from the `coaches` collection, display their name, training hours, and branches they're assigned to.
-// 2. To display the schedules for each coach, query the `schedules` collection with the `coach_id`. Use the `branch_id` to get branch details from the `branches` collection.
-// 3. When a coach arrives at their schedule, they create a new document in the `attendanceRequests` collection with the `coach_id`, `schedule_id`, and `status` as 'pending'.
-// 4. The admin reviews the attendance requests and updates the `status` field to 'accepted' or 'rejected'.
-// 5. Upon receiving an 'accepted' status, calculate the hours worked for that schedule and update the coach's `total_hours`, `total_salary`, `current_month_hours`, and `current_month_salary` in the `coaches` collection.
-// 6. At the end of each month, create a new document in the `salaryHistory` subcollection for each coach, storing their `total_hours` and `total_salary` for the current month. After that, reset the `current_month_hours` and `current_month_salary` fields in the `coaches` collection.
-// 7. To display the salary history for each coach, query the `salaryHistory` subcollection inside the coach document and show the list containing the current month's total hours and salary, along with all previous months.
-// This design allows you to efficiently handle the required functionality while minimizing the number of reads and writes to the Firestore database.
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(InitialState());
+  HomeCubit() : super(InitialState()) {
+    // Call this method when connectivity changes
+    _listenToConnectivityChanges();
+  }
+
 
   static HomeCubit get(context) => BlocProvider.of(context);
+  // Add this method to listen for connectivity changes
+  void _listenToConnectivityChanges() {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
+      if (result != ConnectivityResult.none) {
+        await syncOfflineAttendanceData();
+      }
+    });
+  }
+  Future<void> saveAttendanceDataLocally(String coachId, String scheduleId, DateTime timestamp) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
+
+    Map<String, dynamic> attendanceData = {
+      'coach_id': coachId,
+      'schedule_id': scheduleId,
+      'timestamp': timestamp.toIso8601String(),
+    };
+
+    attendanceList.add(jsonEncode(attendanceData));
+    sharedPreferences.setStringList('offlineAttendance', attendanceList);
+  }
+
+  Future<bool> isConnected() async {
+    ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  Future<void> syncOfflineAttendanceData() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
+
+    if (attendanceList.isNotEmpty) {
+      for (String attendanceJson in attendanceList) {
+        Map<String, dynamic> attendanceData = jsonDecode(attendanceJson);
+
+        // Check for duplicates or conflicts before uploading
+
+         // Get the scheduleid and timestamp from the attendance data
+        //then go to schedules collection and make finished = true for the schedule with this id and timestamp
+        await FirebaseFirestore.instance
+            .collection('schedules')
+            .doc(attendanceData['schedule_id'])
+            .update({
+          'finished': true,
+        });
+      }
+
+      // Clear the locally stored attendance data after successful sync
+      sharedPreferences.remove('offlineAttendance');
+    }
+  }
+  //edit this function to get schedules for current coach and date(timeStamp) equal to today and finished = false
+  //subtract start time for each schedule from timestamp.now and get the smallest one
+  //make bool finished = true for the smallest one
+  //this is my **Collections and Documents:**
+// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
+// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
+// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
+// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
+// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
+  Future<void> onQRCodeScanned(String coachId, String scheduleId) async {
+    DateTime timestamp = DateTime.now();
+   Timestamp today = Timestamp.fromDate(DateTime.now());
+
+    if (await isConnected()) {
+      // Get today's unfinished schedules for the current coach
+      // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      //     .collection('schedules')
+      //     .where('coach_id', isEqualTo: coachId)
+      //     .where('date', isEqualTo: today)
+      //     .where('finished', isEqualTo: false)
+      //     .get();
+      //
+      // // If there are any unfinished schedules
+      // if (querySnapshot.docs.isNotEmpty) {
+      //   // Find the schedule closest to the current time
+      //   DocumentSnapshot closestSchedule = querySnapshot.docs.first;
+      //   Duration smallestDuration = timestamp
+      //       .difference(closestSchedule['start_time'].toDate())
+      //       .abs();
+      //
+      //   for (DocumentSnapshot doc in querySnapshot.docs) {
+      //     Duration currentDuration =
+      //     timestamp.difference(doc['start_time'].toDate()).abs();
+      //     if (currentDuration < smallestDuration) {
+      //       smallestDuration = currentDuration;
+      //       closestSchedule = doc;
+      //     }
+      //   }
+
+        // Update the closest schedule's finished status to true
+        // await FirebaseFirestore.instance
+        //     .collection('schedules')
+        //     .doc(scheduleId)
+        //     .update({'finished': true});
+      addAttendance(scheduleId);
+    //  }
+    } else {
+      await saveAttendanceDataLocally(coachId, scheduleId, timestamp);
+    }
+  }
+
+  Future<void> addAttendance(String scheduleId) async {
+    await FirebaseFirestore.instance
+        .collection('schedules')
+        .doc(scheduleId)
+        .update({
+      'finished': true,
+        });
+    await FirebaseFirestore.instance
+        .collection('schedules')
+        .doc(scheduleId)
+        .get().then((value) async {
+        //edit this code to make same but on schedule
+      // value.docs.forEach((element) async {
+      //   print(element.data());
+      //   print('-----------------');
+      //   print(schedules.length);
+      //
+      //   // Make finished field equal to true
+      //   await element.reference.update({'finished': true});
+      //
+      //   // Calculate the duration
+         DateTime startTime = value['start_time'].toDate();
+         DateTime endTime = value['end_time'].toDate();
+         int duration = endTime.difference(startTime).inHours;
+      //
+      //   // Update total_hours in users collection
+         await FirebaseFirestore.instance
+             .collection('users')
+             .doc(value['coach_id'])
+             .update({'total_hours': FieldValue.increment(duration)});
+      //
+      //   // Add 1 to total attendance in attendance collection
+      //   await FirebaseFirestore.instance.collection('attendance').add({
+      //     'coach_id': element['coach_id'],
+      //     'schedule_id': element.id,
+      //     'status': 'present',
+      //   });
+      // });
+
+
+      print('-----------------');
+      print(schedules.length);
+      emit(GetSchedulesSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(GetSchedulesErrorState(error: error.toString()));
+    });
+  }
+// admin (
+// genereate qr code
+  //
+// Generate a QR code for the schedule using the UUID
+ // QrImage qrImage = QrImage(
+ //   data: 'schedule:$scheduleId',
+ //   version: QrVersions.auto,
+ //   size: 200.0,
+  //);
+  //get the nearest schedule from firestore and generate qrImage
+   Future<void> generateQrImageBasedOnNearestSchedule() async {
+
+
+  }
+
+
+
 //**Collections and Documents:**
 // 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
 // 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
@@ -113,8 +287,115 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
+//this is my firebase Collections and Documents and i want to edit some functions in my app
+// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
+// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
+// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields:'device id', `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
+// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
+// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
+// 6. **attendance**: A collection to store the attendance information of each coach.   - Document ID: unique attendance ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'present', 'absent', 'late')
+
+  // final FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  // final List<String> detectedBeacons = [];
+  // void startScanning() {
+  //   emit(StartScanningLoadingState());
+  //   flutterBlue.startScan(timeout: Duration(seconds: 4));
+  //   flutterBlue.scanResults.listen((results) {
+  //     for (ScanResult r in results) {
+  //       print('serviceUuids :${r.advertisementData.serviceUuids}');
+  //       print('id :${r.device.id}');
+  //       print('ssi :${r.rssi}');
+  //       detectedBeacons.add(r.device.id.toString());
+  //       emit(DetectedBeaconsSuccessState());
+  //     print('${detectedBeacons.length}');
+  //     }
+  //   });
+  //   emit(StartScanningSuccessState());
+  // }
+  // void setUpPeriodicAlarm() async {
+  //   await AndroidAlarmManager.periodic(
+  //       const Duration(seconds: 4),  // Interval between alarms
+  //       0,                            // ID of the alarm (must be unique)
+  //       startScanning,                // Callback function to execute
+  //       wakeup: true,                 // Wake up the device if necessary
+  //       rescheduleOnReboot: true      // Reschedule the alarm after device reboot
+  //   );
+  //   emit(PeriodicAlarmSuccessState());
+  // }
+  // void clearDetectedBeacons() {
+  //   detectedBeacons.clear();
+  //    emit(ClearDetectedBeaconsSuccessState());
+  // }
+  //edit this function to get all schedules where field date (timestamp) equal to today and field finished equal to false and field device id equal to beacon id
+  //then make finished field equal true and add end time - start time to total hours in users collection and add 1 to total attendance in attendance collection
+
+  // //edit this function to get r.device.id.toString() and add it to user collection in field device id
+  // Future<String?> getDeviceId() async {
+  //   try {
+  //     MethodChannel channel = const MethodChannel('samples.flutter.dev/device_id');
+  //     String? deviceId = await channel.invokeMethod('getDeviceId');
+  //     print("Device ID: '$deviceId'.");
+  //     print("\n\n\n\n\n\n\n");
+  //     return deviceId;
+  //   } on PlatformException catch (e) {
+  //     print("Failed to get device ID: '${e.message}'.");
+  //     return null;
+  //   }
+  // }
+  // Future<String?> getDeviceIdBySystem() async {
+  //   try {
+  //     final List<BluetoothDevice> devices = await flutterBlue.connectedDevices;
+  //     final BluetoothDevice device = devices.first;
+  //     final String deviceId = device.id.toString();
+  //     return deviceId;
+  //   } catch (e) {
+  //     print("Failed to get device ID: '${e.toString()}'.");
+  //     return null;
+  //   }
+  // }
+  // Future<String?> getDeviceId3() async {
+  //   try {
+  //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //     String? deviceId;
+  //
+  //     if (Platform.isAndroid) {
+  //       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  //       deviceId = androidInfo.androidId; // Use the Android device ID
+  //       print("Device ID: '$deviceId'.");
+  //       print("\n\n\n\n\n\n\n");
+  //     } else if (Platform.isIOS) {
+  //       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+  //       deviceId = iosInfo.identifierForVendor; // Use the iOS identifier for the vendor
+  //     } else {
+  //       throw UnsupportedError('This platform is not supported.');
+  //     }
+  //
+  //     return deviceId;
+  //   } catch (e) {
+  //     print("Failed to get device ID: '${e.toString()}'.");
+  //     return null;
+  //   }
+  // }
+   //i want to add this features in my app . 1. *QR Code-based Attendance*: Develop a mobile app that allows employees to scan a unique QR code displayed at the entrance of the workplace. The app then records the timestamp and sends the data to a Firebase Realtime Database or Firestore. You can then generate attendance reports from the stored data.
+   // i want to handlewhen employee doesn't have internet connection like that .
+   //Handling lack of internet connection
+// When an employee scans the QR code, the mobile app records the timestamp and tries to send the data to a Firebase Realtime Database or Firestore. However, if the employee's device doesn't have an internet connection, the data can't be sent immediately. To handle this situation, you can implement an offline data storage mechanism:
+//
+//     Save the attendance data locally on the employee's device when there is no internet connection. You can use a local storage solution, such as SharedPreferences, to store the data temporarily.
+//
+//     Monitor the device's internet connection status. You can use libraries such as Reachability (for iOS) or ConnectivityManager (for Android) to detect when the device regains an internet connection.
+//
+//     When the device reconnects to the internet, sync the locally stored attendance data with the Firebase Realtime Database or Firestore. Ensure that you maintain data integrity by checking for duplicates or conflicts.
+// give all functions to handle that
+//this is my firebase Collections and Documents and i want to edit some functions in my app . edit it if you want
+// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
+// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
+// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields:'device id', `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
+// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
+// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
+// 6. **attendance**: A collection to store the attendance information of each coach.   - Document ID: unique attendance ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'present', 'absent', 'late')
+
 
 
 
 }
-//tod
