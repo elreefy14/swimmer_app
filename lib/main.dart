@@ -13,8 +13,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/auth_cubit.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/firebase_auth_cubit.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
 import 'package:swimmer_app/routiong.dart';
@@ -107,12 +106,21 @@ class MyApp extends StatelessWidget {
      //   BlocProvider(create: (context) => getIt<PaymentCubit>()..
    //     authenticate(
     //        apiKey: 'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2libUZ0WlNJNkltbHVhWFJwWVd3aUxDSndjbTltYVd4bFgzQnJJam8yT1RJNE9URjkuajdKSDh3ZnBsUlZhaFpZZDF5anZCVTBIcXcyMDltN0thSThNZEZRTUdFd0xFZm5KR1V6X1NDdEVOSmZKcTR5LXlDRmUwcXMtMzZnbnhrVnI2bXZoN2c=')),
-        BlocProvider(create: (context) => OtpCubit()),
+      //  BlocProvider(create: (context) => OtpCubit()
+       //   ..phoneNumberSubmitted('01097051812')
+      //  ),
        // BlocProvider(create: (context) => NotificationCubit()),
         //BlocProvider(create: (context) => RegisterCubit()),
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
         BlocProvider(create: (context) => LoginCubit()),
+        BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
+        //    .._listenToConnectivityChanges()
+      //  ..onQRCodeScanned(
+      //    coachId: '4rC6uhZzsAbsdCFH0mHW6Qt0TTC3',
+      //    scheduleId: '3HEtmWiDk7K9iGVGNEsV'
+      //  )
+        //..generateQrImageBasedOnNearestSchedule()
         //..setUpPeriodicAlarm()
         //   ..startScanning()
         // ..getSchedules(specificDate:
@@ -121,7 +129,7 @@ class MyApp extends StatelessWidget {
           //..addSchedule('rafik',
            //       '3', '4', 7)
     ),
-        BlocProvider(create: (context) => SignUpCubit()),
+       // BlocProvider(create: (context) => SignUpCubit()),
        // BlocProvider(create: (context) => HomeCubit()
         //    ..searchCourse('mat')
         //    ..addTeacherAndCourseAndachaptersAndLessons()
@@ -169,7 +177,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.home,
+          initialRoute: AppRoutes.login,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

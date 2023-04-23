@@ -18,41 +18,34 @@ part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(
+
       ) : super(LoginInitial());
 
-  static LoginCubit get(context) => BlocProvider.of(context);
+
+static LoginCubit get(context) => BlocProvider.of(context);
 
   final FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
   void signIn({
-    required String email,
+    required String phone,
     required String password,
   }) {
     emit(LoginLoadingState());
     print('email\n\n\n');
-    print(email);
+    print(phone+'@placeholder.com');
     print(password);
     //
     FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
+        email: '$phone@placeholder.com',
         password: password
     ).then((userCredential) async {
       var user = userCredential.user!;
-      //get deviceId from flutter_blue_plus for current device
-      String deviceId = '';
-      try {
-        List<BluetoothDevice> devices = await flutterBlue.connectedDevices;
-        if (devices.isNotEmpty) {
-          deviceId = devices.first.id.id;
-        }
-      } catch (e) {
-        print(e);
-      }
+
       FirebaseMessaging.instance.getToken().then((token) {
         FirebaseFirestore.instance.collection('users')
             .doc(user.uid)
             .update({
           'deviceToken': FieldValue.arrayUnion([token]),
-          'deviceId': deviceId, // Save deviceId to user collection
+           // Save deviceId to user collection
         }).then((_) {
           FirebaseFirestore.instance
               .collection('users')
@@ -112,89 +105,6 @@ class LoginCubit extends Cubit<LoginState> {
       emit(LoginErrorState(errorMessage ?? ""));
     });
   }
-  //todo :de fuction tanya bs na2sha syncronization
-  // void signIn({
-  //     required String email,
-  //     required String password,
-  //   }) {
-  //     emit(LoginLoadingState());
-  //     print('email\n\n\n');
-  //     print(email);
-  //     print(password);
-  //     //
-  //     FirebaseAuth.instance.signInWithEmailAndPassword(
-  //         email: email,
-  //         password: password
-  //     ).then((userCredential) {
-  //       var user = userCredential.user!;
-  //       FirebaseFirestore.instance
-  //           .collection('users')
-  //           .doc(user.uid)
-  //           .get()
-  //           .then((doc) {
-  //         if (doc.exists) {
-  //           var data = doc.data();
-  //           if (!data!['deviceToken'].contains(
-  //               FirebaseMessaging.instance.getToken()) &&
-  //               data['deviceToken'].length < 3) {
-  //             FirebaseFirestore.instance
-  //                 .collection('users')
-  //                 .doc(user.uid)
-  //                 .update({
-  //               'deviceToken':
-  //               FieldValue.arrayUnion([FirebaseMessaging.instance.getToken()])
-  //             }).then((_) {
-  //               print('Token added to deviceToken array.');
-  //               emit(LoginSuccessState(user.uid));
-  //             });
-  //           } else if (!data['deviceToken'].contains(
-  //               FirebaseMessaging.instance.getToken()) &&
-  //               data['deviceToken'].length == 3) {
-  //             emit(LoginErrorState('User is already logged in on 3 devices.'));
-  //           } else {
-  //             emit(LoginSuccessState(user.uid));
-  //           }
-  //         } else {
-  //           emit(LoginErrorState('User data not found.'));
-  //         }
-  //       });
-  //     }).catchError((error) {
-  //       String? errorMessage;
-  //       switch (error.code) {
-  //         case "invalid-email":
-  //           if (kDebugMode) {
-  //             errorMessage = 'The email address is badly formatted.';
-  //           }
-  //           break;
-  //         case "user-not-found":
-  //           if (kDebugMode) {
-  //             errorMessage = 'No user found for that email.';
-  //           }
-  //           break;
-  //         case "wrong-password":
-  //           if (kDebugMode) {
-  //             errorMessage = 'Wrong password provided for that user.';
-  //           }
-  //           break;
-  //         default:
-  //           if (kDebugMode) {
-  //             errorMessage = 'The error is $error';
-  //           }
-  //       }
-  //       print('error firebase:\n\n\n\n\n\n\n');
-  //       print(error.code);
-  //       print('error message:\n\n\n\n\n\n\n');
-  //       print(errorMessage);
-  //       emit(LoginErrorState(errorMessage ?? ""));
-  //     });
-  //   } . edit last function to make it like that one FirebaseMessaging.instance.getToken().then((token) {
-  //   FirebaseFirestore.instance.collection('users')
-  //       .doc(user.user!.uid)
-  //       .update({
-  //     'deviceToken': FieldValue.arrayUnion([token])
-  //   });
-  // });
-
 
 
   void signOut() {

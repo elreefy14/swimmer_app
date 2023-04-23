@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:swimmer_app/home/presenation/home_lauout.dart';
 import 'package:swimmer_app/registeration/presenation/SignUpScreen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
+import 'package:swimmer_app/registeration/presenation/reset_code_screen.dart';
 
 import 'core/constants/routes_manager.dart';
 import 'core/constants/strings.dart';
@@ -36,14 +37,14 @@ class RouteGenerator {
   //        return MaterialPageRoute(builder: (_) =>NewPasswordScreen());
   //      case AppRoutes.resetPassword:
    //       return MaterialPageRoute(builder: (_) =>ResetPasswordScreen());
-    //    case AppRoutes.resetCode: //send email,phone,password as args map
+        case AppRoutes.resetCode: //send email,phone,password as args map
      //     final args = settings.arguments;
       //    if (args is Map<String, dynamic>) {
-       //     return MaterialPageRoute(builder: (_) => ResetCodeScreen(
-       //       email: args['email'],
-       //       phone: args['phone'],
-        //      password: args['password'],
-        //    ));
+            return MaterialPageRoute(builder: (_) => ResetCodeScreen(
+              // email: args['email'],
+              // phone: args['phone'],
+              // password: args['password'],
+           ));
         //  }
         //  throw ArgumentError("Invalid arguments: $args");
    //    case AppRoutes.zoom:

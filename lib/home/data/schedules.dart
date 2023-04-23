@@ -22,8 +22,8 @@ class SchedulesModel {
   //parse json to RegisterErrorModel class without using json_serializable
   String? coachId;
   String? branchId;
-  String? startTime;
-  String? endTime;
+  Timestamp? startTime;
+  Timestamp? endTime;
   Timestamp? date;
   bool? finished;
   SchedulesModel({

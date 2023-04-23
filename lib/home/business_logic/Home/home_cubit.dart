@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
@@ -15,14 +14,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
 import 'home_state.dart';
-//**Collections and Documents:**
+//this is my **Collections and Documents:**
 // 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
 // 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
-// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
+// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, TimeStamp`start_time`, TimeStamp `end_time`,TimeStamp `date`,  `finished `,
 // 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
 // 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
 
@@ -39,10 +37,14 @@ class HomeCubit extends Cubit<HomeState> {
   void _listenToConnectivityChanges() {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
       if (result != ConnectivityResult.none) {
+        print('Network is available');
         await syncOfflineAttendanceData();
+      } else {
+        print('Network is not available');
       }
     });
   }
+
   Future<void> saveAttendanceDataLocally(String coachId, String scheduleId, DateTime timestamp) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
@@ -55,6 +57,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     attendanceList.add(jsonEncode(attendanceData));
     sharedPreferences.setStringList('offlineAttendance', attendanceList);
+    print('Attendance data saved locally');
   }
 
   Future<bool> isConnected() async {
@@ -67,25 +70,26 @@ class HomeCubit extends Cubit<HomeState> {
     List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
 
     if (attendanceList.isNotEmpty) {
+      print('Syncing offline attendance data...');
       for (String attendanceJson in attendanceList) {
         Map<String, dynamic> attendanceData = jsonDecode(attendanceJson);
 
         // Check for duplicates or conflicts before uploading
+        // ...
 
-         // Get the scheduleid and timestamp from the attendance data
-        //then go to schedules collection and make finished = true for the schedule with this id and timestamp
-        await FirebaseFirestore.instance
-            .collection('schedules')
-            .doc(attendanceData['schedule_id'])
-            .update({
-          'finished': true,
-        });
+        // Get the scheduleid and timestamp from the attendance data
+        // then go to the schedules collection and make finished = true for the schedule with this id and timestamp
+        print('Syncing attendance data for schedule ID ${attendanceData['schedule_id']}');
+        await addAttendance(attendanceData['schedule_id']);
       }
-
       // Clear the locally stored attendance data after successful sync
       sharedPreferences.remove('offlineAttendance');
+      print('Offline attendance data synced successfully');
+    } else {
+      print('No offline attendance data to sync');
     }
   }
+
   //edit this function to get schedules for current coach and date(timeStamp) equal to today and finished = false
   //subtract start time for each schedule from timestamp.now and get the smallest one
   //make bool finished = true for the smallest one
@@ -95,7 +99,7 @@ class HomeCubit extends Cubit<HomeState> {
 // 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
 // 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
 // 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
-  Future<void> onQRCodeScanned(String coachId, String scheduleId) async {
+  Future<void> onQRCodeScanned({required String coachId, required String scheduleId}) async {
     DateTime timestamp = DateTime.now();
    Timestamp today = Timestamp.fromDate(DateTime.now());
 
@@ -133,58 +137,39 @@ class HomeCubit extends Cubit<HomeState> {
       addAttendance(scheduleId);
     //  }
     } else {
+      print('No internet connection, saving attendance data locally');
       await saveAttendanceDataLocally(coachId, scheduleId, timestamp);
     }
   }
-
   Future<void> addAttendance(String scheduleId) async {
     await FirebaseFirestore.instance
         .collection('schedules')
         .doc(scheduleId)
         .update({
       'finished': true,
-        });
-    await FirebaseFirestore.instance
+    });
+
+    final scheduleSnapshot = await FirebaseFirestore.instance
         .collection('schedules')
         .doc(scheduleId)
-        .get().then((value) async {
-        //edit this code to make same but on schedule
-      // value.docs.forEach((element) async {
-      //   print(element.data());
-      //   print('-----------------');
-      //   print(schedules.length);
-      //
-      //   // Make finished field equal to true
-      //   await element.reference.update({'finished': true});
-      //
-      //   // Calculate the duration
-         DateTime startTime = value['start_time'].toDate();
-         DateTime endTime = value['end_time'].toDate();
-         int duration = endTime.difference(startTime).inHours;
-      //
-      //   // Update total_hours in users collection
-         await FirebaseFirestore.instance
-             .collection('users')
-             .doc(value['coach_id'])
-             .update({'total_hours': FieldValue.increment(duration)});
-      //
-      //   // Add 1 to total attendance in attendance collection
-      //   await FirebaseFirestore.instance.collection('attendance').add({
-      //     'coach_id': element['coach_id'],
-      //     'schedule_id': element.id,
-      //     'status': 'present',
-      //   });
-      // });
+        .get();
 
+    final start = scheduleSnapshot['startTime'] as Timestamp;
+    final end = scheduleSnapshot['endTime'] as Timestamp;
 
-      print('-----------------');
-      print(schedules.length);
-      emit(GetSchedulesSuccessState());
-    }).catchError((error) {
-      print(error.toString());
-      emit(GetSchedulesErrorState(error: error.toString()));
-    });
+    final startTime = start.toDate();
+    final endTime = end.toDate();
+
+    final duration = endTime.difference(startTime).inHours;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(scheduleSnapshot['coachId'])
+        .update({'totalHours': FieldValue.increment(duration)});
+
+    print('Attendance added successfully');
   }
+
 // admin (
 // genereate qr code
   //
@@ -194,11 +179,86 @@ class HomeCubit extends Cubit<HomeState> {
  //   version: QrVersions.auto,
  //   size: 200.0,
   //);
-  //get the nearest schedule from firestore and generate qrImage
-   Future<void> generateQrImageBasedOnNearestSchedule() async {
+  //TODO;subtract now - start time get first schedule
+  Future<void> generateQrImageBasedOnNearestSchedule() async {
+    emit(GenerateQrImageLoadingState());
+
+    // Get the current timestamp
+    DateTime timestamp = DateTime.now();
+    Timestamp now = Timestamp.fromDate(timestamp);
 
 
-  }
+    // Query Firestore for the nearest schedule
+    QuerySnapshot scheduleQuerySnapshot = await FirebaseFirestore.instance
+        .collection('schedules')
+        .where('finished', isEqualTo: false)
+        //.where('start_time', isGreaterThan: now)
+        //.orderBy('start_time', descending: false)
+        .get();
+
+    // Check if any schedules were found
+    QrImage qrImage;
+    if (scheduleQuerySnapshot.docs.isNotEmpty) {
+      // Get the ID of the first schedule document
+      String scheduleId = scheduleQuerySnapshot.docs.first.id;
+
+      // Generate a QR code image with the schedule ID as data
+
+      print('\n\n\n\n\n');
+      print('$scheduleId');
+      print('$scheduleId');
+      print('$scheduleId');
+      print('$scheduleId');
+      print('$scheduleId');
+      print('\n\n\n\n\n\n\n');
+
+      qrImage = QrImage(
+        data: scheduleId,
+        version: QrVersions.auto,
+        size: 200.0,
+      );
+      emit(GenerateQrImageSuccessState());
+    } else {
+      // Handle case where no schedules were found
+      qrImage = QrImage(
+        data: "No schedules found",
+        version: QrVersions.auto,
+        size: 200.0,
+      );
+      emit(GenerateQrImageErrorState(
+          error:'error'
+      ));
+    }
+
+
+    // // If there are any unfinished schedules
+    // if (querySnapshot.docs.isNotEmpty) {
+    //   // Find the schedule closest to the current time
+    //   DocumentSnapshot closestSchedule = querySnapshot.docs.first;
+    //   Duration smallestDuration = timestamp
+    //       .difference(closestSchedule['start_time'].toDate().millisecondsSinceEpoch)
+    //       .abs();
+    //
+    //   for (DocumentSnapshot doc in querySnapshot.docs) {
+    //     Duration currentDuration = timestamp
+    //         .difference(doc['start_time'].toDate().millisecondsSinceEpoch)
+    //         .abs();
+    //     if (currentDuration < smallestDuration) {
+    //       smallestDuration = currentDuration;
+    //       closestSchedule = doc;
+    //     }
+    //   }
+
+      // Generate a QR code for the schedule using the UUID
+
+
+      // Update the QR image
+
+
+
+    }
+
+
 
 
 
@@ -220,7 +280,7 @@ class HomeCubit extends Cubit<HomeState> {
 // This design allows you to efficiently handle the required functionality while minimizing the number of reads and writes to the Firestore database.
 
 //finction to add random ummy values to schedules in firebase firestore
-  void addSchedule(String coachId, String startTime, String endTime, int dayOfWeek) {
+  void addSchedule(String coachId, Timestamp startTime, Timestamp endTime, int dayOfWeek) {
     DateTime now = DateTime.now();
     DateTime startOfMonth = DateTime(now.year, now.month, 1);
     DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);

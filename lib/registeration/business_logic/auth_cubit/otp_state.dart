@@ -25,3 +25,12 @@ class AuthError extends OtpState {
   final String? error;
   AuthError(this.error);
 }
+//(OtpVerificationFailed(
+//           exception.message, canResendOtp: true, resendOtpDuration: _resendOtpTimerDuration));
+//
+class OtpVerificationFailed extends OtpState {
+  final String? error;
+  final bool canResendOtp;
+  final int resendOtpDuration;
+  OtpVerificationFailed(this.error, {this.canResendOtp = false, this.resendOtpDuration = 0});
+}

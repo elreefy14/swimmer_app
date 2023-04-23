@@ -22,6 +22,13 @@ class PeriodicAlarmSuccessState extends HomeState {}
 class StartScanningLoadingState extends HomeState {}
 //StartScanningSuccessState
 class StartScanningSuccessState extends HomeState {}
-
-
+//GenerateQrImageSuccessState
+class GenerateQrImageSuccessState extends HomeState {}
+//GenerateQrImageErrorState
+class GenerateQrImageErrorState extends HomeState {
+  final String error;
+  GenerateQrImageErrorState({required this.error});
+}
+//GenerateQrImageLoadingState
+class GenerateQrImageLoadingState extends HomeState {}
 

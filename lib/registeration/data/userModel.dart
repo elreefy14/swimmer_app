@@ -29,6 +29,8 @@ class UserModel
   int? currentMonthSalary;
   String? uId;
   String? phone;
+  String? fname;
+  String? lname;
 
 
   UserModel({
@@ -42,6 +44,8 @@ class UserModel
     this.currentMonthSalary,
     this.uId,
     this.phone,
+    this.fname,
+    this.lname,
 
   });
 
@@ -56,6 +60,8 @@ class UserModel
     currentMonthSalary = json['currentMonthSalary'];
     uId = json['uId'];
     phone = json['phone'];
+    fname = json['fname'];
+    lname = json['lname'];
 
   }
 
@@ -71,6 +77,8 @@ class UserModel
     data['currentMonthSalary'] = this.currentMonthSalary;
     data['uId'] = this.uId;
     data['phone'] = this.phone;
+    data['fname'] = this.fname;
+    data['lname'] = this.lname;
     return data;
 
   }
@@ -88,6 +96,8 @@ return {
   'currentMonthSalary': currentMonthSalary,
   'uId': uId,
   'phone': phone,
+  'fname': fname,
+  'lname': lname,
 
     };
 

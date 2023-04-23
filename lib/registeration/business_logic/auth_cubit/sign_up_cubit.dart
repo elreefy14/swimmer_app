@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/userModel.dart';
-import 'auth_state.dart';
+import 'sign_up_state.dart';
 //**Collections and Documents:**
 // 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
 // 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
@@ -34,20 +34,22 @@ void changePasswordVisibility(){
 }
 
   Future<void> signUp({
-    required String email,
+    required String lName,
+    required String fName,
     required String phone,
     required String password,
   }) async {
     emit(SignUpLoadingState());
     FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
+        email: '$phone@placeholder.com',
         password: password
     ).then((value) {
       print(value.user!.uid);
       createUser(
         uId: value.user!.uid,
         phone: phone,
-        email: email,
+        fname: fName,
+        lname: lName,
       );
       emit(SignUpSuccessState(value.user!.uid));
     }).catchError((error) {
@@ -86,16 +88,16 @@ void changePasswordVisibility(){
   void createUser({
     required String? uId,
     required String? phone,
-    required String? email,
+    required String? fname,
+    required String? lname,
   }) {
     emit(CreateUserLoadingState());
     UserModel model = UserModel(
-      email: email,
       phone: phone,
         uId: uId,
         name: 'Write your name...',
         level: 3,
-        hourlyRate: 0,
+        hourlyRate: 30,
         totalHours: 0,
         totalSalary: 0,
         currentMonthHours: 0,
@@ -109,4 +111,4 @@ void changePasswordVisibility(){
     });
   }
 }
-//tod
+

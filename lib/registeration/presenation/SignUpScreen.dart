@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/registeration/presenation/widget/widget.dart';
 import '../../../core/constants/font_manager.dart';
 import '../../../core/constants/styles_manager.dart';
-import '../business_logic/auth_cubit/auth_cubit.dart';
-import '../business_logic/auth_cubit/auth_state.dart';
+import '../business_logic/auth_cubit/sign_up_cubit.dart';
+import '../business_logic/auth_cubit/sign_up_state.dart';
 import '../business_logic/auth_cubit/otp_cubit.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -126,52 +126,7 @@ class SignUpScreen extends StatelessWidget {
                         height: height * 0.02,
                       ),
                       //elevated button
-                      BlocConsumer<OtpCubit, OtpState>(
-                        listener: (context, state) {
-                          if (state is OTPSent) {
-                            // Navigate to the next screen or perform other actions here
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   AppRoutes.resetCode,
-                            //   arguments: {
-                            //     'email': emailController.text,
-                            //     'phone': phoneController.text,
-                            //     'password': passwordController.text,
-                            //   },
-                            // );
-                          }
-                        },
-                        builder: (context, state) {
-                          return ConditionalBuilder(
-                              condition: state is! phoneNumberSubmittedLoading,
-                              builder: (context) => defaultButton(
-                                  function: () {
-                                    if (signUpFormKey.currentState!
-                                        .validate()) {
-                                      SignUpCubit.get(context)
-                                          .signUp(
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                        phone: phoneController.text,
-                                      );
-                                     //   OtpCubit.get(context)
-                                     //       .phoneNumberSubmitted(
-                                     //           phoneController.text);
-                                    }
-                                  },
-                                  text: 'Sign Up',
-                                  radius: 30.r,
-                                  isUpperCase: false,
-                                fontSize: FontSizeManager.s16,
-                                height: 45.h,
-                                width: 0.8.sw,
 
-
-                              ),
-                              fallback: (context) =>
-                                  Center(child: CircularProgressIndicator()));
-                        },
-                      ),
                     ],
                   ),
                 ),
