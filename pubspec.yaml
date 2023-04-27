@@ -23,8 +23,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
   auto_size_text: 3.0.0
   built_collection: 5.1.1
   built_value: 8.4.3
@@ -90,7 +88,6 @@ dependencies:
   conditional_builder_null_safety:
   bot_toast:
   json_annotation: ^4.8.0
-  flutterfire_ui: ^0.4.3+20
   android_alarm_manager_plus: ^2.1.2
   device_info_plus: ^2.0.2
   connectivity: ^3.0.6
