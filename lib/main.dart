@@ -1,21 +1,16 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:bloc/bloc.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
 import 'package:swimmer_app/routiong.dart';
 
 import 'core/bloc_observer.dart';
