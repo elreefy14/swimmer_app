@@ -29,6 +29,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
     required String phone,
     required String password,
   }) {
+    //rafik  //
     emit(LoginLoadingState());
     print('email\n\n\n');
     print(phone+'@placeholder.com');
