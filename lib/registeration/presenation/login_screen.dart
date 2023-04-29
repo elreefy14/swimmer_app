@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/registeration/presenation/widget/component.dart';
 
 
@@ -49,14 +51,21 @@ class SignInScreen extends StatelessWidget {
           return null;
         },Icons.password,),
                     SizedBox(height: 20.0),
-                    ElevatedButton(
+                    BlocConsumer<LoginCubit, LoginState>(
+  listener: (context, state) {
+    // TODO: implement listener
+  },
+  builder: (context, state) {
+    return ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // Form is valid, proceed further
+
                         }
                       },
                       child: Text(' تسجيل دخول'),
-                    ),
+                    );
+  },
+),
                   ],
                 ),
               ),

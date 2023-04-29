@@ -107,7 +107,11 @@ class MyApp extends StatelessWidget {
        // BlocProvider(create: (context) => NotificationCubit()),
         //BlocProvider(create: (context) => RegisterCubit()),
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
-        BlocProvider(create: (context) => LoginCubit()),
+        BlocProvider(create: (context) => LoginCubit()
+        ..signIn(
+          phone: '01097051812',
+          password: '123456',
+        )),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
         //    .._listenToConnectivityChanges()

@@ -26,7 +26,90 @@ class LoginCubit extends Cubit<LoginState> {
 
 static LoginCubit get(context) => BlocProvider.of(context);
 
-  final FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  // void signIn({
+  //     required String phone,
+  //     required String password,
+  //   }) {
+  //     emit(LoginLoadingState());
+  //     FirebaseAuth.instance.signInWithEmailAndPassword(
+  //       email: '$phone@placeholder.com',
+  //       password: password,
+  //     ).then((userCredential) async {
+  //       var user = userCredential.user!;
+  //
+  //       FirebaseMessaging.instance.getToken().then((token) {
+  //         FirebaseFirestore.instance
+  //             .collection('users')
+  //             .doc(user.uid)
+  //             .update({
+  //           'deviceToken': FieldValue.arrayUnion([token]),
+  //           // Save deviceId to user collection
+  //         })
+  //             .then((_) {
+  //           FirebaseFirestore.instance
+  //               .collection('users')
+  //               .doc(user.uid)
+  //               .get()
+  //               .then((doc) async {
+  //             if (doc.exists) {
+  //               var data = doc.data();
+  //               if (data!['deviceToken'].length < 3) {
+  //                 // Get user data from the document
+  //                 var userData = UserCacheModel(
+  //                   email: user.email??'${data['phone']}@placeholder.com',
+  //                   phone: user.phoneNumber??data['phone'],
+  //                   token: token??data['deviceToken'][0],
+  //                   uid: user.uid,
+  //                   name: data['name'],
+  //                   level: data['level'],
+  //                   hourlyRate: data['hourly_rate'],
+  //                   totalHours: data['total_hours'],
+  //                   totalSalary: data['total_salary'],
+  //                   currentMonthHours: data['current_month_hours'],
+  //                   currentMonthSalary: data['current_month_salary'],
+  //                 );
+  //                 CacheHelper.saveUser(userData);
+  //
+  //                 emit(LoginSuccessState(user.uid));
+  //               } else {
+  //                 emit(LoginErrorState('User is already logged in on 3 devices.'));
+  //               }
+  //             } else {
+  //               emit(LoginErrorState('User data not found.'));
+  //             }
+  //           });
+  //         });
+  //       });
+  //     }).catchError((error) {
+  //       String? errorMessage;
+  //       switch (error.code) {
+  //         case "invalid-email":
+  //           if (kDebugMode) {
+  //             errorMessage = 'The email address is badly formatted.';
+  //           }
+  //           break;
+  //         case "user-not-found":
+  //           if (kDebugMode) {
+  //             errorMessage = 'No user found for that email.';
+  //           }
+  //           break;
+  //         case "wrong-password":
+  //           if (kDebugMode) {
+  //             errorMessage = 'Wrong password provided for that user.';
+  //           }
+  //           break;
+  //         default:
+  //           if (kDebugMode) {
+  //             errorMessage = 'The error is $error';
+  //           }
+  //       }
+  //       print('error firebase:\n\n\n\n\n\n\n');
+  //       print(error.code);
+  //       print('error message:\n\n\n\n\n\n\n');
+  //       print(errorMessage);
+  //       emit(LoginErrorState(errorMessage ?? ""));
+  //     });
+  //   }
   void signIn({
     required String phone,
     required String password,
@@ -58,15 +141,21 @@ static LoginCubit get(context) => BlocProvider.of(context);
             if (doc.exists) {
               var data = doc.data();
               if (data!['deviceToken'].length < 3) {
-                // Save user token, uid, email, name, phone in cache for future use
-                var userCacheModel = UserCacheModel(
-                    token: token ?? '',
-                    uid: user.uid ?? '',
-                    email: user.email ?? '${data['email']}',
-                    name: user.displayName ?? '${data['name']}',
-                    phone: user.phoneNumber ?? '${data['phone']}'
-                );
-                CacheHelper.saveUser(userCacheModel);
+
+                var userData = UserCacheModel(
+                                      email: user.email??'${data['phone']}@placeholder.com',
+                                      phone: user.phoneNumber??data['phone'],
+                                      token: token??data['deviceToken'][0],
+                                      uid: user.uid,
+                                      name: data['name'],
+                                      level: data['level'],
+                                      hourlyRate: data['hourly_rate']??30,
+                                      totalHours: data['total_hours']??0,
+                                      totalSalary: data['total_salary']??0,
+                                      currentMonthHours: data['current_month_hours']??0,
+                                      currentMonthSalary: data['current_month_salary']??0,
+                                    );
+                                    CacheHelper.saveUser(userData);
 
                 emit(LoginSuccessState(user.uid));
               } else {

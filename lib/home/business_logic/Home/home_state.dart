@@ -1,3 +1,5 @@
+import '../../data/schedules.dart';
+
 abstract class HomeState {}
 //InitialState
 class InitialState extends HomeState {}
@@ -31,4 +33,16 @@ class GenerateQrImageErrorState extends HomeState {
 }
 //GenerateQrImageLoadingState
 class GenerateQrImageLoadingState extends HomeState {}
+//LoadingState
+class LoadingState extends HomeState {}
+//emit(GetAllSchedulesForSpecificCoachSuccessState(schedules: schedules));
+class GetAllSchedulesForSpecificCoachSuccessState extends HomeState {
+  final List<SchedulesModel> schedules;
+  GetAllSchedulesForSpecificCoachSuccessState({required this.schedules});
+}
+//GetAllSchedulesForSpecificCoachErrorState
+class GetAllSchedulesForSpecificCoachErrorState extends HomeState {
+  final String error;
+  GetAllSchedulesForSpecificCoachErrorState({required this.error});
+}
 

@@ -17,13 +17,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
 import 'home_state.dart';
-//this is my **Collections and Documents:**
-// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
-// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
-// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, TimeStamp`start_time`, TimeStamp `end_time`,TimeStamp `date`,  `finished `,
-// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
-// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
-
+// ****this is my firestore Collections and Documents:**
+// - *users*: A collection to store the information of all coaches.
+// - Document ID: unique coach ID
+// - Fields: *`name`, *`level`*, *`hourly_rate`*, *`total_hours`*, *`total_salary`*, *`current_month_hours`*, *`current_month_salary`**
+// - Subcollection: *`schedules`*
+// - Document ID: unique schedule ID
+// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`*, *`finished`**
+// - Subcollection: *`attendance`*
+// - Document ID: unique attendance ID (usually just the coach ID)
+// - Fields: *`attended`, *`qr_code`**
+// - Subcollection: *`salaryHistory`*
+// - Document ID: unique salary history ID (usually just the month and year)
+// - Fields: *`month`, *`year`*, *`total_hours`*, *`total_salary`**
+// - Fields: *`branches`* (array of branch IDs that the coach works at)
+//
+// - *branches*: A collection to store the information of all branches.
+// - Document ID: unique branch ID
+// - Fields: *`name`, *`address`**
+// - Subcollection: *`coaches`*
+// - Document ID: unique coach ID who works at this branch
+//
+// - *admins*: A collection to store the information of all admins.
+// - Document ID: unique admin ID
+// - Fields: *`name`, *`email`*, *`branch_id`** (the ID of the branch they're responsible for)
+//
+// - *schedules*: A collection to store the information of all schedules.
+// - Document ID: unique schedule ID
+// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`**
+// - Subcollection: *`attendance`*
+// - Document ID: unique attendance ID (usually just the coach ID)
+// - Fields: *`attended`, *`qr_code`**
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(InitialState()) {
@@ -33,6 +57,30 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
+
+  //edit this function to save list of schedules for current coach in a list
+  void getAllSchedulesForSpecific() {
+    emit(LoadingState());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('schedules')
+        .where('coach_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // filter the schedules by coach id
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+        .get()
+        .then((querySnapshot) {
+      List<SchedulesModel> schedules = [];
+      querySnapshot.docs.forEach((doc) {
+        schedules.add(SchedulesModel.fromJson(doc.data()));
+      });
+      emit(GetAllSchedulesForSpecificCoachSuccessState(schedules: schedules));
+    })
+        .catchError((error){
+      emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
+    });
+  }
+
+  ///////////////////////////////////////////////////////////////////
   // Add this method to listen for connectivity changes
   void _listenToConnectivityChanges() {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
@@ -290,13 +338,19 @@ class HomeCubit extends Cubit<HomeState> {
     for (int day = 1; day <= endOfMonth.day; day++) {
       DateTime date = DateTime(now.year, now.month, day);
       if (date.weekday == dayOfWeek) {
+       //schedules: A collection to store the information of all schedules.
+        // // Document ID: unique schedule ID
+        // // Fields:  branch_id, start_time, end_time, date, finished, attendance (map of coach ID to boolean indicating whether they attended)
         SchedulesModel schedulesModel = SchedulesModel(
-          coachId: coachId,
-          branchId: 'branchId',
-          endTime: endTime,
-          startTime: startTime,
+         branchId: 'branchId',
+         startTime: Timestamp.fromDate(DateTime(date.year, date.month, date.day, 8)),
+          endTime: Timestamp.fromDate(DateTime(date.year, date.month, date.day, 10)),
           date: Timestamp.fromDate(date),
           finished: false,
+
+             attendance: {
+           'coach1': true,
+               'coach2': false},
         );
         FirebaseFirestore.instance
             .collection('schedules')
