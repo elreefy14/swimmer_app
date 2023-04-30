@@ -47,10 +47,10 @@ class HomeScreen extends StatelessWidget {
   width: double.infinity,
   child: OutlinedButton(
     onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignInScreen()),
-    );
+   // Navigator.push(
+  //    context,
+  //    MaterialPageRoute(builder: (context) => SignInScreen()),
+  //  );
     },
     child: Text('تسجيل الدخول'),
   ),

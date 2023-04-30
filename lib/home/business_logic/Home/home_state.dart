@@ -37,12 +37,17 @@ class GenerateQrImageLoadingState extends HomeState {}
 class LoadingState extends HomeState {}
 //emit(GetAllSchedulesForSpecificCoachSuccessState(schedules: schedules));
 class GetAllSchedulesForSpecificCoachSuccessState extends HomeState {
-  final List<SchedulesModel> schedules;
-  GetAllSchedulesForSpecificCoachSuccessState({required this.schedules});
 }
 //GetAllSchedulesForSpecificCoachErrorState
 class GetAllSchedulesForSpecificCoachErrorState extends HomeState {
   final String error;
   GetAllSchedulesForSpecificCoachErrorState({required this.error});
+}
+//AddScheduleToCoachCollectionSuccessState
+class AddScheduleToCoachCollectionSuccessState extends HomeState {}
+//AddScheduleToCoachCollectionErrorState
+class AddScheduleToCoachCollectionErrorState extends HomeState {
+  final String error;
+  AddScheduleToCoachCollectionErrorState({required this.error});
 }
 

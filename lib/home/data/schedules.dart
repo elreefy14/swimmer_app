@@ -29,7 +29,7 @@ class SchedulesModel {
   Timestamp? endTime;
   Timestamp? date;
   bool? finished;
-  final Map<String, bool> attendance;
+
   SchedulesModel({
 
     required this.branchId,
@@ -37,7 +37,7 @@ class SchedulesModel {
     required this.endTime,
     required this.date,
     required this.finished,
-    required this.attendance,
+
   });
 
   //from json function
@@ -49,23 +49,20 @@ class SchedulesModel {
       endTime: json['endTime'],
       date: json['date'],
       finished: json['finished'],
-      attendance: json['attendance'],
+
     );
   }
 
 
+  //to json function
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> attendanceJson = {};
-    attendance.forEach((key, value) {
-      attendanceJson[key] = value;
-    });
     return {
       'branchId': branchId,
       'startTime': startTime,
       'endTime': endTime,
       'date': date,
       'finished': finished,
-      'attendance': attendanceJson,
+
     };
   }
 }

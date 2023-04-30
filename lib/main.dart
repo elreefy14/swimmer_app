@@ -114,7 +114,9 @@ class MyApp extends StatelessWidget {
         )),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
-          ..getSchedules(specificDate: DateTime.now())
+     //   ..addScheduleToCoachCollection()
+       ..getAllSchedulesForSpecificUser()
+       //   ..getSchedules(specificDate: DateTime.now())
           //  ..getAllSchedulesForSpecificUser()
         //    .._listenToConnectivityChanges()
       //  ..onQRCodeScanned(
