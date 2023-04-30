@@ -31,4 +31,16 @@ class GenerateQrImageErrorState extends HomeState {
 }
 //GenerateQrImageLoadingState
 class GenerateQrImageLoadingState extends HomeState {}
+//LoadingState
+class LoadingState extends HomeState {}
+//    emit(GetAllSchedulesForSpecificCoachSuccessState(schedules: schedules));\
+//GetAllSchedulesForSpecificCoachSuccessState
+class GetAllSchedulesForSpecificCoachSuccessState extends HomeState {
 
+  GetAllSchedulesForSpecificCoachSuccessState();
+}
+//GetAllSchedulesForSpecificCoachErrorState
+class GetAllSchedulesForSpecificCoachErrorState extends HomeState {
+  final String error;
+  GetAllSchedulesForSpecificCoachErrorState({required this.error});
+}
