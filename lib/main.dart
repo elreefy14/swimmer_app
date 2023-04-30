@@ -114,6 +114,8 @@ class MyApp extends StatelessWidget {
         )),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
+          ..getSchedules(specificDate: DateTime.now())
+          //  ..getAllSchedulesForSpecificUser()
         //    .._listenToConnectivityChanges()
       //  ..onQRCodeScanned(
       //    coachId: '4rC6uhZzsAbsdCFH0mHW6Qt0TTC3',
@@ -176,7 +178,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.login,
+          initialRoute: AppRoutes.home,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

@@ -59,27 +59,35 @@ class HomeCubit extends Cubit<HomeState> {
   static HomeCubit get(context) => BlocProvider.of(context);
 
   //edit this function to save list of schedules for current coach in a list
-  void getAllSchedulesForSpecific() {
+  List<SchedulesModel> userSchedules = [];
+  void getAllSchedulesForSpecificUser() {
     emit(LoadingState());
+    print('Getting all schedules for specific coach');
+
+    print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
     FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        // .collection('users')
+        // .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('schedules')
-        .where('coach_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // filter the schedules by coach id
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+       // .where('coach_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // filter the schedules by coach id
+       // .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+       // .where('date', isGreaterThanOrEqualTo: Timestamp.now())
         .get()
         .then((querySnapshot) {
-      List<SchedulesModel> schedules = [];
+      print('Successfully retrieved all schedules for specific coach');
+      print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+
       querySnapshot.docs.forEach((doc) {
-        schedules.add(SchedulesModel.fromJson(doc.data()));
+        userSchedules.add(SchedulesModel.fromJson(doc.data()));
+        print('doc.data(): ${doc.data()}');
       });
       emit(GetAllSchedulesForSpecificCoachSuccessState(schedules: schedules));
     })
         .catchError((error){
+      print('Failed to retrieve all schedules for specific coach due to error: $error');
       emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
     });
   }
-
   ///////////////////////////////////////////////////////////////////
   // Add this method to listen for connectivity changes
   void _listenToConnectivityChanges() {
@@ -381,7 +389,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     FirebaseFirestore.instance
         .collection('schedules')
-        .where('coachId', isEqualTo: 'rafik')
+      //  .where('coachId', isEqualTo: 'rafik')
         .where('date', isGreaterThanOrEqualTo: startTimestamp)
         .where('date', isLessThanOrEqualTo: endTimestamp)
         .get()
