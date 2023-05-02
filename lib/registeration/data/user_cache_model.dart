@@ -1,28 +1,30 @@
 class UserCacheModel {
-  final String token;
-  final String uid;
-  final String email;
-  final String name;
-  final String phone;
-  final int level;
-  final int hourlyRate;
-  final int totalHours;
-  final int totalSalary;
-  final int currentMonthHours;
-  final int currentMonthSalary;
+   String? token;
+   String? uid;
+   String? email;
+   String? name;
+   String? phone;
+   String? image;
+   int? level;
+   int? hourlyRate;
+   int? totalHours;
+   int? totalSalary;
+   int? currentMonthHours;
+   int? currentMonthSalary;
 
   UserCacheModel({
-    required this.token,
-    required this.uid,
-    required this.email,
-    required this.name,
-    required this.phone,
-    required this.level,
-    required this.hourlyRate,
-    required this.totalHours,
-    required this.totalSalary,
-    required this.currentMonthHours,
-    required this.currentMonthSalary,
+   this.token,
+   this.uid,
+   this.email,
+   this.name,
+   this.phone,
+   this.level,
+   this.hourlyRate,
+   this.totalHours,
+   this.totalSalary,
+   this.currentMonthHours,
+   this.currentMonthSalary,
+    this.image,
   });
 
   factory UserCacheModel.fromJson(Map<String, dynamic> json) {
@@ -38,10 +40,12 @@ class UserCacheModel {
       totalSalary: json['total_salary'],
       currentMonthHours: json['current_month_hours'],
       currentMonthSalary: json['current_month_salary'],
+      image: json['image'],
     );
   }
 
   Map<String, dynamic> toJson() => {
+    'image': image,
     'token': token,
     'uid': uid,
     'email': email,

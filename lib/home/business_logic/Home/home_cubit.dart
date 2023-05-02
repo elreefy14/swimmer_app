@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -58,7 +59,97 @@ class HomeCubit extends Cubit<HomeState> {
 
   static HomeCubit get(context) => BlocProvider.of(context);
 
+  //
+  // formatDate() {
+  //   for (var i = 0; i < article!.articles!.length; i++) {
+  //     var formattedDate = DateFormat('hh a yyyy/MM/dd EEEE', 'ar')
+  //         .format(DateTime.parse(article!.articles![i].createdAt!));
+  //
+  //     var timePart = formattedDate.split(' ')[0];
+  //     var datePart = formattedDate.substring(3, 21);
+  //     var dayPart = formattedDate.split(' ')[formattedDate.split(' ').length - 1];
+  //
+  //     date.add('$timePart $datePart $dayPart');
+  //   }
+  // }
 
+
+
+  //i want to get list of schedules from firebase database and show them like that .   10 AM         2023/05/2    tuesday (but in arabic)  . 10 am is the start time     2023/05/2   is date . all fields are timestamp variables
+  //edit this function
+   // List<SchedulesModel> userSchedules = [];
+   //   void getAllSchedulesForSpecificUser() {
+   //     emit(LoadingState());
+   //     print('Getting all schedules for specific coach');
+   //
+   //     print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
+   //     FirebaseFirestore.instance
+   //          .collection('users')
+   //          .doc(FirebaseAuth.instance.currentUser!.uid)
+   //         .collection('schedules')
+   //        // .where('coach_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // filter the schedules by coach id
+   //        // .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+   //        // .where('date', isGreaterThanOrEqualTo: Timestamp.now())
+   //         .get()
+   //         .then((querySnapshot) {
+   //       print('Successfully retrieved all schedules for specific coach');
+   //       print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+   //
+   //       querySnapshot.docs.forEach((doc) {
+   //         userSchedules.add(SchedulesModel.fromJson(doc.data()));
+   //         print('doc.data(): ${doc.data()}');
+   //       });
+   //       emit(GetAllSchedulesForSpecificCoachSuccessState());
+   //     })
+   //         .catchError((error){
+   //       print('Failed to retrieve all schedules for specific coach due to error: $error');
+   //       emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
+   //     });
+   //   }
+  List<SchedulesModel> userSchedules = [];
+  void getAllSchedulesForSpecificUser() {
+    emit(LoadingState());
+    print('Getting all schedules for specific coach');
+
+    print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('schedules')
+        .get()
+        .then((querySnapshot) {
+      print('Successfully retrieved all schedules for specific coach');
+      print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+
+      querySnapshot.docs.forEach((doc) {
+        var schedule = SchedulesModel.fromJson(doc.data());
+        var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
+        var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
+        var formattedSchedule = '$startTime $date';
+        print('formattedSchedule: $formattedSchedule');
+        userSchedules.add(schedule);
+      });
+
+      emit(GetAllSchedulesForSpecificCoachSuccessState());
+    })
+        .catchError((error){
+      print('Failed to retrieve all schedules for specific coach due to error: $error');
+      emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
+    });
+  }
+  //todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 lw 3atz t3ed schedules yb2a kda
+//ListView.builder(
+//   itemCount: userSchedules.length,
+//   itemBuilder: (context, index) {
+//     var schedule = userSchedules[index];
+//     var startTime = DateFormat('hh a', 'ar').format(schedule.startTime.toDate());
+//     var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date.toDate());
+//     var formattedSchedule = '$startTime $date';
+//
+//     return Text(formattedSchedule);
+//   },
+// ),
+  //Todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 bos fo2
   //add schedule to coach collection in subcollection schedules
 void addScheduleToCoachCollection(
    // SchedulesModel schedule
@@ -92,35 +183,7 @@ void addScheduleToCoachCollection(
     });
   }
   //edit this function to save list of schedules for current coach in a list
-  List<SchedulesModel> userSchedules = [];
-  void getAllSchedulesForSpecificUser() {
-    emit(LoadingState());
-    print('Getting all schedules for specific coach');
 
-    print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
-    FirebaseFirestore.instance
-         .collection('users')
-         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('schedules')
-       // .where('coach_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // filter the schedules by coach id
-       // .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
-       // .where('date', isGreaterThanOrEqualTo: Timestamp.now())
-        .get()
-        .then((querySnapshot) {
-      print('Successfully retrieved all schedules for specific coach');
-      print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
-
-      querySnapshot.docs.forEach((doc) {
-        userSchedules.add(SchedulesModel.fromJson(doc.data()));
-        print('doc.data(): ${doc.data()}');
-      });
-      emit(GetAllSchedulesForSpecificCoachSuccessState());
-    })
-        .catchError((error){
-      print('Failed to retrieve all schedules for specific coach due to error: $error');
-      emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
-    });
-  }
   ///////////////////////////////////////////////////////////////////
   // Add this method to listen for connectivity changes
   void _listenToConnectivityChanges() {

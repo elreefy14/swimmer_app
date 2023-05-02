@@ -44,9 +44,9 @@ class SchedulesModel {
   factory SchedulesModel.fromJson(Map<String, dynamic> json) {
     return SchedulesModel(
 
-      branchId: json['branchId'],
-      startTime: json['startTime'],
-      endTime: json['endTime'],
+      branchId: json['branch_id'],
+      startTime: json['start_time'],
+      endTime: json['end_time'],
       date: json['date'],
       finished: json['finished'],
 
@@ -57,9 +57,9 @@ class SchedulesModel {
   //to json function
   Map<String, dynamic> toJson() {
     return {
-      'branchId': branchId,
-      'startTime': startTime,
-      'endTime': endTime,
+      'branch_id': branchId,
+      'start_time': startTime,
+      'end_time': endTime,
       'date': date,
       'finished': finished,
 

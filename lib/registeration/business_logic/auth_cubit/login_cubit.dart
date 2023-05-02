@@ -1,7 +1,8 @@
 // ignore_for_file: unused_import
 
 import 'dart:ffi';
-
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/cashe_helper.dart';
 import '../../data/userModel.dart';
 import '../../data/user_cache_model.dart';
@@ -26,90 +28,94 @@ class LoginCubit extends Cubit<LoginState> {
 
 static LoginCubit get(context) => BlocProvider.of(context);
 
-  // void signIn({
-  //     required String phone,
-  //     required String password,
-  //   }) {
-  //     emit(LoginLoadingState());
-  //     FirebaseAuth.instance.signInWithEmailAndPassword(
-  //       email: '$phone@placeholder.com',
-  //       password: password,
-  //     ).then((userCredential) async {
-  //       var user = userCredential.user!;
-  //
-  //       FirebaseMessaging.instance.getToken().then((token) {
-  //         FirebaseFirestore.instance
-  //             .collection('users')
-  //             .doc(user.uid)
-  //             .update({
-  //           'deviceToken': FieldValue.arrayUnion([token]),
-  //           // Save deviceId to user collection
-  //         })
-  //             .then((_) {
-  //           FirebaseFirestore.instance
-  //               .collection('users')
-  //               .doc(user.uid)
-  //               .get()
-  //               .then((doc) async {
-  //             if (doc.exists) {
-  //               var data = doc.data();
-  //               if (data!['deviceToken'].length < 3) {
-  //                 // Get user data from the document
-  //                 var userData = UserCacheModel(
-  //                   email: user.email??'${data['phone']}@placeholder.com',
-  //                   phone: user.phoneNumber??data['phone'],
-  //                   token: token??data['deviceToken'][0],
-  //                   uid: user.uid,
-  //                   name: data['name'],
-  //                   level: data['level'],
-  //                   hourlyRate: data['hourly_rate'],
-  //                   totalHours: data['total_hours'],
-  //                   totalSalary: data['total_salary'],
-  //                   currentMonthHours: data['current_month_hours'],
-  //                   currentMonthSalary: data['current_month_salary'],
-  //                 );
-  //                 CacheHelper.saveUser(userData);
-  //
-  //                 emit(LoginSuccessState(user.uid));
-  //               } else {
-  //                 emit(LoginErrorState('User is already logged in on 3 devices.'));
-  //               }
-  //             } else {
-  //               emit(LoginErrorState('User data not found.'));
-  //             }
-  //           });
-  //         });
-  //       });
-  //     }).catchError((error) {
-  //       String? errorMessage;
-  //       switch (error.code) {
-  //         case "invalid-email":
-  //           if (kDebugMode) {
-  //             errorMessage = 'The email address is badly formatted.';
-  //           }
-  //           break;
-  //         case "user-not-found":
-  //           if (kDebugMode) {
-  //             errorMessage = 'No user found for that email.';
-  //           }
-  //           break;
-  //         case "wrong-password":
-  //           if (kDebugMode) {
-  //             errorMessage = 'Wrong password provided for that user.';
-  //           }
-  //           break;
-  //         default:
-  //           if (kDebugMode) {
-  //             errorMessage = 'The error is $error';
-  //           }
-  //       }
-  //       print('error firebase:\n\n\n\n\n\n\n');
-  //       print(error.code);
-  //       print('error message:\n\n\n\n\n\n\n');
-  //       print(errorMessage);
-  //       emit(LoginErrorState(errorMessage ?? ""));
-  //     });
-  //   }
+  String? profilePicURL;
+
+  Future<void> uploadProfilePic(
+
+      ) async {
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child(Uri.file(profileImage!.path).pathSegments.last)
+        .putFile(profileImage!)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        editUserData(
+          image: value,
+        );
+        emit(UploadProfilePicSuccessState());
+      }).catchError((error) {
+        print(error.toString());
+        emit(UploadProfilePicErrorState());
+      });
+      emit(UploadProfilePicSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(UploadProfilePicErrorState());
+    });
+  }
+  File? profileImage;
+  ImagePicker? picker = ImagePicker();
+
+  Future? getProfileImage() async {
+    final pickedFile = await picker?.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      profileImage =  File(pickedFile.path);
+      await uploadProfilePic();
+      emit(GetProfilePicSuccessState());
+    } else {
+      print('No Image Selected');
+      emit(GetProfilePicErrorState());
+    }
+  }
+//make a function to edit user data in firebase and cache
+  //user can edit first name , last name , image ,phone number seperately in firebase and cache
+  void editUserData({
+    String? firstName,
+    String? lastName,
+    String? phone,
+    String? image,
+  }) {
+    emit(EditUserDataLoadingState());
+    var user = FirebaseAuth.instance.currentUser;
+    Map<String, Object?> updateData = {};
+    if (firstName != null) {
+      updateData['first_name'] = firstName;
+    }
+    if (lastName != null) {
+      updateData['last_name'] = lastName;
+    }
+    if (phone != null) {
+      updateData['phone'] = phone;
+    }
+    if (image != null) {
+      updateData['image'] = image;
+    }
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .update(updateData)
+        .then((_) {
+      // update local cache
+      CacheHelper.getUser()!.then((userData) {
+        if (firstName != null) {
+          userData!.name = firstName + ' ' + (lastName ?? '');
+        }
+        if (phone != null) {
+          userData!.phone = phone;
+        }
+        if (image != null) {
+          userData!.image = image;
+        }
+        CacheHelper.saveUser(userData);
+      });
+
+      emit(EditUserDataSuccessState());
+    }).catchError((error) {
+      emit(EditUserDataErrorState(error.toString()));
+    });
+  }
+
   void signIn({
     required String phone,
     required String password,

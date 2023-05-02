@@ -41,5 +41,20 @@ class CreateGoogleUserSuccessState extends LoginState {
 class CreateGoogleUserErrorState extends LoginState {}
 //ChangeSuffixIconState
 class ChangeSuffixIconState extends LoginState {}
-
-
+//EditUserDataLoadingState
+class EditUserDataLoadingState extends LoginState {}
+//EditUserDataSuccessState
+class EditUserDataSuccessState extends LoginState {}
+//EditUserDataErrorState
+class EditUserDataErrorState extends LoginState {
+  final String error;
+  EditUserDataErrorState(this.error);
+}
+//UploadProfilePicSuccessState
+class UploadProfilePicSuccessState extends LoginState {}
+//UploadProfilePicErrorState
+class UploadProfilePicErrorState extends LoginState {}
+//GetProfilePicSuccessState
+class GetProfilePicSuccessState extends LoginState {}
+//GetProfilePicErrorState
+class GetProfilePicErrorState extends LoginState {}

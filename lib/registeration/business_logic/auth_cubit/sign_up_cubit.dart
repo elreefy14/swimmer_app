@@ -32,6 +32,51 @@ void changePasswordVisibility(){
   showPassword = !showPassword;
   emit(ChangePasswordVisibilityState());
 }
+//make function yo update new password in firebase
+  Future<void> updatePassword({
+    required String password,
+  }) async {
+    emit(UpdatePasswordLoadingState());
+    FirebaseAuth.instance.currentUser!.updatePassword(password).then((value) {
+      emit(UpdatePasswordSuccessState());
+    }).catchError((error) {
+      String? errorMessage;
+      switch (error.code) {
+        case "weak-password":
+          if (kDebugMode) {
+            print(errorMessage);
+            errorMessage = 'The password provided is too weak.';
+          }
+          break;
+        case "email-already-in-use":
+          if (kDebugMode) {
+            print(errorMessage);
+            errorMessage = 'The account already exists for that email.';
+          }
+          break;
+        case "invalid-email":
+          if (kDebugMode) {
+            print(errorMessage);
+            errorMessage = 'The email address is badly formatted.';
+          }
+          break;
+        case "operation-not-allowed":
+          if (kDebugMode) {
+            print(errorMessage);
+            errorMessage = 'Email/password accounts are not enabled.';
+          }
+          break;
+        default:
+          if (kDebugMode) {
+            errorMessage = 'The error is $error';
+            print(errorMessage);
+          }
+      }
+      emit(UpdatePasswordErrorState(
+        error: errorMessage,
+      ));
+    });
+  }
 
   Future<void> signUp({
     required String lName,
