@@ -67,36 +67,42 @@ static LoginCubit get(context) => BlocProvider.of(context);
       emit(GetProfilePicErrorState());
     }
   }
-//make a function to edit user data in firebase and cache
-  //user can edit first name , last name , image ,phone number seperately in firebase and cache
   void editUserData({
     String? firstName,
     String? lastName,
     String? phone,
     String? image,
-  }) {
+  }) async {
     emit(EditUserDataLoadingState());
-    var user = FirebaseAuth.instance.currentUser;
-    Map<String, Object?> updateData = {};
+    final user = FirebaseAuth.instance.currentUser;
+    final updateData = <String, Object?>{};
+    final notificationData = <String, dynamic>{};
+
     if (firstName != null) {
       updateData['first_name'] = firstName;
-    }
+      notificationData['message'] = 'تم تحديث الاسم الأول إلى $firstName';
+       }
     if (lastName != null) {
       updateData['last_name'] = lastName;
+      notificationData['message'] = 'تم تحديث الاسم الأخير إلى $lastName';
     }
     if (phone != null) {
       updateData['phone'] = phone;
+      notificationData['message'] = 'تم تحديث رقم الهاتف إلى $phone';
     }
     if (image != null) {
       updateData['image'] = image;
+      notificationData['message'] = 'تم تحديث الصورة إلى $image';
     }
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .update(updateData)
-        .then((_) {
-      // update local cache
+    // Update the user data
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .update(updateData);
+
+      // Update the local cache
       CacheHelper.getUser()!.then((userData) {
         if (firstName != null) {
           userData!.name = firstName + ' ' + (lastName ?? '');
@@ -109,12 +115,69 @@ static LoginCubit get(context) => BlocProvider.of(context);
         }
         CacheHelper.saveUser(userData);
       });
+      // Add notification to the subcollection
+      notificationData['timestamp'] = FieldValue.serverTimestamp();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('notifications')
+          .add(notificationData);
 
       emit(EditUserDataSuccessState());
-    }).catchError((error) {
+    } catch (error) {
+      print(error.toString());
       emit(EditUserDataErrorState(error.toString()));
-    });
+    }
   }
+
+//make a function to edit user data in firebase and cache
+  //user can edit first name , last name , image ,phone number seperately in firebase and cache
+  // void editUserData({
+  //   String? firstName,
+  //   String? lastName,
+  //   String? phone,
+  //   String? image,
+  // }) {
+  //   emit(EditUserDataLoadingState());
+  //   var user = FirebaseAuth.instance.currentUser;
+  //   Map<String, Object?> updateData = {};
+  //   if (firstName != null) {
+  //     updateData['first_name'] = firstName;
+  //   }
+  //   if (lastName != null) {
+  //     updateData['last_name'] = lastName;
+  //   }
+  //   if (phone != null) {
+  //     updateData['phone'] = phone;
+  //   }
+  //   if (image != null) {
+  //     updateData['image'] = image;
+  //   }
+  //
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(user!.uid)
+  //       .update(updateData)
+  //       .then((_) {
+  //     // update local cache
+  //     CacheHelper.getUser()!.then((userData) {
+  //       if (firstName != null) {
+  //         userData!.name = firstName + ' ' + (lastName ?? '');
+  //       }
+  //       if (phone != null) {
+  //         userData!.phone = phone;
+  //       }
+  //       if (image != null) {
+  //         userData!.image = image;
+  //       }
+  //       CacheHelper.saveUser(userData);
+  //     });
+  //
+  //     emit(EditUserDataSuccessState());
+  //   }).catchError((error) {
+  //     emit(EditUserDataErrorState(error.toString()));
+  //   });
+  // }
 
   void signIn({
     required String phone,

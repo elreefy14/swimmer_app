@@ -58,10 +58,10 @@ class SignInScreen extends StatelessWidget {
   listener: (context, state) {
 
     if (state is LoginSuccessState) {
-      showToast(
-        msg: 'تم تسجيل الدخول بنجاح',
-        state: ToastStates.SUCCESS,
-      );
+      // showToast(
+      //   msg: 'تم تسجيل الدخول بنجاح',
+      //   state: ToastStates.SUCCESS,
+      // );
 
       Navigator.pushNamed(context, AppRoutes.home);
     }else if (state is LoginErrorState) {

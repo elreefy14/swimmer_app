@@ -110,7 +110,10 @@ class MyApp extends StatelessWidget {
         //BlocProvider(create: (context) => RegisterCubit()),
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
         BlocProvider(create: (context) => LoginCubit()
-      ..getProfileImage()
+           ..editUserData(
+             firstName: 'ahmed',
+           )
+          //..getProfileImage()
           //  ..signIn(
       //    phone: '01097051812',
       //    password: '123456',

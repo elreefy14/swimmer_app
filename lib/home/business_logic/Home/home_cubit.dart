@@ -59,53 +59,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   static HomeCubit get(context) => BlocProvider.of(context);
 
-  //
-  // formatDate() {
-  //   for (var i = 0; i < article!.articles!.length; i++) {
-  //     var formattedDate = DateFormat('hh a yyyy/MM/dd EEEE', 'ar')
-  //         .format(DateTime.parse(article!.articles![i].createdAt!));
-  //
-  //     var timePart = formattedDate.split(' ')[0];
-  //     var datePart = formattedDate.substring(3, 21);
-  //     var dayPart = formattedDate.split(' ')[formattedDate.split(' ').length - 1];
-  //
-  //     date.add('$timePart $datePart $dayPart');
-  //   }
-  // }
-
-
-
-  //i want to get list of schedules from firebase database and show them like that .   10 AM         2023/05/2    tuesday (but in arabic)  . 10 am is the start time     2023/05/2   is date . all fields are timestamp variables
-  //edit this function
-   // List<SchedulesModel> userSchedules = [];
-   //   void getAllSchedulesForSpecificUser() {
-   //     emit(LoadingState());
-   //     print('Getting all schedules for specific coach');
-   //
-   //     print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
-   //     FirebaseFirestore.instance
-   //          .collection('users')
-   //          .doc(FirebaseAuth.instance.currentUser!.uid)
-   //         .collection('schedules')
-   //        // .where('coach_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // filter the schedules by coach id
-   //        // .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
-   //        // .where('date', isGreaterThanOrEqualTo: Timestamp.now())
-   //         .get()
-   //         .then((querySnapshot) {
-   //       print('Successfully retrieved all schedules for specific coach');
-   //       print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
-   //
-   //       querySnapshot.docs.forEach((doc) {
-   //         userSchedules.add(SchedulesModel.fromJson(doc.data()));
-   //         print('doc.data(): ${doc.data()}');
-   //       });
-   //       emit(GetAllSchedulesForSpecificCoachSuccessState());
-   //     })
-   //         .catchError((error){
-   //       print('Failed to retrieve all schedules for specific coach due to error: $error');
-   //       emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
-   //     });
-   //   }
   List<SchedulesModel> userSchedules = [];
   void getAllSchedulesForSpecificUser() {
     emit(LoadingState());
