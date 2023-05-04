@@ -8,11 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/routiong.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/bloc_observer.dart';
 import 'core/cashe_helper.dart';
 import 'core/constants/routes_manager.dart';
@@ -22,6 +23,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message:\n\n\n ${message.messageId}');
 }
 Future<void> main() async {
+  //await initializeDateFormatting('ar', null);
 
   //wait widget tree to be built
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,9 +109,22 @@ class MyApp extends StatelessWidget {
        // BlocProvider(create: (context) => NotificationCubit()),
         //BlocProvider(create: (context) => RegisterCubit()),
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
-        BlocProvider(create: (context) => LoginCubit()),
+        BlocProvider(create: (context) => LoginCubit()
+           ..editUserData(
+             firstName: 'ahmed',
+           )
+          //..getProfileImage()
+          //  ..signIn(
+      //    phone: '01097051812',
+      //    password: '123456',
+      //  )
+        ),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
+     //   ..addScheduleToCoachCollection()
+       ..getAllSchedulesForSpecificUser()
+       //   ..getSchedules(specificDate: DateTime.now())
+          //  ..getAllSchedulesForSpecificUser()
         //    .._listenToConnectivityChanges()
       //  ..onQRCodeScanned(
       //    coachId: '4rC6uhZzsAbsdCFH0mHW6Qt0TTC3',
@@ -151,14 +166,14 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context , child) => MaterialApp(
 
-          // localizationsDelegates: [
-          //   GlobalMaterialLocalizations.delegate,
-          //   GlobalWidgetsLocalizations.delegate,
-          //   GlobalCupertinoLocalizations.delegate,
-          // ],
-          // supportedLocales: const [
-          //   Locale('ar', "AE"),
-          // ],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ar', "AE"),
+          ],
 
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],

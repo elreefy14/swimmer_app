@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/registeration/presenation/widget/component.dart';
+
+import '../../core/constants/routes_manager.dart';
+import '../../home/presenation/widget/widget.dart';
 
 
 class SignInScreen extends StatelessWidget {
@@ -8,7 +13,7 @@ class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
-  
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +54,42 @@ class SignInScreen extends StatelessWidget {
           return null;
         },Icons.password,),
                     SizedBox(height: 20.0),
-                    ElevatedButton(
+                    BlocConsumer<LoginCubit, LoginState>(
+  listener: (context, state) {
+
+    if (state is LoginSuccessState) {
+      // showToast(
+      //   msg: 'تم تسجيل الدخول بنجاح',
+      //   state: ToastStates.SUCCESS,
+      // );
+
+      Navigator.pushNamed(context, AppRoutes.home);
+    }else if (state is LoginErrorState) {
+      showToast(
+        msg: state.error,
+        state: ToastStates.ERROR,
+      );
+    }else if (state is LoginLoadingState) {
+      showToast(
+        msg: 'جاري تسجيل الدخول',
+        state: ToastStates.WARNING,
+      );
+    }
+  },
+  builder: (context, state) {
+    return ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Form is valid, proceed further
+                         if (_formKey.currentState!.validate()) {
+                         LoginCubit.get(context).signIn(
+                           phone: phoneController.text,
+                           password: passwordController.text,
+                         );
                         }
                       },
                       child: Text(' تسجيل دخول'),
-                    ),
+                    );
+  },
+),
                   ],
                 ),
               ),

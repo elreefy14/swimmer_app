@@ -31,6 +31,8 @@ class UserModel
   String? phone;
   String? fname;
   String? lname;
+  String? image;
+
 
 
   UserModel({
@@ -46,7 +48,7 @@ class UserModel
     this.phone,
     this.fname,
     this.lname,
-
+this.image,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +64,7 @@ class UserModel
     phone = json['phone'];
     fname = json['fname'];
     lname = json['lname'];
+image = json['image'];
 
   }
 
@@ -79,6 +82,7 @@ class UserModel
     data['phone'] = this.phone;
     data['fname'] = this.fname;
     data['lname'] = this.lname;
+data['image'] = this.image;
     return data;
 
   }

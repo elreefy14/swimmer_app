@@ -24,3 +24,12 @@ class CreateUserSuccessState extends SocialStates {
 }
 //CreateUserErrorState
 class CreateUserErrorState extends SocialStates {}
+//UpdatePasswordLoadingState
+class UpdatePasswordLoadingState extends SocialStates {}
+//UpdatePasswordSuccessState
+class UpdatePasswordSuccessState extends SocialStates {}
+//UpdatePasswordErrorState
+class UpdatePasswordErrorState extends SocialStates {
+  final String? error;
+  UpdatePasswordErrorState({this.error});
+}
