@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swimmer_app/core/constants/routes_manager.dart';
 import 'package:swimmer_app/registeration/presenation/SignUpScreen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
 
@@ -33,10 +34,11 @@ class HomeScreen extends StatelessWidget {
   width: double.infinity,
   child: ElevatedButton(
     onPressed: () {
-     Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignUpScreen()),
-    );
+    //  Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => SignUpScreen()),
+    // ); pushNamed
+    Navigator.pushNamed(context, AppRoutes.signUp);
     },
     child: Text('تسجيل'),
     style: ElevatedButton.styleFrom(primary: Colors.blue),
@@ -50,7 +52,8 @@ class HomeScreen extends StatelessWidget {
    // Navigator.push(
   //    context,
   //    MaterialPageRoute(builder: (context) => SignInScreen()),
-  //  );
+  //  ) push named
+  Navigator.pushNamed(context, AppRoutes.login);
     },
     child: Text('تسجيل الدخول'),
   ),

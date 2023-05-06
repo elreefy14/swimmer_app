@@ -28,7 +28,7 @@ class OtpCubit extends Cubit<OtpState> {
     emit(PhoneNumberSubmittedloaded());
   }
 
-  Future<void> otpSubmitted(String otp) async {
+  Future<void> otpSubmitted({required String otp}) async {
     emit(OTPLoading());
     final AuthCredential credential = PhoneAuthProvider.credential(
       verificationId: verificationIdd!,
@@ -111,6 +111,7 @@ class OtpCubit extends Cubit<OtpState> {
     );
     emit(OTPSent());
   }
+
 }
 
 //

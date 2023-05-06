@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
  const secondaryFontColor = Color(0xFF7c7d7e);
  const placeholder = Color(0xFF959696);
 class MyColors {
+  static const Color blue = Color(0xff0666EB);
+  static const Color lightBlue = Color(0xffE5EFFD);
+  static const Color lightGrey = Color(0xffE1E1E1);
   //save #081945 in static variable background color
   static const defaultColor = Color(0xFF00A9B6);
   //ToDo: save 0x411D2429 in static variable background color !!

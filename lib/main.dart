@@ -5,15 +5,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/routiong.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/bloc_observer.dart';
 import 'core/cashe_helper.dart';
 import 'core/constants/routes_manager.dart';
@@ -110,19 +110,20 @@ class MyApp extends StatelessWidget {
         //BlocProvider(create: (context) => RegisterCubit()),
         //BlocProvider(create: (context) => FirebaseAuthCubit()),
         BlocProvider(create: (context) => LoginCubit()
-           ..editUserData(
-             firstName: 'ahmed',
-           )
+           // ..editUserData(
+           //   firstName: 'ahmed',
+           // )
           //..getProfileImage()
           //  ..signIn(
       //    phone: '01097051812',
       //    password: '123456',
       //  )
         ),
+        BlocProvider(create: (context) => OtpCubit()),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
      //   ..addScheduleToCoachCollection()
-       ..getAllSchedulesForSpecificUser()
+      // ..getAllSchedulesForSpecificUser()
        //   ..getSchedules(specificDate: DateTime.now())
           //  ..getAllSchedulesForSpecificUser()
         //    .._listenToConnectivityChanges()
@@ -187,7 +188,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.login,
+          initialRoute: AppRoutes.signUp,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

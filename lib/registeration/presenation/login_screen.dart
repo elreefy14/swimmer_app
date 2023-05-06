@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,10 +59,6 @@ class SignInScreen extends StatelessWidget {
   listener: (context, state) {
 
     if (state is LoginSuccessState) {
-      // showToast(
-      //   msg: 'تم تسجيل الدخول بنجاح',
-      //   state: ToastStates.SUCCESS,
-      // );
 
       Navigator.pushNamed(context, AppRoutes.home);
     }else if (state is LoginErrorState) {
@@ -76,19 +73,23 @@ class SignInScreen extends StatelessWidget {
       );
     }
   },
-  builder: (context, state) {
-    return ElevatedButton(
-                      onPressed: () {
-                         if (_formKey.currentState!.validate()) {
-                         LoginCubit.get(context).signIn(
-                           phone: phoneController.text,
-                           password: passwordController.text,
-                         );
-                        }
+                      builder: (context, state) {
+                        return ConditionalBuilder(
+                          condition: state is! LoginLoadingState,
+                          builder: (context) => ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                LoginCubit.get(context).signIn(
+                                  phone: phoneController.text,
+                                  password: passwordController.text,
+                                );
+                              }
+                            },
+                            child: Text(' تسجيل دخول'),
+                          ),
+                          fallback: (context) => Center(child: CircularProgressIndicator()),
+                        );
                       },
-                      child: Text(' تسجيل دخول'),
-                    );
-  },
 ),
                   ],
                 ),

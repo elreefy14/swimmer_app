@@ -1,6 +1,14 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:swimmer_app/core/constants/routes_manager.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_state.dart';
 import 'package:swimmer_app/registeration/presenation/otp.dart';
 import 'package:swimmer_app/registeration/presenation/widget/component.dart';
+
+import '../../home/presenation/widget/widget.dart';
 
 class SignUpScreen extends StatelessWidget {
 
@@ -67,17 +75,57 @@ class SignUpScreen extends StatelessWidget {
           return null;
         },Icons.lock, ),
                     SizedBox(height: 20.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => OtpVerificationScreen(phoneNumber:phoneController.text ,)),
+                    BlocConsumer<OtpCubit,OtpState >(
+  listener: (context, state) {
+    if (state is PhoneNumberSubmittedloaded) {
+      Navigator.pushNamed(
+                context,
+                AppRoutes.otpVerification,
+                arguments: {
+                  'phone': phoneController.text,
+                  'lName': lastNameController.text,
+                  'fName': firstNameController.text,
+                  'password': passwordController.text,
+                },
+              );
+    }
+
+
+  },
+  builder: (context, state) {
+    return ConditionalBuilder(
+      condition: state is! SignUpLoadingState,
+      builder: (context) {
+        return ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+           OtpCubit.get(context).phoneNumberSubmitted(phoneController.text);
+              // Navigator.pushNamed(
+              //   context,
+              //   AppRoutes.otpVerification,
+              //   arguments: {
+              //     'phone': phoneController.text,
+              //     'lName': lastNameController.text,
+              //     'fName': firstNameController.text,
+              //     'password': passwordController.text,
+              //   },
+              // );
+            }
+          },
+          child: Text('تسجيل'),
+        );
+
+      },
+      fallback: (context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
-                        }
-                      },
-                      child: Text('تسجيل'),
-                    ),
+
+
+  },
+),
                   ],
                 ),
               ),

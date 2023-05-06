@@ -23,7 +23,7 @@ import 'sign_up_state.dart';
 // 7. To display the salary history for each coach, query the `salaryHistory` subcollection inside the coach document and show the list containing the current month's total hours and salary, along with all previous months.
 // This design allows you to efficiently handle the required functionality while minimizing the number of reads and writes to the Firestore database.
 
-class SignUpCubit extends Cubit<SocialStates> {
+class SignUpCubit extends Cubit<SignUpState> {
   SignUpCubit() : super(InitialState());
 
   static SignUpCubit get(context) => BlocProvider.of(context);
@@ -32,6 +32,8 @@ void changePasswordVisibility(){
   showPassword = !showPassword;
   emit(ChangePasswordVisibilityState());
 }
+//function to check if email and password are in firebase
+
 //make function yo update new password in firebase
   Future<void> updatePassword({
     required String password,
