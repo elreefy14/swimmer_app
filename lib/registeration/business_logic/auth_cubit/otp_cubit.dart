@@ -64,8 +64,11 @@ class OtpCubit extends Cubit<OtpState> {
     return (exception) {
       print('My verification failed');
       print(exception);
-      emit(OtpVerificationFailed(
-          exception.message, canResendOtp: true, resendOtpDuration: _resendOtpTimerDuration));
+      emit(VerificationFailed(
+        exception.message,
+      //    exception.message, canResendOtp: true, resendOtpDuration: _resendOtpTimerDuration
+            )
+      );
     };
   }
 
@@ -90,7 +93,7 @@ class OtpCubit extends Cubit<OtpState> {
         emit(OtpVerificationFailed('', canResendOtp: true, resendOtpDuration: _resendOtpTimerDuration));
       } else {
         _resendOtpTimerDuration--;
-        emit(OtpVerificationFailed('', canResendOtp: false, resendOtpDuration: _resendOtpTimerDuration));
+       // emit(OtpVerificationFailed('', canResendOtp: false, resendOtpDuration: _resendOtpTimerDuration));
       }
     });
   }
@@ -99,17 +102,36 @@ class OtpCubit extends Cubit<OtpState> {
     _resendOtpTimer.cancel();
     _resendOtpTimerDuration = 30;
   }
-
-  void resendOtpCode() async {
-    emit(phoneNumberSubmittedLoading());
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: '+2${user!.user!.phoneNumber}',
-      verificationCompleted: _verificationCompleted(),
-      verificationFailed: _verificationFailed(),
-      codeSent: await _codeSent(),
-      codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout(),
-    );
-    emit(OTPSent());
+//edit this code so that if time is 0 then resend otp else emit the state otpverificationfailed
+  // void resendOtpCode({required phone}) async {
+  //   emit(phoneNumberSubmittedLoading());
+  //   await FirebaseAuth.instance.verifyPhoneNumber(
+  //    // phoneNumber: '+2${user!.user!.phoneNumber}',
+  //    // phoneNumber: '+201097051812',
+  //     phoneNumber: '+2$phone',
+  //     verificationCompleted: _verificationCompleted(),
+  //     verificationFailed: _verificationFailed(),
+  //     codeSent: await _codeSent(),
+  //     codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout(),
+  //   );
+  //   emit(OTPSent());
+  // }
+  void resendOtpCode({required phone}) async {
+    if (_resendOtpTimerDuration == 0) {
+      // Resend the OTP immediately
+      emit(phoneNumberSubmittedLoading());
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+2$phone',
+        verificationCompleted: _verificationCompleted(),
+        verificationFailed: _verificationFailed(),
+        codeSent: await _codeSent(),
+        codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout(),
+      );
+      emit(OTPSent());
+    } else {
+      // Show the remaining time left in the resend OTP timer
+      emit(OtpVerificationFailed('', canResendOtp: false, resendOtpDuration: _resendOtpTimerDuration));
+    }
   }
 
 }

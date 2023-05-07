@@ -167,14 +167,14 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context , child) => MaterialApp(
 
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('ar', "AE"),
-          ],
+          // localizationsDelegates: [
+          //   GlobalMaterialLocalizations.delegate,
+          //   GlobalWidgetsLocalizations.delegate,
+          //   GlobalCupertinoLocalizations.delegate,
+          // ],
+          // supportedLocales: const [
+          //   Locale('ar', "AE"),
+          // ],
 
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],

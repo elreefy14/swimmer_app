@@ -34,3 +34,8 @@ class OtpVerificationFailed extends OtpState {
   final int resendOtpDuration;
   OtpVerificationFailed(this.error, {this.canResendOtp = false, this.resendOtpDuration = 0});
 }
+//VerificationFailed
+class VerificationFailed extends OtpState {
+  final String? error;
+  VerificationFailed(this.error);
+}
