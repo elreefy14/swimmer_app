@@ -82,10 +82,10 @@ class OtpVerificationScreen extends StatelessWidget {
             builder: (context, state) {
               return BlocBuilder<OtpCubit, OtpState>(
                 builder: (context, state) {
-                  if (state is SignUpErrorState || state is VerificationFailed){
-                  return Container();
+                  if (state is OTPLoading || state is SignUpLoadingState){
+                    return showProgressIndicator(context);
                   }else{
-                  return showProgressIndicator(context);
+                    return Container();
               }
                 }
               );

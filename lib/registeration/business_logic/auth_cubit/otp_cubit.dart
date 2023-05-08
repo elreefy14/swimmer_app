@@ -127,7 +127,8 @@ class OtpCubit extends Cubit<OtpState> {
         codeSent: await _codeSent(),
         codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout(),
       );
-      emit(OTPSent());
+    //  emit(OtpVerificationFailed('', canResendOtp: true, resendOtpDuration: _resendOtpTimerDuration));
+     emit(OTPSent());
     } else {
       // Show the remaining time left in the resend OTP timer
       emit(OtpVerificationFailed('', canResendOtp: false, resendOtpDuration: _resendOtpTimerDuration));

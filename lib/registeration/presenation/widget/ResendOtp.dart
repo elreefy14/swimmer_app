@@ -26,25 +26,30 @@ class ResendOtp extends StatelessWidget {
           SizedBox(width: 8.0),
           BlocConsumer<OtpCubit, OtpState>(
             listener: (context, state) {
-              if (state is OtpVerificationFailed) {
-                if (state.canResendOtp == true) {
+              if (state is  OtpVerificationFailed) {
+                if (state.canResendOtp == false) {
                   // The user can resend the OTP now
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('You can resend the OTP now.'),
-                    ),
-                  );
-                } else {
-                  // The user has to wait for the resend timer to finish
                   final duration = state.resendOtpDuration;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('You can resend the OTP in $duration seconds.'),
+                      // content: Text('You can resend the OTP in $duration seconds.'),
+                      content: Text('يمكنك اعادة الارسال بعد $duration ثانية'),
+
                     ),
                   );
+                } }  if (state is OTPSent) {
+                  // The user has to wait for the resend timer to finish
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      //in arabic
+                      // content: Text('we will send you another OTP code.'),
+                      content: Text('سوف نرسل لك رمز تفعيل اخر'),
+                    ),
+                  );
+
                 }
-              }
-            },
+              },
+
             builder: (context, state) {
               return TextButton(
                 onPressed: () {
