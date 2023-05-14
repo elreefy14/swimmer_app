@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swimmer_app/core/cashe_helper.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
 import 'home_state.dart';
@@ -58,19 +59,31 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
-
-  List<SchedulesModel> userSchedules = [];
-  void getAllSchedulesForSpecificUser() {
+//make function to get all schedules for specific coach 
+//for the next 20 days store them in shared preferences and sort them by date
+//then when the coach open the app check if the date between first and last date in shared preferences bigger than 10 days 
+//if yes then get list of schedules from shared preferences 
+//else if no then get list of schedules from firestore and store them in shared preferences 
+ 
+  //List<SchedulesModel> userSchedules = [];
+  Future<List<SchedulesModel>> getAllSchedulesForSpecificUser() async {
     emit(LoadingState());
     print('Getting all schedules for specific coach');
 
     print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
+
+    List<SchedulesModel>? schedules =await CacheHelper.getSchedulesFromSharedPreferences();
+    print('schedules.length: ${schedules.length}');
+    print('\n\n\n\n\n');
+    if (schedules.length < 20) {
     FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(FirebaseAuth.instance.currentUser!.uid??'fnBisJY3vGgHL3on0tYeAJWI5GA2')
         .collection('schedules')
+    //.orderBy('date', descending: false)
+    .limit(20 - schedules.length)
         .get()
-        .then((querySnapshot) {
+        .then((querySnapshot) async {
       print('Successfully retrieved all schedules for specific coach');
       print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
 
@@ -80,9 +93,12 @@ class HomeCubit extends Cubit<HomeState> {
         var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
         var formattedSchedule = '$startTime $date';
         print('formattedSchedule: $formattedSchedule');
-        userSchedules.add(schedule);
+        schedules.add(schedule);
       });
 
+
+      await CacheHelper.storeSchedulesInSharedPreferences(schedules);
+    print('schedules.length: ${schedules.length}');
       emit(GetAllSchedulesForSpecificCoachSuccessState());
     })
         .catchError((error){
@@ -90,6 +106,36 @@ class HomeCubit extends Cubit<HomeState> {
       emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
     });
   }
+    return schedules;
+  }
+  // Future<void> storeSchedulesInSharedPreferences(List<SchedulesModel> schedules) async {
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     var encodedSchedules = jsonEncode(schedules.map((schedule) => schedule.toJson()).toList());
+  //     await prefs.setString('schedules', encodedSchedules);
+  //     emit(StoreSchedulesInSharedPreferencesSuccessState());
+  //   } catch (error) {
+  //     print('Failed to store schedules in shared preferences due to error: $error');
+  //     emit(StoreSchedulesInSharedPreferencesErrorState(error: error.toString()));
+  //   }
+  // }
+  //
+  // Future<List<SchedulesModel>> getCachedSchedules() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   var encodedSchedules = prefs.getString('schedules');
+  //   List<SchedulesModel> schedules = [];
+  //
+  //   if (encodedSchedules != null) {
+  //     var decodedSchedules = jsonDecode(encodedSchedules);
+  //     decodedSchedules.forEach((schedule) {
+  //       schedules.add(SchedulesModel.fromJson(schedule));
+  //     });
+  //   }
+  //   print('schedules.length: ${schedules.length}');
+  //
+  //   return schedules;
+  // }
+
   //todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 lw 3atz t3ed schedules yb2a kda
 //ListView.builder(
 //   itemCount: userSchedules.length,
@@ -115,7 +161,7 @@ void addScheduleToCoachCollection(
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('schedules')
         .add({
-      'branch_id': 'edasdas',
+      'branch_id': 'edasdaseeeeeeee',
       'coach_id': 'awak4gIQ28SdtDYLJIEF9phS20p2',
      // 'start_time': Today 8 pm
    //   'end_time':today 10 pm

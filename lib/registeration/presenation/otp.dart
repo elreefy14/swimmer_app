@@ -24,42 +24,42 @@ class OtpVerificationScreen extends StatelessWidget {
   }) : super(key: key);
   late String otpCode;
 
-  // void showProgressIndicator(BuildContext context) {
-  //   AlertDialog alertDialog = AlertDialog(
-  //     backgroundColor: Colors.transparent,
-  //     elevation: 0,
-  //     content: Center(
-  //       child: CircularProgressIndicator(
-  //         valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-  //       ),
-  //     ),
-  //   );
-  //
-  //   showDialog(
-  //     barrierColor: Colors.white.withOpacity(0),
-  //     barrierDismissible: false,
-  //     context: context,
-  //     builder: (context) {
-  //       return alertDialog;
-  //     },
-  //   );
-  // }
-  Widget showProgressIndicator(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Center(
-        child: AlertDialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          content: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-            ),
-          ),
+  void showProgressIndicator(BuildContext context) {
+    AlertDialog alertDialog = AlertDialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      content: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
         ),
       ),
     );
+
+    showDialog(
+      barrierColor: Colors.white.withOpacity(0),
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return alertDialog;
+      },
+    );
   }
+  // Widget showProgressIndicator(BuildContext context) {
+  //   return Material(
+  //     color: Colors.transparent,
+  //     child: Center(
+  //       child: AlertDialog(
+  //         backgroundColor: Colors.transparent,
+  //         elevation: 0,
+  //         content: Center(
+  //           child: CircularProgressIndicator(
+  //             valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _login(BuildContext context) {
     BlocProvider.of<OtpCubit>(context).otpSubmitted(otp: otpCode).then((
@@ -72,39 +72,57 @@ class OtpVerificationScreen extends StatelessWidget {
         )
     );
   }
+
 //solve this error The return type 'void' isn't a 'Widget', as required by the closure's context.
   Widget _buildVrifyButton(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
-      child: ElevatedButton(
-        onPressed: () {
-          BlocBuilder<SignUpCubit, SignUpState>(
-            builder: (context, state) {
-              return BlocBuilder<OtpCubit, OtpState>(
-                builder: (context, state) {
-                  if (state is OTPLoading || state is SignUpLoadingState){
-                    return showProgressIndicator(context);
-                  }else{
-                    return Container();
+      child: BlocConsumer<OtpCubit, OtpState>(
+        listener: (context, state) {
+          //OTPLoading
+          if (state is OTPLoading && state is! VerificationFailed && state is! AuthErrorOccur && state is! OtpVerificationFailed) {
+            showProgressIndicator(context);
+          }
+          else if (state is AuthErrorOccur){
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    state.error ??
+                   'otp not correct'),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return BlocConsumer<SignUpCubit, SignUpState>(
+            listener: (context, state) {
+             //if state is signup loading
+              if (state is SignUpLoadingState && state is! SignUpErrorState) {
+                showProgressIndicator(context);
               }
-                }
+            },
+            builder: (context, state) {
+              return ElevatedButton(
+                onPressed: () {
+                // showProgressIndicator(context);
+
+                  _login(context);
+                },
+                child: Text(
+                  'Verify',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(110, 50),
+                  primary: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
               );
             },
           );
-
-          _login(context);
         },
-        child: Text(
-          'Verify',
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
-        style: ElevatedButton.styleFrom(
-          minimumSize: Size(110, 50),
-          primary: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
-        ),
       ),
     );
   }
@@ -122,7 +140,8 @@ class OtpVerificationScreen extends StatelessWidget {
           // and navigate to the sign up screen again
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.error ??
+              content: Text(
+                 '${state.error}' ??
                   'An error occurred while verifying the OTP. Please try again.'),
             ),
           );

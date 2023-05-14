@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../home/data/schedules.dart';
 import '../registeration/data/user_cache_model.dart';
 import 'constants/strings.dart';
 
@@ -11,21 +12,40 @@ class CacheHelper {
   static init() async {
     sharedPreferences = await SharedPreferences.getInstance();
   }
-  //  static const String COURSES_KEY = 'courses';
-  //
-  //   final SharedPreferences _prefs;
-  //
-  //   CoursePreferences(this._prefs);
-  //
-  //   List<Course> get courses {
-  //     List<String> courseJsonList = _prefs.getStringList(COURSES_KEY);
-  //     if (courseJsonList == null) {
-  //       return [];
-  //     }
-  //     return courseJsonList.map((courseJson) => Course.fromJson(json.decode(courseJson))).toList();
-  //   }
+// Future<List<SchedulesModel>> getCachedSchedules() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     var encodedSchedules = prefs.getString('schedules');
+//     List<SchedulesModel> schedules = [];
+//
+//     if (encodedSchedules != null) {
+//       var decodedSchedules = jsonDecode(encodedSchedules);
+//       decodedSchedules.forEach((schedule) {
+//         schedules.add(SchedulesModel.fromJson(schedule));
+//       });
+//     }
+//
+//     return schedules;
+//   }
+// static  Future<void> storeSchedulesInSharedPreferences(List<SchedulesModel> schedules)async {
+//   List<String> encodedSchedules = schedules.map((schedule) => jsonEncode(schedule)).toList();
+//   sharedPreferences.setStringList('schedules', encodedSchedules);
+// }
+  static Future<void> storeSchedulesInSharedPreferences(List<SchedulesModel> schedules) async {
+    List<String> encodedSchedules = schedules.map((schedule) => jsonEncode(schedule.toJson())).toList();
+    sharedPreferences.setStringList('schedules', encodedSchedules);
+  }
 
 
+  static Future<List<SchedulesModel>> getSchedulesFromSharedPreferences() async {
+    List<SchedulesModel> schedules = [];
+    List<String>? encodedSchedules = sharedPreferences.getStringList('schedules');
+    if (encodedSchedules != null) {
+      encodedSchedules.forEach((schedule) {
+        schedules.add(SchedulesModel.fromJson(jsonDecode(schedule)));
+      });
+    }
+    return schedules;
+  }
 
   static setBool(
       {required String key, required bool value}) async {

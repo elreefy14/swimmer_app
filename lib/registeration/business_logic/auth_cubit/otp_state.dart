@@ -39,3 +39,5 @@ class VerificationFailed extends OtpState {
   final String? error;
   VerificationFailed(this.error);
 }
+//OTPReSent
+class OTPReSent extends OtpState {}

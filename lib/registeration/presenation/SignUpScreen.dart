@@ -44,9 +44,9 @@ class SignUpScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    BuildTextFormField('الاسم الاول', firstNameController,TextInputType.name, 'ادخل الاسم الاول', (value) {
+                    BuildTextFormField('الاسم الاول14', firstNameController,TextInputType.name, 'ادخل الاسم الاول', (value) {
           if (value!.isEmpty) {
-            return 'الرجاء ادخال الاسم الاول';
+            return ' الرجاء ادخال الاسم الاول';
           }
           return null;
         },Icons.person),

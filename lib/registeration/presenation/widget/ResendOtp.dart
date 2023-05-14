@@ -37,13 +37,14 @@ class ResendOtp extends StatelessWidget {
 
                     ),
                   );
-                } }  if (state is OTPSent) {
+                } }  if (state is OTPReSent) {
                   // The user has to wait for the resend timer to finish
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       //in arabic
-                      // content: Text('we will send you another OTP code.'),
-                      content: Text('سوف نرسل لك رمز تفعيل اخر'),
+                      // content: Text('we will send you another OTP code now'),
+                      content: Text('سوف نرسل لك رمز تفعيل اخر الان'),
+
                     ),
                   );
 

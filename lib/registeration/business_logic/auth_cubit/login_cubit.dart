@@ -241,22 +241,27 @@ static LoginCubit get(context) => BlocProvider.of(context);
       switch (error.code) {
         case "invalid-email":
           if (kDebugMode) {
-            errorMessage = 'The email address is badly formatted.';
+            //translate to arabic
+            //errorMessage = 'The email address is badly formatted.';
+            errorMessage = 'البريد الإلكتروني غير صالح';
           }
           break;
         case "user-not-found":
           if (kDebugMode) {
-            errorMessage = 'No user found for that email.';
+           // errorMessage = 'No user found for that mobile number.';
+            errorMessage = 'لا يوجد مستخدم بهذا الرقم';
           }
           break;
         case "wrong-password":
           if (kDebugMode) {
-            errorMessage = 'Wrong password provided for that user.';
+          //  errorMessage = 'Wrong password provided for that user.';
+            errorMessage = 'كلمة المرور غير صحيحة';
           }
           break;
         default:
           if (kDebugMode) {
-            errorMessage = 'The error is $error';
+           errorMessage = 'The error is $error';
+          //  errorMessage = 'حدث خطأ ما';
           }
       }
       print('error firebase:\n\n\n\n\n\n\n');

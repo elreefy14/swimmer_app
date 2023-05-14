@@ -9,13 +9,28 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit, HomeState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
-      builder: (context, state) {
-        return Container();
-      },
+    return Builder(
+      builder: (context) {
+        //Future<void> _initSchedules() async {
+        //     final cachedSchedules = await getCachedSchedules();
+        //     if (cachedSchedules.length < 20) {
+        //       final nextSchedules = await fetchUserSchedules(widget.userId);
+        //       _schedules = [...cachedSchedules, ...nextSchedules];
+        //       cacheSchedules(_schedules);
+        //     } else {
+        //       _schedules = cachedSchedules;
+        //     }
+        //   }
+
+        return BlocConsumer<HomeCubit, HomeState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            return Container();
+          },
+        );
+      }
     );
   }
 }

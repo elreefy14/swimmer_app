@@ -50,4 +50,12 @@ class AddScheduleToCoachCollectionErrorState extends HomeState {
   final String error;
   AddScheduleToCoachCollectionErrorState({required this.error});
 }
+//StoreSchedulesInSharedPreferencesSuccessState
+class StoreSchedulesInSharedPreferencesSuccessState extends HomeState {}
+//StoreSchedulesInSharedPreferencesErrorState
+class StoreSchedulesInSharedPreferencesErrorState extends HomeState {
+  final String error;
+  StoreSchedulesInSharedPreferencesErrorState({required this.error});
+}
+
 

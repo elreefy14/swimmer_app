@@ -1,5 +1,4 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'package:bloc/bloc.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/date_symbol_data_file.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
@@ -98,17 +96,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        // BlocProvider(create: (context) => getIt<AuthCubit>()),
-
-     //   BlocProvider(create: (context) => getIt<PaymentCubit>()..
-   //     authenticate(
-    //        apiKey: 'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2libUZ0WlNJNkltbHVhWFJwWVd3aUxDSndjbTltYVd4bFgzQnJJam8yT1RJNE9URjkuajdKSDh3ZnBsUlZhaFpZZDF5anZCVTBIcXcyMDltN0thSThNZEZRTUdFd0xFZm5KR1V6X1NDdEVOSmZKcTR5LXlDRmUwcXMtMzZnbnhrVnI2bXZoN2c=')),
-      //  BlocProvider(create: (context) => OtpCubit()
-       //   ..phoneNumberSubmitted('01097051812')
-      //  ),
-       // BlocProvider(create: (context) => NotificationCubit()),
-        //BlocProvider(create: (context) => RegisterCubit()),
-        //BlocProvider(create: (context) => FirebaseAuthCubit()),
         BlocProvider(create: (context) => LoginCubit()
            // ..editUserData(
            //   firstName: 'ahmed',
@@ -122,7 +109,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => OtpCubit()),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
-     //   ..addScheduleToCoachCollection()
+        //..getCachedSchedules()
+          ..getAllSchedulesForSpecificUser()
+      //  ..addScheduleToCoachCollection()
       // ..getAllSchedulesForSpecificUser()
        //   ..getSchedules(specificDate: DateTime.now())
           //  ..getAllSchedulesForSpecificUser()
@@ -167,28 +156,22 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context , child) => MaterialApp(
 
-          // localizationsDelegates: [
-          //   GlobalMaterialLocalizations.delegate,
-          //   GlobalWidgetsLocalizations.delegate,
-          //   GlobalCupertinoLocalizations.delegate,
-          // ],
-          // supportedLocales: const [
-          //   Locale('ar', "AE"),
-          // ],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ar', "AE"),
+          ],
 
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],
-          //debugShowCheckedModeBanner: false,
-          // home:  zoom(),
-          ///////////////////////
-          //initialRoute: AppRoutes.mainRoute,
-          //onGenerateRoute:RouteGenerator.generateRoute,
-
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.signUp,
+          initialRoute: AppRoutes.home,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),
@@ -208,3 +191,4 @@ class MyApp extends StatelessWidget {
 //     }
 //   });
 // }
+
