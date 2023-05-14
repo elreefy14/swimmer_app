@@ -109,9 +109,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => OtpCubit()),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
-        //..getCachedSchedules()
           ..getAllSchedulesForSpecificUser()
-      //  ..addScheduleToCoachCollection()
+       // ..addScheduleToCoachCollection()
       // ..getAllSchedulesForSpecificUser()
        //   ..getSchedules(specificDate: DateTime.now())
           //  ..getAllSchedulesForSpecificUser()

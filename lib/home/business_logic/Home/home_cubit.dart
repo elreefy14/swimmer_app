@@ -59,55 +59,109 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
-//make function to get all schedules for specific coach 
-//for the next 20 days store them in shared preferences and sort them by date
-//then when the coach open the app check if the date between first and last date in shared preferences bigger than 10 days 
-//if yes then get list of schedules from shared preferences 
-//else if no then get list of schedules from firestore and store them in shared preferences 
- 
-  //List<SchedulesModel> userSchedules = [];
-  Future<List<SchedulesModel>> getAllSchedulesForSpecificUser() async {
+  //todo:fix this
+//there is a problem in this function
+//lets iamgine that there is 2 scedules in 25 may
+//one start time is 2 pm and one start at 5 pm
+//so in case the lastDateInSharedPreferences contain the schedule wich start at 2 pm
+//in this case  .where('date', isGreaterThan: Timestamp.fromDate(lastDateInSharedPreferences))
+  //will not retrieve the schedule wich start at 5 pm
+  Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
     emit(LoadingState());
     print('Getting all schedules for specific coach');
 
     print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
-
-    List<SchedulesModel>? schedules =await CacheHelper.getSchedulesFromSharedPreferences();
+    List<SchedulesModel>? schedules = await CacheHelper.getSchedulesFromSharedPreferences();
     print('schedules.length: ${schedules.length}');
     print('\n\n\n\n\n');
     if (schedules.length < 20) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid??'fnBisJY3vGgHL3on0tYeAJWI5GA2')
-        .collection('schedules')
-    //.orderBy('date', descending: false)
-    .limit(20 - schedules.length)
-        .get()
-        .then((querySnapshot) async {
-      print('Successfully retrieved all schedules for specific coach');
-      print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+      DateTime now = DateTime.now();
+      DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.date!.toDate() : DateTime.now().subtract(Duration(days: 10));
 
-      querySnapshot.docs.forEach((doc) {
-        var schedule = SchedulesModel.fromJson(doc.data());
-        var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
-        var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
-        var formattedSchedule = '$startTime $date';
-        print('formattedSchedule: $formattedSchedule');
-        schedules.add(schedule);
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
+          .collection('schedules')
+          .orderBy('date', descending: false)
+          .orderBy('startTime', descending: false)
+          .startAfter([Timestamp.fromDate(lastDateInSharedPreferences), schedules.isNotEmpty ? schedules.last.startTime! : null])
+          .limit(20 - schedules.length)
+          .get()
+          .then((querySnapshot) async {
+        print('Successfully retrieved all schedules for specific coach');
+        print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+
+        querySnapshot.docs.forEach((doc) {
+          var schedule = SchedulesModel.fromJson2(doc.data());
+          var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
+          var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
+          var formattedSchedule = '$startTime $date';
+          print('formattedSchedule: $formattedSchedule');
+          schedules?.add(schedule);
+        });
+
+        // Sort schedules in descending order based on the date
+        schedules?.sort((a, b) => b.date!.compareTo(a.date!));
+
+        // Keep only the latest 20 schedules
+        schedules = schedules?.take(20).toList();
+
+        await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
+        print('schedules.lengthtt: ${schedules?.length}');
+        emit(GetAllSchedulesForSpecificCoachSuccessState());
+      }).catchError((error) {
+        print('Failed to retrieve all schedules for specific coach due to error: $error');
+        emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
       });
-
-
-      await CacheHelper.storeSchedulesInSharedPreferences(schedules);
-    print('schedules.length: ${schedules.length}');
-      emit(GetAllSchedulesForSpecificCoachSuccessState());
-    })
-        .catchError((error){
-      print('Failed to retrieve all schedules for specific coach due to error: $error');
-      emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
-    });
-  }
+    }
     return schedules;
   }
+
+  //edit this function so that it get only schedules for the next 20 days
+  //where the date is bigger than the last date in shared preferences
+  //and where date is same or bigger than today's date
+  //and i want the capacity of the list to be 20 in shared preferences . how to handle this?
+  // Future<List<SchedulesModel>> getAllSchedulesForSpecificUser() async {
+  //   emit(LoadingState());
+  //   print('Getting all schedules for specific coach');
+  //
+  //   print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
+  //   List<SchedulesModel>? schedules =await CacheHelper.getSchedulesFromSharedPreferences();
+  //   print('schedules.length: ${schedules.length}');
+  //   print('\n\n\n\n\n');
+  //   if (schedules.length < 20) {
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(FirebaseAuth.instance.currentUser!.uid??'fnBisJY3vGgHL3on0tYeAJWI5GA2')
+  //       .collection('schedules')
+  //   .orderBy('date', descending: false)
+  //   .limit(20 - schedules.length)
+  //       .get()
+  //       .then((querySnapshot) async {
+  //     print('Successfully retrieved all schedules for specific coach');
+  //     print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+  //
+  //     querySnapshot.docs.forEach((doc) {
+  //       var schedule = SchedulesModel.fromJson2(doc.data());
+  //       var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
+  //       var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
+  //       var formattedSchedule = '$startTime $date';
+  //       print('formattedSchedule: $formattedSchedule');
+  //       schedules.add(schedule);
+  //     });
+  //
+  //
+  //     await CacheHelper.storeSchedulesInSharedPreferences(schedules);
+  //   print('schedules.length: ${schedules.length}');
+  //     emit(GetAllSchedulesForSpecificCoachSuccessState());
+  //   })
+  //       .catchError((error){
+  //     print('Failed to retrieve all schedules for specific coach due to error: $error');
+  //     emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
+  //   });
+  // }
+  //   return schedules;
+  // }
   // Future<void> storeSchedulesInSharedPreferences(List<SchedulesModel> schedules) async {
   //   try {
   //     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -150,37 +204,39 @@ class HomeCubit extends Cubit<HomeState> {
 // ),
   //Todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 bos fo2
   //add schedule to coach collection in subcollection schedules
-void addScheduleToCoachCollection(
-   // SchedulesModel schedule
-    ) {
+  Future<void> addScheduleToCoachCollection() async {
     emit(LoadingState());
     print('Adding schedule to coach collection');
-  //  print('schedule: ${schedule.toJson()}');
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('schedules')
-        .add({
-      'branch_id': 'edasdaseeeeeeee',
-      'coach_id': 'awak4gIQ28SdtDYLJIEF9phS20p2',
-     // 'start_time': Today 8 pm
-   //   'end_time':today 10 pm
-   //   'date': today
-      'start_time': Timestamp.now(),
-      'end_time': Timestamp.now(),
-      'date': Timestamp.now(),
-      'finished': false,
+    await CacheHelper.clearSchedulesFromSharedPreferences();
 
-    })
-        .then((value) {
-      print('Successfully added schedule to coach collection');
-      emit(AddScheduleToCoachCollectionSuccessState());
-    })
-        .catchError((error){
-      print('Failed to add schedule to coach collection due to error: $error');
-      emit(AddScheduleToCoachCollectionErrorState(error: error.toString()));
-    });
+    for (int i = 0; i < 20; i++) {
+      DateTime startTime = DateTime.now().add(Duration(days: 2, hours: 20, minutes: i * 5));
+      DateTime endTime = startTime.add(Duration(hours: 2));
+      DateTime date = DateTime(startTime.year, startTime.month, startTime.day);
+
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('schedules')
+          .add({
+        'branch_id': 'edasdaseeeeeeee',
+        'coach_id': 'awak4gIQ28SdtDYLJIEF9phS20p2',
+        'start_time': Timestamp.fromDate(startTime),
+        'end_time': Timestamp.fromDate(endTime),
+        'date': 'October 21, 2025 at 11:57:01 PM UTC+2',
+        'finished': false,
+      })
+          .then((value) {
+        print('Successfully added schedule to coach collection');
+        emit(AddScheduleToCoachCollectionSuccessState());
+      })
+          .catchError((error) {
+        print('Failed to add schedule to coach collection due to error: $error');
+        emit(AddScheduleToCoachCollectionErrorState(error: error.toString()));
+      });
+    }
   }
+
   //edit this function to save list of schedules for current coach in a list
 
   ///////////////////////////////////////////////////////////////////

@@ -39,7 +39,23 @@ class SchedulesModel {
     };
   }
 
+factory SchedulesModel.fromJson2(Map<String, dynamic> json) {
+    return SchedulesModel(
+//       branch_id "edasdas"
+//       coach_id "awak4gIQ28SdtDYLJIEF9phS20p2"
+//       date May 13, 2023 at 11:57:01 PM UTC+2
+//       end_time May 13, 2023 at 11:57:01 PM UTC+2
+//       finished false
+//       start_time May 13, 2023 at 11:57:01 PM UTC+2
+      branchId: json['branch_id'],
+      startTime: json['start_time'],
+      endTime: json['end_time'],
+      date: json['date'],
+      finished: json['finished'],
 
+
+    );
+  }
 
   //from json function
 //from json function
