@@ -58,4 +58,3 @@ class StoreSchedulesInSharedPreferencesErrorState extends HomeState {
   StoreSchedulesInSharedPreferencesErrorState({required this.error});
 }
 
-

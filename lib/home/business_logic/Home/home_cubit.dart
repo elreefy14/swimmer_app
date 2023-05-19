@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -59,13 +60,9 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
-  //todo:fix this
-//there is a problem in this function
-//lets iamgine that there is 2 scedules in 25 may
-//one start time is 2 pm and one start at 5 pm
-//so in case the lastDateInSharedPreferences contain the schedule wich start at 2 pm
-//in this case  .where('date', isGreaterThan: Timestamp.fromDate(lastDateInSharedPreferences))
-  //will not retrieve the schedule wich start at 5 pm
+
+
+
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
     emit(LoadingState());
     print('Getting all schedules for specific coach');
@@ -74,34 +71,44 @@ class HomeCubit extends Cubit<HomeState> {
     List<SchedulesModel>? schedules = await CacheHelper.getSchedulesFromSharedPreferences();
     print('schedules.length: ${schedules.length}');
     print('\n\n\n\n\n');
+//daebug dateTimes.now
+    print('DateTime.now(): ${DateTime.now()}');
+    // Delete schedules with start time before today
+    schedules?.removeWhere((schedule) => schedule.startTime!.toDate().isBefore(DateTime.now()));
+
     if (schedules.length < 20) {
       DateTime now = DateTime.now();
-      DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.date!.toDate() : DateTime.now().subtract(Duration(days: 10));
+      DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.date!.toDate() : //DATETIME.now -5 days
+      DateTime(now.year, now.month, now.day - 5);
+      print('lastDateInSharedPreferences: $lastDateInSharedPreferences');
+      print('now: $now');
 
       FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
           .collection('schedules')
-          .orderBy('date', descending: false)
-          .orderBy('startTime', descending: false)
-          .startAfter([Timestamp.fromDate(lastDateInSharedPreferences), schedules.isNotEmpty ? schedules.last.startTime! : null])
+          .orderBy('start_time', descending: false)
+          .startAfter([
+        if (lastDateInSharedPreferences != null) Timestamp.fromDate(lastDateInSharedPreferences),
+        if (schedules.isNotEmpty && schedules.last.startTime != null) schedules.last.startTime!,
+      ])
           .limit(20 - schedules.length)
           .get()
           .then((querySnapshot) async {
         print('Successfully retrieved all schedules for specific coach');
         print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
-
+        //edit this to show start time like this 12:00 am
         querySnapshot.docs.forEach((doc) {
           var schedule = SchedulesModel.fromJson2(doc.data());
           var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
-          var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
+          var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.startTime!.toDate());
           var formattedSchedule = '$startTime $date';
           print('formattedSchedule: $formattedSchedule');
           schedules?.add(schedule);
         });
 
         // Sort schedules in descending order based on the date
-        schedules?.sort((a, b) => b.date!.compareTo(a.date!));
+        schedules?.sort((a, b) => b.startTime!.compareTo(a.startTime!));
 
         // Keep only the latest 20 schedules
         schedules = schedules?.take(20).toList();
@@ -117,79 +124,6 @@ class HomeCubit extends Cubit<HomeState> {
     return schedules;
   }
 
-  //edit this function so that it get only schedules for the next 20 days
-  //where the date is bigger than the last date in shared preferences
-  //and where date is same or bigger than today's date
-  //and i want the capacity of the list to be 20 in shared preferences . how to handle this?
-  // Future<List<SchedulesModel>> getAllSchedulesForSpecificUser() async {
-  //   emit(LoadingState());
-  //   print('Getting all schedules for specific coach');
-  //
-  //   print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
-  //   List<SchedulesModel>? schedules =await CacheHelper.getSchedulesFromSharedPreferences();
-  //   print('schedules.length: ${schedules.length}');
-  //   print('\n\n\n\n\n');
-  //   if (schedules.length < 20) {
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(FirebaseAuth.instance.currentUser!.uid??'fnBisJY3vGgHL3on0tYeAJWI5GA2')
-  //       .collection('schedules')
-  //   .orderBy('date', descending: false)
-  //   .limit(20 - schedules.length)
-  //       .get()
-  //       .then((querySnapshot) async {
-  //     print('Successfully retrieved all schedules for specific coach');
-  //     print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
-  //
-  //     querySnapshot.docs.forEach((doc) {
-  //       var schedule = SchedulesModel.fromJson2(doc.data());
-  //       var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
-  //       var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date!.toDate());
-  //       var formattedSchedule = '$startTime $date';
-  //       print('formattedSchedule: $formattedSchedule');
-  //       schedules.add(schedule);
-  //     });
-  //
-  //
-  //     await CacheHelper.storeSchedulesInSharedPreferences(schedules);
-  //   print('schedules.length: ${schedules.length}');
-  //     emit(GetAllSchedulesForSpecificCoachSuccessState());
-  //   })
-  //       .catchError((error){
-  //     print('Failed to retrieve all schedules for specific coach due to error: $error');
-  //     emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
-  //   });
-  // }
-  //   return schedules;
-  // }
-  // Future<void> storeSchedulesInSharedPreferences(List<SchedulesModel> schedules) async {
-  //   try {
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     var encodedSchedules = jsonEncode(schedules.map((schedule) => schedule.toJson()).toList());
-  //     await prefs.setString('schedules', encodedSchedules);
-  //     emit(StoreSchedulesInSharedPreferencesSuccessState());
-  //   } catch (error) {
-  //     print('Failed to store schedules in shared preferences due to error: $error');
-  //     emit(StoreSchedulesInSharedPreferencesErrorState(error: error.toString()));
-  //   }
-  // }
-  //
-  // Future<List<SchedulesModel>> getCachedSchedules() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   var encodedSchedules = prefs.getString('schedules');
-  //   List<SchedulesModel> schedules = [];
-  //
-  //   if (encodedSchedules != null) {
-  //     var decodedSchedules = jsonDecode(encodedSchedules);
-  //     decodedSchedules.forEach((schedule) {
-  //       schedules.add(SchedulesModel.fromJson(schedule));
-  //     });
-  //   }
-  //   print('schedules.length: ${schedules.length}');
-  //
-  //   return schedules;
-  // }
-
   //todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 lw 3atz t3ed schedules yb2a kda
 //ListView.builder(
 //   itemCount: userSchedules.length,
@@ -203,39 +137,8 @@ class HomeCubit extends Cubit<HomeState> {
 //   },
 // ),
   //Todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 bos fo2
-  //add schedule to coach collection in subcollection schedules
-  Future<void> addScheduleToCoachCollection() async {
-    emit(LoadingState());
-    print('Adding schedule to coach collection');
-    await CacheHelper.clearSchedulesFromSharedPreferences();
 
-    for (int i = 0; i < 20; i++) {
-      DateTime startTime = DateTime.now().add(Duration(days: 2, hours: 20, minutes: i * 5));
-      DateTime endTime = startTime.add(Duration(hours: 2));
-      DateTime date = DateTime(startTime.year, startTime.month, startTime.day);
 
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('schedules')
-          .add({
-        'branch_id': 'edasdaseeeeeeee',
-        'coach_id': 'awak4gIQ28SdtDYLJIEF9phS20p2',
-        'start_time': Timestamp.fromDate(startTime),
-        'end_time': Timestamp.fromDate(endTime),
-        'date': 'October 21, 2025 at 11:57:01 PM UTC+2',
-        'finished': false,
-      })
-          .then((value) {
-        print('Successfully added schedule to coach collection');
-        emit(AddScheduleToCoachCollectionSuccessState());
-      })
-          .catchError((error) {
-        print('Failed to add schedule to coach collection due to error: $error');
-        emit(AddScheduleToCoachCollectionErrorState(error: error.toString()));
-      });
-    }
-  }
 
   //edit this function to save list of schedules for current coach in a list
 
@@ -464,211 +367,42 @@ class HomeCubit extends Cubit<HomeState> {
 
 
     }
+  Future<void> addScheduleToCoachCollection() async {
+    emit(LoadingState());
+    print('Adding schedule to coach collection');
+    await CacheHelper.clearSchedulesFromSharedPreferences();
 
+    final Random random = Random();
 
+    for (int i = 0; i < 20; i++) {
+      // Generate a random start time between 9:00 AM and 5:00 PM
+      final int startHour = random.nextInt(8) + 9;
+      final int startMinute = random.nextInt(4) * 15;
+      final DateTime startTime = DateTime(2023, 5, random.nextInt(9) + 17, startHour, startMinute);
 
+      // Generate a random end time between 1 and 3 hours after the start time
+      final int duration = random.nextInt(2) + 1;
+      final DateTime endTime = startTime.add(Duration(hours: duration));
 
-
-//**Collections and Documents:**
-// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
-// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
-// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
-// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
-// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
-
-// **Workflow:**
-// 1. When a coach logs in, retrieve their information from the `coaches` collection, display their name, training hours, and branches they're assigned to.
-// 2. To display the schedules for each coach, query the `schedules` collection with the `coach_id`. Use the `branch_id` to get branch details from the `branches` collection.
-// 3. When a coach arrives at their schedule, they create a new document in the `attendanceRequests` collection with the `coach_id`, `schedule_id`, and `status` as 'pending'.
-// 4. The admin reviews the attendance requests and updates the `status` field to 'accepted' or 'rejected'.
-// 5. Upon receiving an 'accepted' status, calculate the hours worked for that schedule and update the coach's `total_hours`, `total_salary`, `current_month_hours`, and `current_month_salary` in the `coaches` collection.
-// 6. At the end of each month, create a new document in the `salaryHistory` subcollection for each coach, storing their `total_hours` and `total_salary` for the current month. After that, reset the `current_month_hours` and `current_month_salary` fields in the `coaches` collection.
-// 7. To display the salary history for each coach, query the `salaryHistory` subcollection inside the coach document and show the list containing the current month's total hours and salary, along with all previous months.
-// This design allows you to efficiently handle the required functionality while minimizing the number of reads and writes to the Firestore database.
-//todo: add schedule sh3alaaaaaaaaa
-//finction to add random ummy values to schedules in firebase firestore
-//   void addSchedule(String coachId, Timestamp startTime, Timestamp endTime, int dayOfWeek) {
-//     DateTime now = DateTime.now();
-//     DateTime startOfMonth = DateTime(now.year, now.month, 1);
-//     DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
-//     Timestamp startTimestamp = Timestamp.fromDate(startOfMonth);
-//     Timestamp endTimestamp = Timestamp.fromDate(endOfMonth);
-//
-//     for (int day = 1; day <= endOfMonth.day; day++) {
-//       DateTime date = DateTime(now.year, now.month, day);
-//       if (date.weekday == dayOfWeek) {
-//        //schedules: A collection to store the information of all schedules.
-//         // // Document ID: unique schedule ID
-//         // // Fields:  branch_id, start_time, end_time, date, finished, attendance (map of coach ID to boolean indicating whether they attended)
-//         SchedulesModel schedulesModel = SchedulesModel(
-//          branchId: 'branchId',
-//          startTime: Timestamp.fromDate(DateTime(date.year, date.month, date.day, 8)),
-//           endTime: Timestamp.fromDate(DateTime(date.year, date.month, date.day, 10)),
-//           date: Timestamp.fromDate(date),
-//           finished: false,
-//
-//              attendance: {
-//            'coach1': true,
-//                'coach2': false},
-//         );
-//         FirebaseFirestore.instance
-//             .collection('schedules')
-//             .add(schedulesModel.toJson())
-//             .then((value) {
-//           print(value.id);
-//         }).catchError((error) {
-//           print(error.toString());
-//         });
-//       }
-//     }
-//   }
-
-  //get all schedules for current user using FireBAse.uid of current user
-  //and day in date field equal to today but them in a list of schedules
-  List<SchedulesModel> schedules = [];
-  void getSchedules({required DateTime specificDate}) {
-    DateTime startOfDay = DateTime(specificDate.year, specificDate.month, specificDate.day);
-    DateTime endOfDay = DateTime(specificDate.year, specificDate.month, specificDate.day, 23, 59, 59);
-    Timestamp startTimestamp = Timestamp.fromDate(startOfDay);
-    Timestamp endTimestamp = Timestamp.fromDate(endOfDay);
-   print('-----------------');
-    print(startTimestamp);
-    print(endTimestamp);
-    print('-----------------');
-
-    emit(GetSchedulesLoadingState());
-
-    FirebaseFirestore.instance
-        .collection('schedules')
-      //  .where('coachId', isEqualTo: 'rafik')
-      //  .where('date', isGreaterThanOrEqualTo: startTimestamp)
-       // .where('date', isLessThanOrEqualTo: endTimestamp)
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        schedules.add(SchedulesModel.fromJson(element.data()));
-        print(element.data());
-        print('-----------------');
-        print(schedules.length);
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('schedules')
+          .add({
+        'branch_id': 'edasdaseeeeeeee',
+        'coach_id': 'awak4gIQ28SdtDYLJIEF9phS20p2',
+        'start_time': Timestamp.fromDate(startTime),
+        'end_time': Timestamp.fromDate(endTime),
+        'finished': false,
+      })
+          .then((value) {
+        print('Successfully added schedule to coach collection');
+        emit(AddScheduleToCoachCollectionSuccessState());
+      })
+          .catchError((error) {
+        print('Failed to add schedule to coach collection due to error: $error');
+        emit(AddScheduleToCoachCollectionErrorState(error: error.toString()));
       });
-      print('-----------------');
-      print(schedules.length);
-      emit(GetSchedulesSuccessState());
-    }).catchError((error) {
-      print(error.toString());
-      emit(GetSchedulesErrorState(error: error.toString()));
-    });
+    }
   }
-
-//this is my firebase Collections and Documents and i want to edit some functions in my app
-// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
-// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
-// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields:'device id', `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
-// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
-// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
-// 6. **attendance**: A collection to store the attendance information of each coach.   - Document ID: unique attendance ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'present', 'absent', 'late')
-
-  // final FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
-  // final List<String> detectedBeacons = [];
-  // void startScanning() {
-  //   emit(StartScanningLoadingState());
-  //   flutterBlue.startScan(timeout: Duration(seconds: 4));
-  //   flutterBlue.scanResults.listen((results) {
-  //     for (ScanResult r in results) {
-  //       print('serviceUuids :${r.advertisementData.serviceUuids}');
-  //       print('id :${r.device.id}');
-  //       print('ssi :${r.rssi}');
-  //       detectedBeacons.add(r.device.id.toString());
-  //       emit(DetectedBeaconsSuccessState());
-  //     print('${detectedBeacons.length}');
-  //     }
-  //   });
-  //   emit(StartScanningSuccessState());
-  // }
-  // void setUpPeriodicAlarm() async {
-  //   await AndroidAlarmManager.periodic(
-  //       const Duration(seconds: 4),  // Interval between alarms
-  //       0,                            // ID of the alarm (must be unique)
-  //       startScanning,                // Callback function to execute
-  //       wakeup: true,                 // Wake up the device if necessary
-  //       rescheduleOnReboot: true      // Reschedule the alarm after device reboot
-  //   );
-  //   emit(PeriodicAlarmSuccessState());
-  // }
-  // void clearDetectedBeacons() {
-  //   detectedBeacons.clear();
-  //    emit(ClearDetectedBeaconsSuccessState());
-  // }
-  //edit this function to get all schedules where field date (timestamp) equal to today and field finished equal to false and field device id equal to beacon id
-  //then make finished field equal true and add end time - start time to total hours in users collection and add 1 to total attendance in attendance collection
-
-  // //edit this function to get r.device.id.toString() and add it to user collection in field device id
-  // Future<String?> getDeviceId() async {
-  //   try {
-  //     MethodChannel channel = const MethodChannel('samples.flutter.dev/device_id');
-  //     String? deviceId = await channel.invokeMethod('getDeviceId');
-  //     print("Device ID: '$deviceId'.");
-  //     print("\n\n\n\n\n\n\n");
-  //     return deviceId;
-  //   } on PlatformException catch (e) {
-  //     print("Failed to get device ID: '${e.message}'.");
-  //     return null;
-  //   }
-  // }
-  // Future<String?> getDeviceIdBySystem() async {
-  //   try {
-  //     final List<BluetoothDevice> devices = await flutterBlue.connectedDevices;
-  //     final BluetoothDevice device = devices.first;
-  //     final String deviceId = device.id.toString();
-  //     return deviceId;
-  //   } catch (e) {
-  //     print("Failed to get device ID: '${e.toString()}'.");
-  //     return null;
-  //   }
-  // }
-  // Future<String?> getDeviceId3() async {
-  //   try {
-  //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  //     String? deviceId;
-  //
-  //     if (Platform.isAndroid) {
-  //       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  //       deviceId = androidInfo.androidId; // Use the Android device ID
-  //       print("Device ID: '$deviceId'.");
-  //       print("\n\n\n\n\n\n\n");
-  //     } else if (Platform.isIOS) {
-  //       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-  //       deviceId = iosInfo.identifierForVendor; // Use the iOS identifier for the vendor
-  //     } else {
-  //       throw UnsupportedError('This platform is not supported.');
-  //     }
-  //
-  //     return deviceId;
-  //   } catch (e) {
-  //     print("Failed to get device ID: '${e.toString()}'.");
-  //     return null;
-  //   }
-  // }
-   //i want to add this features in my app . 1. *QR Code-based Attendance*: Develop a mobile app that allows employees to scan a unique QR code displayed at the entrance of the workplace. The app then records the timestamp and sends the data to a Firebase Realtime Database or Firestore. You can then generate attendance reports from the stored data.
-   // i want to handlewhen employee doesn't have internet connection like that .
-   //Handling lack of internet connection
-// When an employee scans the QR code, the mobile app records the timestamp and tries to send the data to a Firebase Realtime Database or Firestore. However, if the employee's device doesn't have an internet connection, the data can't be sent immediately. To handle this situation, you can implement an offline data storage mechanism:
-//
-//     Save the attendance data locally on the employee's device when there is no internet connection. You can use a local storage solution, such as SharedPreferences, to store the data temporarily.
-//
-//     Monitor the device's internet connection status. You can use libraries such as Reachability (for iOS) or ConnectivityManager (for Android) to detect when the device regains an internet connection.
-//
-//     When the device reconnects to the internet, sync the locally stored attendance data with the Firebase Realtime Database or Firestore. Ensure that you maintain data integrity by checking for duplicates or conflicts.
-// give all functions to handle that
-//this is my firebase Collections and Documents and i want to edit some functions in my app . edit it if you want
-// 1. **users**: A collection to store the information of all coaches.   - Document ID: unique coach ID   - Fields: `name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`
-// 2. **branches**: A collection to store the information of all branches.   - Document ID: unique branch ID   - Fields: `name`, `address`
-// 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields:'device id', `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
-// 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
-// 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
-// 6. **attendance**: A collection to store the attendance information of each coach.   - Document ID: unique attendance ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'present', 'absent', 'late')
-
-
-
-
 }
