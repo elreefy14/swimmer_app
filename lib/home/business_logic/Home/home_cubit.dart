@@ -17,6 +17,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swimmer_app/core/cashe_helper.dart';
+import '../../data/Notification.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
 import 'home_state.dart';
@@ -60,7 +61,77 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
+//make notification mode contain body and date fiels l .use flutter .i want to make function to store latest 20 notifications which is subcolection in users collection in shared  .it get the the latest notification from shared pref and get notification from firebase where it eariler than it . shared pref will contain list of only 20 item max . this my firebase firestore data base design .- *coaches*: A collection to store the information of all coaches.
+//     - Document ID: unique coach ID
+//     - Fields: *`name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`*
+//     - Subcollection: *`schedules`*
+//         - Document ID: unique schedule ID
+//         - Fields: *`branch_id`, `start_time`, `end_time`, `date`, `finished`*
+//         - Subcollection: *`attendance`*
+//             - Document ID: unique attendance ID (usually just the coach ID)
+//             - Fields: *`attended`, `qr_code`*
+//     - Subcollection: *`salaryHistory`*
+//         - Document ID: unique salary history ID (usually just the month and year)
+//         - Fields: *`month`, `year`, `total_hours`, `total_salary`*
+//     - Fields: *`branches`* (array of branch IDs that the coach works at)
+// - *branches*: A collection to store the information of all branches.
+//     - Document ID: unique branch ID
+//     - Fields: *`name`, `address`*
+//     - Subcollection: *`coaches`*
+//         - Document ID: unique coach ID who works at this branch
+// - *admins*: A collection to store the information of all admins.
+//     - Document ID: unique admin ID
+//     - Fields: *`name`, `email`, `branch_id`* (the ID of the branch they're responsible for)
+// - *schedules*: A collection to store the information of all schedules.
+//     - Document ID: unique schedule ID
+//     - Fields: *`branch_id`, `start_time`, `end_time`, `date`*
+//     - Subcollection: *`attendance`*
+//         - Document ID: unique attendance ID (usually just the coach ID)
+//         - Fields: *`attended`, `qr_code`*
+  Future<void> saveLatestNotifications(List<NotificationModel> notifications) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = notifications.map((n) => jsonEncode(n)).toList();
+    prefs.setStringList('latest_notifications', jsonList);
+  }
+  Future<List<NotificationModel>> getNotifications() async {
+  // await clearNotificationsfromcache();
 
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList('latest_notifications') ?? [];
+    final latestNotification =
+    jsonList.isNotEmpty ? NotificationModel.fromJson(jsonDecode(jsonList.first)) : null;
+    print('latestNotification: $latestNotification');
+
+    final notifications = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('fnBisJY3vGgHL3on0tYeAJWI5GA2')
+        .collection('notifications')
+        .where('date', isGreaterThan: latestNotification?.date ?? DateTime.fromMicrosecondsSinceEpoch(0))
+        .orderBy('date', descending: true)
+        .limit(20 - jsonList.length)
+        .get()
+        .then((querySnapshot) {
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        doc.reference.delete(); // Delete the notification from Firestore
+        return NotificationModel(body: data['body'], date: data['date'].toDate());
+      }).toList();
+    });
+
+    final allNotifications = [
+      ...notifications,
+      ...jsonList.map((json) => NotificationModel.fromJson(jsonDecode(json)))
+    ];
+    allNotifications.sort((a, b) => b.date.compareTo(a.date));
+
+    if (allNotifications.length > 20) {
+      allNotifications.removeRange(20, allNotifications.length);
+    }
+
+    await saveLatestNotifications(allNotifications);
+    print('allNotifications: ${allNotifications.map((n) => n.body).toList()}');
+    return allNotifications;
+  }
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
@@ -404,5 +475,27 @@ class HomeCubit extends Cubit<HomeState> {
         emit(AddScheduleToCoachCollectionErrorState(error: error.toString()));
       });
     }
+  }
+
+  clearNotificationsfromcache() {
+    CacheHelper.clearNotificationsFromSharedPreferences();
+  }
+  Future<void> generateRandomNotifications() async {
+    for (int i = 0; i < 20; i++) {
+      await generateRandomNotification();
+    }
+  }
+  Future<void> generateRandomNotification() async {
+    final random = Random();
+    final notificationsCollection = FirebaseFirestore.instance.collection('users').doc('fnBisJY3vGgHL3on0tYeAJWI5GA2').collection('notifications');
+
+    final daysAgo = random.nextInt(30);
+    final notification = {
+      'body': 'Notification ${random.nextInt(100)}',
+      'date': DateTime.now().add(Duration(days: daysAgo)),
+    };
+
+    await notificationsCollection.add(notification);
+
   }
 }

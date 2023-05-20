@@ -162,6 +162,10 @@ class CacheHelper {
     sharedPreferences.remove(AppStrings.userCacheModel);
   }
 
+  static void clearNotificationsFromSharedPreferences() {
+    sharedPreferences.remove('latest_notifications');
+  }
+
 
 
 
