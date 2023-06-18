@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
+//import 'package:connectivity/connectivity.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -56,7 +55,7 @@ import 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(InitialState()) {
     // Call this method when connectivity changes
-    _listenToConnectivityChanges();
+   // _listenToConnectivityChanges();
   }
 
 
@@ -215,16 +214,16 @@ class HomeCubit extends Cubit<HomeState> {
 
   ///////////////////////////////////////////////////////////////////
   // Add this method to listen for connectivity changes
-  void _listenToConnectivityChanges() {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
-      if (result != ConnectivityResult.none) {
-        print('Network is available');
-        await syncOfflineAttendanceData();
-      } else {
-        print('Network is not available');
-      }
-    });
-  }
+  // void _listenToConnectivityChanges() {
+  //   Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
+  //     if (result != ConnectivityResult.none) {
+  //       print('Network is available');
+  //       await syncOfflineAttendanceData();
+  //     } else {
+  //       print('Network is not available');
+  //     }
+  //   });
+  // }
 
   Future<void> saveAttendanceDataLocally(String coachId, String scheduleId, DateTime timestamp) async {
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -241,10 +240,10 @@ class HomeCubit extends Cubit<HomeState> {
     print('Attendance data saved locally');
   }
 
-  Future<bool> isConnected() async {
-    ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult != ConnectivityResult.none;
-  }
+  // Future<bool> isConnected() async {
+  //   ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
+  //   return connectivityResult != ConnectivityResult.none;
+  // }
 
   Future<void> syncOfflineAttendanceData() async {
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -284,7 +283,8 @@ class HomeCubit extends Cubit<HomeState> {
     DateTime timestamp = DateTime.now();
    Timestamp today = Timestamp.fromDate(DateTime.now());
 
-    if (await isConnected()) {
+    if (true) {
+    //if (await isConnected()) {
       // Get today's unfinished schedules for the current coach
       // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
       //     .collection('schedules')

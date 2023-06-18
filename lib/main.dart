@@ -1,4 +1,3 @@
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,7 @@ Future<void> main() async {
 
   //wait widget tree to be built
   WidgetsFlutterBinding.ensureInitialized();
-  await AndroidAlarmManager.initialize();
+  //await AndroidAlarmManager.initialize();
 
   //init git it
   //initGetIt();
@@ -172,7 +171,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.home,
+          initialRoute: AppRoutes.signUp,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

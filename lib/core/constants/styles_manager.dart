@@ -4,7 +4,7 @@ import 'font_manager.dart';
 
 TextStyle _getTextStyle(double fontSize, FontWeight fontWeight, Color color) {
   return TextStyle(
-    fontFamily: FontFamilyNames.messiriFont,
+    fontFamily: FontFamilyNames.Montserrat,
     fontWeight: fontWeight,
     fontSize: fontSize,
     color: color,

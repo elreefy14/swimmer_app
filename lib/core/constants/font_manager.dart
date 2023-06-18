@@ -18,6 +18,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 //           ),
 class FontFamilyNames {
   static const String messiriFont = "ElMessiri";
+  static const String Montserrat = "Montserrat-Arabic";
 }
 
 class FontWeightManager {
@@ -35,6 +36,9 @@ class FontSizeManager {
   static  double s18 = 18.0.sp;
   static  double s20 = 20.0.sp;
   static  double s22 = 22.0.sp;
+  static  double s24 = 24.0.sp;
+  static  double s26 = 26.0.sp;
   static  double s30 = 30.0.sp;
+  static  double s32 = 30.0.sp;
   static  double s40 = 40.0.sp;
 }
