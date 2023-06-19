@@ -30,13 +30,27 @@ class SignUpScreen extends StatelessWidget {
       children: [
         Padding(
           padding:  EdgeInsets.only(
-            top: 62.0.h,
+            top: 82.0.h,
            // horizontal: 145.w,
           ),
-          child: Text(
-            'تسجيل',
-            style: getBoldStyle(fontSize: FontSizeManager.s32, color: Colors.black),
-            textAlign: TextAlign.center,
+          child: Center(
+            child: Container(
+              width: 99.w,
+              height: 26.h,
+              alignment: Alignment.center,
+              child: Text(
+                'تسجيل',
+                style: TextStyle(
+                  fontFamily: 'Montserrat-Arabic',
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 32,
+                  height: 26 / 32,
+                  color: Color(0xFF333333),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
         ),
         // Text(
@@ -57,14 +71,14 @@ class SignUpScreen extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                  child: BuildTextFormField('الاسم الاول14', firstNameController,TextInputType.name, 'ادخل الاسم الاول', (value) {
+                  child: BuildTextFormField('الاسم الاول', firstNameController,TextInputType.name, 'ادخل الاسم الاول', (value) {
       if (value!.isEmpty) {
         return ' الرجاء ادخال الاسم الاول';
       }
       return null;
     },Icons.person),
                 ),
-                SizedBox(height: 5.0.h),
+                SizedBox(height: 20.0.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 35.0.w),
                   child: BuildTextFormField('الاسم الاخير', lastNameController, TextInputType.name,'ادخل الاسم الاخير', (value) {
@@ -74,7 +88,7 @@ class SignUpScreen extends StatelessWidget {
       return null;
     },Icons.person),
                 ),
-                SizedBox(height: 5.0),
+                SizedBox(height: 20.0),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 35.0.w),
                   child: BuildTextFormField('رقم الهاتف', phoneController, TextInputType.phone,'ادخل رقم الهاتف', (value) {
@@ -84,7 +98,7 @@ class SignUpScreen extends StatelessWidget {
       return null;
     },Icons.phone,),
                 ),
-                SizedBox(height: 5.0.h),
+                SizedBox(height: 20.0.h),
                    Padding(
                      padding: EdgeInsets.symmetric(horizontal: 35.0.w),
                      child: BuildTextFormField('كلمة المرور', passwordController,TextInputType.text, 'ادخل كلمة المرور', (value) {
@@ -120,29 +134,42 @@ class SignUpScreen extends StatelessWidget {
     condition: state is! SignUpLoadingState,
     builder: (context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-         horizontal: 31.w,
-         vertical: 20.h
+      padding: EdgeInsets.only(
+         left: 31.w,
+         right: 31.w,
+         top: 50.h
       ),
       child: ElevatedButton(
-
         onPressed: () {
           if (_formKey.currentState!.validate()) {
-         OtpCubit.get(context).phoneNumberSubmitted(phoneController.text);
-            // Navigator.pushNamed(
-            //   context,
-            //   AppRoutes.otpVerification,
-            //   arguments: {
-            //     'phone': phoneController.text,
-            //     'lName': lastNameController.text,
-            //     'fName': firstNameController.text,
-            //     'password': passwordController.text,
-            //   },
-            // );
+            //signUp
+            OtpCubit.get(context).phoneNumberSubmitted(phoneController.text);
           }
         },
-        child: Text('تسجيل'),
+        child: Text(
+          'تسجيل',
+          style: TextStyle(
+            fontFamily: 'Montserrat-Arabic',
+            fontStyle: FontStyle.normal,
+            fontWeight: FontWeight.w400,
+            fontSize: 18,
+            height: 26 / 18,
+            color: Color(0xFFFFFFFF),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        style: ElevatedButton.styleFrom(
+          primary: Color(0xFF2196F3), // Background color
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: TextStyle(
+            fontSize: 18, // Adjust the font size if needed
+          ),
+        ),
       ),
+
     );
 
     },
