@@ -112,21 +112,33 @@ class SignUpScreen extends StatelessWidget {
     },Icons.lock, ),
                    ),
             //    SizedBox(height: 20.0.h),
-                BlocConsumer<OtpCubit,OtpState >(
-  listener: (context, state) {
-    if (state is PhoneNumberSubmittedloaded) {
-    Navigator.pushNamed(
-            context,
-            AppRoutes.otpVerification,
-            arguments: {
-              'phone': phoneController.text,
-              'lName': lastNameController.text,
-              'fName': firstNameController.text,
-              'password': passwordController.text,
-            },
-          );
-    }
-
+               // BlocConsumer<OtpCubit,OtpState >(
+                 BlocConsumer<SignUpCubit,SignUpState >(
+          listener: (context, state) {
+    // if (state is PhoneNumberSubmittedloaded) {
+    // Navigator.pushNamed(
+    //         context,
+    //         AppRoutes.otpVerification,
+    //         arguments: {
+    //           'phone': phoneController.text,
+    //           'lName': lastNameController.text,
+    //           'fName': firstNameController.text,
+    //           'password': passwordController.text,
+    //         },
+    //       );
+     // }
+           //show toast in case of error and success
+            if (state is SignUpErrorState) {
+              showToast(
+                msg:state.error?? 'حدث خطأ ما',
+                state: ToastStates.ERROR,
+              );
+            }else if (state is SignUpSuccessState) {
+              showToast(
+                msg: 'تم التسجيل بنجاح',
+                state: ToastStates.SUCCESS,
+              );
+            }
 
   },
   builder: (context, state) {
@@ -137,13 +149,19 @@ class SignUpScreen extends StatelessWidget {
       padding: EdgeInsets.only(
          left: 31.w,
          right: 31.w,
-         top: 50.h
+         top: 40.h
       ),
       child: ElevatedButton(
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             //signUp
-            OtpCubit.get(context).phoneNumberSubmitted(phoneController.text);
+            SignUpCubit.get(context).signUp(
+              fName:  firstNameController.text,
+              lName:  lastNameController.text,
+              phone: phoneController.text,
+              password: passwordController.text,
+            );
+           // OtpCubit.get(context).phoneNumberSubmitted(phoneController.text);
           }
         },
         child: Text(

@@ -102,6 +102,13 @@ void changePasswordVisibility(){
     }).catchError((error) {
       String? errorMessage;
    switch (error.code) {
+     //case user already exists
+          case "email-already-in-use":
+            if (kDebugMode) {
+              print(errorMessage);
+            errorMessage = 'The account already exists for that email.';
+            }
+            break;
          case "invalid-email":
             if (kDebugMode) {
               print(errorMessage);
