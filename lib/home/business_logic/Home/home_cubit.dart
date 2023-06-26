@@ -19,6 +19,7 @@ import 'package:swimmer_app/core/cashe_helper.dart';
 import '../../data/Notification.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
+import '../../presenation/home_lauout.dart';
 import 'home_state.dart';
 // ****this is my firestore Collections and Documents:**
 // - *users*: A collection to store the information of all coaches.
@@ -60,6 +61,20 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
+  final List<Widget> _screens = [
+   ScreenOne(),
+   ScreenTwo(),
+   ScreenThree(),
+   ScreenFour(),
+  ];
+//function to select screen
+  int _currentIndex = 0;
+  int get currentIndex => _currentIndex;
+  Widget get currentScreen => _screens[_currentIndex];
+  void changeBottomNav(int index) {
+    _currentIndex = index;
+    emit(ChangeBottomNavState());
+  }
 //make notification mode contain body and date fiels l .use flutter .i want to make function to store latest 20 notifications which is subcolection in users collection in shared  .it get the the latest notification from shared pref and get notification from firebase where it eariler than it . shared pref will contain list of only 20 item max . this my firebase firestore data base design .- *coaches*: A collection to store the information of all coaches.
 //     - Document ID: unique coach ID
 //     - Fields: *`name`, `level`, `hourly_rate`, `total_hours`, `total_salary`, `current_month_hours`, `current_month_salary`*

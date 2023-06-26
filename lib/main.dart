@@ -108,7 +108,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => OtpCubit()),
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
-        ..getNotifications()
+        //..getNotifications()
          // ..generateRandomNotifications()
         //    ..getAllSchedulesForSpecificUser()
        // ..addScheduleToCoachCollection()
@@ -171,7 +171,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.signUp,
+          initialRoute: AppRoutes.home,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

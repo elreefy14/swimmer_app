@@ -179,7 +179,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
   //   });
   // }
 
-  void signIn({
+  void userLogin({
     required String phone,
     required String password,
   }) {

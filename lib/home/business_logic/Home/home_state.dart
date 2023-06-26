@@ -57,4 +57,5 @@ class StoreSchedulesInSharedPreferencesErrorState extends HomeState {
   final String error;
   StoreSchedulesInSharedPreferencesErrorState({required this.error});
 }
-
+//ChangeBottomNavState
+class ChangeBottomNavState extends HomeState {}

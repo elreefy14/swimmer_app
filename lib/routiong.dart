@@ -19,7 +19,7 @@ class RouteGenerator {
           return MaterialPageRoute(builder: (_) =>SignUpScreen());
         case AppRoutes.login:
           return MaterialPageRoute(builder: (_) =>SignInScreen());
-           case AppRoutes.home:
+          case AppRoutes.home:
              return MaterialPageRoute(builder: (_) =>HomeLayout());
              //case OtpVerificationScreen
              // Navigator.pushNamed(

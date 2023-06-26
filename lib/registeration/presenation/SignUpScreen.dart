@@ -61,7 +61,7 @@ class SignUpScreen extends StatelessWidget {
         //     fontWeight: FontWeight.bold,
         //   ),
         // ),
-        SizedBox(height: 50.0.h),
+        SizedBox(height: 70.0.h),
         Form(
           key: _formKey,
           child: Directionality(
