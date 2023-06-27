@@ -1,10 +1,9 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-//import 'package:dash_chat_2/dash_chat_2.dart';
+import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:swimmer_app/home/presenation/widget/widget.dart';
 
 import '../../core/cashe_helper.dart';
@@ -22,22 +21,7 @@ class HomeLayout extends StatelessWidget {
           return context.watch<HomeCubit>().currentScreen;
         },
       ),
-      bottomNavigationBar:
-      BottomNavBar()
-     //      BottomBarSalomon(
-     //
-     //                color: Colors.blue,
-     //                backgroundColor: Colors.white,
-     //                colorSelected: Colors.white,
-     //                backgroundSelected: Colors.blue,
-     //                borderRadius: BorderRadius.circular(0),
-     //                indexSelected: visit,
-     //                onTap: (index) => setState(() {
-     //                  visit = index;
-     //                }),
-     //              ),
-
-
+      bottomNavigationBar: BottomNavBar(),
     );
   }
 }

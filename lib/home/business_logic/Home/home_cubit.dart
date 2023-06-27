@@ -5,13 +5,13 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:connectivity/connectivity.dart';
+import 'package:dash_chat/dash_chat.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swimmer_app/core/cashe_helper.dart';
@@ -436,18 +436,19 @@ class HomeCubit extends Cubit<HomeState> {
       print('$scheduleId');
       print('\n\n\n\n\n\n\n');
 
-     // qrImage = QrImage(
-    //    data: scheduleId,
-      //  version: QrVersions.auto,
-      //  size: 200.0,
-      //);
+      qrImage = QrImage(
+        data: scheduleId,
+        version: QrVersions.auto,
+        size: 200.0,
+      );
       emit(GenerateQrImageSuccessState());
     } else {
       // Handle case where no schedules were found
-    //  qrImage = QrImage(
-     // 'No schedules found',
-
-      //);
+      qrImage = QrImage(
+        data: "No schedules found",
+        version: QrVersions.auto,
+        size: 200.0,
+      );
       emit(GenerateQrImageErrorState(
           error:'error'
       ));
