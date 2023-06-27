@@ -1,278 +1,128 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../../core/constants/my_color.dart';
+import '../../business_logic/Home/home_cubit.dart';
+import '../../business_logic/Home/home_state.dart';
 
 
-Widget defaultFormField2({
-  required context,
-  TextEditingController? controller,
-  dynamic hintText,
-  dynamic labelText,
-  IconData? prefix,
-  int maxLines = 1,
-  String? initialValue,
-  TextInputType? keyboardType,
-  Function(String)? onSubmit,
-  onChange,
-  onTap,
-  required String? Function(String?) validate,
-  bool isPassword = false,
-  bool enabled = true,
-  IconData? suffix,
-  suffixPressed,
-}) =>
-    Container(
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: isPassword,
-        textAlign: TextAlign.start,
-        onFieldSubmitted: onSubmit,
-        enabled: enabled,
-        onChanged: onChange,
-        onTap: onTap,
-        validator: validate,
-        textCapitalization: TextCapitalization.words,
-        textAlignVertical: TextAlignVertical.center,
-        style: Theme.of(context).textTheme.bodyText1,
-        initialValue: initialValue,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(20),
-          hintText: hintText,
-          labelText: labelText,
-          hintStyle: TextStyle(fontSize: 20, color: Colors.grey),
-          labelStyle: TextStyle(color: Colors.grey),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15),borderSide: BorderSide(color: Colors.grey)),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15),borderSide: BorderSide(color: Colors.grey)),
-          prefixIcon: Icon(
-            prefix,
-            color: Colors.blueAccent,
-          ),
-          prefixStyle: TextStyle(color: Colors.blueAccent),
-          suffixStyle: TextStyle(color: Colors.blueAccent),
-          suffixIcon: suffix != null
-              ? IconButton(
-              onPressed: suffixPressed,
-              icon: Icon(suffix, color: Colors.blueAccent))
-              : null,
-        ),
-      ),
-    );
+//use this cubit to change the bottom nav bar index
+//  static HomeCubit get(context) => BlocProvider.of(context);
+// List<String> listOfImages = [
+//   'assets/images/dashboard-2_svgrepo.com.png',
+//   'assets/images/scan-qrcode_svgrepo.com.png',
+//   'assets/images/🦆 icon _person_.png',
+//   'assets/images/Vector.png',
+// ];
+//   final List<Widget> _screens = [
+//    ScreenOne(),
+//    ScreenTwo(),
+//    ScreenThree(),
+//    ScreenFour(),
+//   ];
+// //function to select screen
+//   int _currentIndex = 0;
+//   int get currentIndex => _currentIndex;
+//   Widget get currentScreen => _screens[_currentIndex];
+//   void changeBottomNav(int index) {
+//     _currentIndex = index;
+//     emit(ChangeBottomNavState());
+//   }
+//edit this BottomNavBar
+class BottomNavBar extends StatelessWidget {
+  const BottomNavBar({Key? key}) : super(key: key);
 
-void navigateTo(context, widget) => Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => widget,
-  ),
-);
-void navigateAndFinsh(context, widget) => Navigator.pushAndRemoveUntil(
-  context,
-  MaterialPageRoute(
-    builder: (context) => widget,
-  ),
-      (route) => false,
-);
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
 
-Widget defaultFormField(
-    {required TextEditingController controller,
-      required TextInputType type,
-      Function? onSubmit,
-      Function? onChange,
-      bool isPassword = false,
-      required String? Function(String? val)? validate,
-      double radius = 0.0,
-      String? label,
-      IconData? prefix,
-      IconData? suffix,
-      Function? suffixPressed,
-      bool isClickable = true,
-      double width = double.infinity}) =>
-    Container(
-      width: width,
-      height: 55.h,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      decoration: BoxDecoration(
-        color: Color(0xFFF2F2F2),
-        borderRadius: BorderRadius.circular(
-          radius,
-        ),
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: type,
-        obscureText: isPassword,
-        enabled: isClickable,
-        onFieldSubmitted: (e) {
-          if (onSubmit != null) onSubmit(e);
-        },
-        onChanged: (s) {
-          if (onChange != null) onChange(s);
-        },
-        validator: validate,
-        // textAlignVertical: TextAlignVertical.center,
-        decoration: InputDecoration(
-          errorStyle: TextStyle(
-
-            overflow: TextOverflow.ellipsis,
-            height: 2.5,
-            color: Colors.red,
-          ),
-          border: InputBorder.none,
-          labelText: label,
-
-          prefixIcon: Icon(
-            prefix,
-          ),
-          hintStyle: TextStyle(
-              fontFamily: 'Metropolis-Regular',
-              fontSize: 16,
-              color: placeholder),
-          suffixIcon: suffix != null
-              ? IconButton(
-            onPressed: () {
-              suffixPressed!();
-            },
-            icon: Icon(
-              suffix,
-            ),
-          )
-              : null,
-        ),
-      ),
-    );
-Widget defaultButton({
-  double width = double.infinity,
-  double height = 45,
-  Color backgroundColor = mainColor,
-  Color borderColor = mainColor,
-  Color fontColor = Colors.white,
-  bool isUpperCase = true,
-  String fontFamily = 'Metropolis-SemiBold',
-  double radius = 3.0,
-  double borderWidth = 0,
-  double fontSize = 16.0,
-  required Function function,
-  required String text,
-  IconData? prefix,
-}) =>
-    Container(
-      width: width,
-      height: height,
-      child: MaterialButton(
-        onPressed: () {
-          function();
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (prefix != null)
-              FaIcon(
-                prefix,
-                size: 20,
-                color: Color(0xFFffffff),
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        return Container(
+          //padding: EdgeInsets.symmetric(horizontal: screenWidth * .048),
+          //margin: EdgeInsets.all(20),
+          height: screenWidth * .155,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.15),
+                blurRadius: 30,
+                offset: Offset(0, 10),
               ),
-            if (prefix != null)
-              SizedBox(
-                width: 20,
-              ),
-            Text(
-              isUpperCase ? text.toUpperCase() : text,
-              style: TextStyle(
-                  color: fontColor, fontSize: fontSize, fontFamily: fontFamily),
-            ),
-          ],
-        ),
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(width: borderWidth, color: borderColor),
-        borderRadius: BorderRadius.circular(
-          radius,
-        ),
-        color: backgroundColor,
-      ),
+            ],
+            //  borderRadius: BorderRadius.circular(50),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (int index = 0;
+              index < HomeCubit.get(context).listOfImages.length;
+              index++)
+                InkWell(
+                  onTap: () {
+                    HomeCubit.get(context).changeBottomNav(index);
+                    HapticFeedback.lightImpact();
+                  },
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  child: Stack(
+                    children: [
+                      AnimatedContainer(
+                        duration: Duration(seconds: 1),
+                        curve: Curves.fastLinearToSlowEaseIn,
+                        width: screenWidth * .2125,
+                        height: screenWidth * .12,
+                        decoration: BoxDecoration(
+                          color: index == HomeCubit.get(context).currentIndex
+                              ? //#2196F3
+                          Color(0xff2196F3)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * .024),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                HomeCubit.get(context).listOfImages[index],
+                                color: index ==
+                                    HomeCubit.get(context).currentIndex
+                                    ? //#F4F4F4
+                                Color(0xffF4F4F4)
+                                    : //#B9B9B9
+                                Color(0xffB9B9B9),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                HomeCubit.get(context).listOfTitles[index],
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontFamily: 'IBM Plex Sans Arabic',
+                                  color: index ==
+                                      HomeCubit.get(context).currentIndex
+                                      ? Color(0xFF2196F3)
+                                      : Color(0xFFB9B9B9),
+                                  letterSpacing: 0.03.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
-Widget mySeparator() => Container(
-  width: double.infinity,
-  height: 1,
-  color: Colors.grey[500],
-);
-//showToast2
-void showToast({
-  required String msg,
-  required ToastStates state,
-}) =>
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 5,
-      backgroundColor: chooseToastColor(state),
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-
-chooseToastColor(ToastStates state) {
-  Color color;
-  switch (state) {
-    case ToastStates.SUCCESS:
-      color = Colors.green;
-      break;
-    case ToastStates.ERROR:
-      color = Colors.red;
-      break;
-    case ToastStates.WARNING:
-      color = Colors.amber;
-      break;
   }
-  return color;
-}
-
-enum ToastStates { SUCCESS, ERROR, WARNING }
-
-Widget CustomTextField(
-    {required TextEditingController controller,
-      BuildContext ?context,
-      required String label,
-       IconData? icon,
-      TextInputType? type,
-       bool? isPassword,
-       Function(String)? validate,
-       Function(String)? onSubmit,
-       Function(String)? onChange,
-       FocusNode? focusNode,
-       FocusNode? nextFocusNode,
-       bool? isLast,
-    }) {
-return Padding(
-padding: const EdgeInsets.symmetric(vertical: 10),
-child: TextFormField(
-controller: controller,
-keyboardType: type,
-obscureText: isPassword?? false,
-onFieldSubmitted: (value) {
-
-},
-focusNode: focusNode,
-decoration: InputDecoration(
-labelText: label,
-prefixIcon: Icon(
-icon,
-color: Color(0xFFF2F2F2),
-),
-border: OutlineInputBorder(
-borderRadius: BorderRadius.circular(20),
-),
-focusedBorder: OutlineInputBorder(
-borderRadius: BorderRadius.circular(20),
-borderSide: BorderSide(
-color:Color(0xFFF2F2F2),
-),
-),
-),
-),
-);
 }

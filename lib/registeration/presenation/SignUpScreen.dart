@@ -8,6 +8,7 @@ import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubi
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_state.dart';
 import 'package:swimmer_app/registeration/presenation/otp.dart';
 import 'package:swimmer_app/registeration/presenation/widget/component.dart';
+import 'package:swimmer_app/registeration/presenation/widget/widget.dart';
 
 import '../../core/constants/font_manager.dart';
 import '../../core/constants/styles_manager.dart';

@@ -12,10 +12,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swimmer_app/core/cashe_helper.dart';
+import '../../../registeration/data/user_cache_model.dart';
 import '../../data/Notification.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
@@ -61,6 +61,31 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
+//static Future<UserCacheModel?> getUser() async {
+//     final jsonString = sharedPreferences.getString(AppStrings.userCacheModel);
+//     if (jsonString == null) {
+//       return null;
+//     }
+//     return UserCacheModel.fromJson(json.decode(jsonString));
+//   }
+  //get user data from shared pref
+  UserCacheModel? userCacheModel;
+  Future<void> getUserData() async {
+    emit(GetUserDataLoadingState());
+    userCacheModel =await CacheHelper.getUser() ;
+  }
+  List<String> listOfImages = [
+    'assets/images/dashboard-2_svgrepo.com.png',
+    'assets/images/scan-qrcode_svgrepo.com.png',
+    'assets/images/🦆 icon _person_.png',
+    'assets/images/Vector.png',
+  ];
+  List<String> listOfTitles = [
+  'لوحة التحكم',
+  'مسح الكود',
+  'الملف الشخصي',
+  'الاشعارات',
+];
   final List<Widget> _screens = [
    ScreenOne(),
    ScreenTwo(),
@@ -149,6 +174,7 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
+   // await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
     print('Getting all schedules for specific coach');
 
@@ -200,7 +226,9 @@ class HomeCubit extends Cubit<HomeState> {
 
         await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
         print('schedules.lengthtt: ${schedules?.length}');
-        emit(GetAllSchedulesForSpecificCoachSuccessState());
+        emit(GetAllSchedulesForSpecificCoachSuccessState(
+            schedules: schedules ?? [],
+        ));
       }).catchError((error) {
         print('Failed to retrieve all schedules for specific coach due to error: $error');
         emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));

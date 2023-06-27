@@ -37,6 +37,8 @@ class GenerateQrImageLoadingState extends HomeState {}
 class LoadingState extends HomeState {}
 //emit(GetAllSchedulesForSpecificCoachSuccessState(schedules: schedules));
 class GetAllSchedulesForSpecificCoachSuccessState extends HomeState {
+  final List<SchedulesModel> schedules;
+  GetAllSchedulesForSpecificCoachSuccessState({required this.schedules});
 }
 //GetAllSchedulesForSpecificCoachErrorState
 class GetAllSchedulesForSpecificCoachErrorState extends HomeState {
@@ -59,3 +61,12 @@ class StoreSchedulesInSharedPreferencesErrorState extends HomeState {
 }
 //ChangeBottomNavState
 class ChangeBottomNavState extends HomeState {}
+//GetUserDataLoadingState
+class GetUserDataLoadingState extends HomeState {}
+//GetUserDataSuccessState
+class GetUserDataSuccessState extends HomeState {}
+//GetUserDataErrorState
+class GetUserDataErrorState extends HomeState {
+  final String error;
+  GetUserDataErrorState({required this.error});
+}

@@ -11,7 +11,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/cashe_helper.dart';
@@ -178,7 +177,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
   //     emit(EditUserDataErrorState(error.toString()));
   //   });
   // }
-
+  UserCacheModel? userData ;
   void userLogin({
     required String phone,
     required String password,
@@ -211,7 +210,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
               var data = doc.data();
               if (data!['deviceToken'].length < 3) {
 
-                var userData = UserCacheModel(
+                 userData = UserCacheModel(
                                       email: user.email??'${data['phone']}@placeholder.com',
                                       phone: user.phoneNumber??data['phone'],
                                       token: token??data['deviceToken'][0],
