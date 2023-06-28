@@ -436,19 +436,18 @@ class HomeCubit extends Cubit<HomeState> {
       print('$scheduleId');
       print('\n\n\n\n\n\n\n');
 
-      qrImage = QrImage(
-        data: scheduleId,
-        version: QrVersions.auto,
-        size: 200.0,
-      );
+     // qrImage = QrImage(
+    //    data: scheduleId,
+      //  version: QrVersions.auto,
+      //  size: 200.0,
+      //);
       emit(GenerateQrImageSuccessState());
     } else {
       // Handle case where no schedules were found
-      qrImage = QrImage(
-        data: "No schedules found",
-        version: QrVersions.auto,
-        size: 200.0,
-      );
+    //  qrImage = QrImage(
+     // 'No schedules found',
+
+      //);
       emit(GenerateQrImageErrorState(
           error:'error'
       ));

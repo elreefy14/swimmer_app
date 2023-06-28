@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+//import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
@@ -158,14 +158,14 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context , child) => MaterialApp(
 
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('ar', "AE"),
-          ],
+          // localizationsDelegates: [
+          //   GlobalMaterialLocalizations.delegate,
+          //   GlobalWidgetsLocalizations.delegate,
+          //   GlobalCupertinoLocalizations.delegate,
+          // ],
+          // supportedLocales: const [
+          //   Locale('ar', "AE"),
+          // ],
 
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],
