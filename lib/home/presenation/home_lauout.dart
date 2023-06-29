@@ -22,7 +22,22 @@ class HomeLayout extends StatelessWidget {
           return context.watch<HomeCubit>().currentScreen;
         },
       ),
-      bottomNavigationBar: BottomNavBar(),
+      bottomNavigationBar:
+      BottomNavBar()
+     //      BottomBarSalomon(
+     //
+     //                color: Colors.blue,
+     //                backgroundColor: Colors.white,
+     //                colorSelected: Colors.white,
+     //                backgroundSelected: Colors.blue,
+     //                borderRadius: BorderRadius.circular(0),
+     //                indexSelected: visit,
+     //                onTap: (index) => setState(() {
+     //                  visit = index;
+     //                }),
+     //              ),
+
+
     );
   }
 }
