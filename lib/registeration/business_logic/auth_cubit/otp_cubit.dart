@@ -59,7 +59,7 @@ class OtpCubit extends Cubit<OtpState> {
       print('DIO ERROR');
 
       print(e.message);
-      emit(AuthErrorOccur(e.message));
+      emit(AuthErrorOccur(e.message??''));
     }
   }
 
