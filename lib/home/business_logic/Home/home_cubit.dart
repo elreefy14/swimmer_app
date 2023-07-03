@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:awesome_bottom_bar/tab_item.dart';
+import 'package:bottom_bar/bottom_bar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -74,18 +76,31 @@ class HomeCubit extends Cubit<HomeState> {
     emit(GetUserDataLoadingState());
     userCacheModel =await CacheHelper.getUser() ;
   }
-  List<String> listOfImages = [
-    'assets/images/dashboard-2_svgrepo.com.png',
-    'assets/images/scan-qrcode_svgrepo.com.png',
-    'assets/images/🦆 icon _person_.png',
-    'assets/images/Vector.png',
+//   List<String> listOfImages = [
+//     'assets/images/dashboard-2_svgrepo.com.png',
+//     'assets/images/scan-qrcode_svgrepo.com.png',
+//     'assets/images/🦆 icon _person_.png',
+//     'assets/images/Vector.png',
+//   ];
+//   List<String> listOfTitles = [
+//   'لوحة التحكم',
+//   'مسح الكود',
+//   'الملف الشخصي',
+//   'الاشعارات',
+// ];
+   List<TabItem> items = [
+     TabItem(icon: Icons.home, title: 'لوحة التحكم'),
+      TabItem(icon: Icons.qr_code_scanner, title: 'مسح الكود'),
+      TabItem(icon: Icons.person, title: 'الملف الشخصي'),
+      TabItem(icon: Icons.notifications, title: 'الاشعارات'),
   ];
-  List<String> listOfTitles = [
-  'لوحة التحكم',
-  'مسح الكود',
-  'الملف الشخصي',
-  'الاشعارات',
-];
+  List<BottomBarItem> items2 = [
+    BottomBarItem(
+      icon: ImageIcon(AssetImage('assets/images/dashboard-2_svgrepo.com.png')),
+      title: Text('Home'),
+      activeColor: Colors.blue,
+    ),
+  ];
   final List<Widget> _screens = [
    ScreenOne(),
    ScreenTwo(),
@@ -174,7 +189,8 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
-   // await CacheHelper.clearSchedulesFromSharedPreferences();
+    await initializeDateFormatting('ar');
+    await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
     print('Getting all schedules for specific coach');
 
