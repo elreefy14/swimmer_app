@@ -21,6 +21,9 @@ class RouteGenerator {
           return MaterialPageRoute(builder: (_) =>SignInScreen());
           case AppRoutes.home:
              return MaterialPageRoute(builder: (_) =>HomeLayout());
+             //EditProfile
+              case AppRoutes.editProfile:
+              return MaterialPageRoute(builder: (_) =>EditProfile());
              //case OtpVerificationScreen
              // Navigator.pushNamed(
              //   context,

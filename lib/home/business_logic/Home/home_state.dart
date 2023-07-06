@@ -70,3 +70,19 @@ class GetUserDataErrorState extends HomeState {
   final String error;
   GetUserDataErrorState({required this.error});
 }
+class EditUserDataLoadingState extends HomeState {}
+//EditUserDataSuccessState
+class EditUserDataSuccessState extends HomeState {}
+//EditUserDataErrorState
+class EditUserDataErrorState extends HomeState {
+  final String error;
+  EditUserDataErrorState(this.error);
+}
+//UploadProfilePicSuccessState
+class UploadProfilePicSuccessState extends HomeState {}
+//UploadProfilePicErrorState
+class UploadProfilePicErrorState extends HomeState {}
+//GetProfilePicSuccessState
+class GetProfilePicSuccessState extends HomeState {}
+//GetProfilePicErrorState
+class GetProfilePicErrorState extends HomeState {}

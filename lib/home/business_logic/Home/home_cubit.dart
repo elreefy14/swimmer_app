@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:awesome_bottom_bar/tab_item.dart';
 import 'package:bottom_bar/bottom_bar.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -59,10 +61,147 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(InitialState()) {
     // Call this method when connectivity changes
    // _listenToConnectivityChanges();
+    //initControllers();
   }
 
 
   static HomeCubit get(context) => BlocProvider.of(context);
+
+  final formKey = GlobalKey<FormState>();
+  late TextEditingController firstNameController;
+  late TextEditingController lastNameController;
+  late TextEditingController phoneController;
+
+  void initControllers() {
+    firstNameController = TextEditingController(text: userCacheModel?.name);
+    lastNameController = TextEditingController(text: userCacheModel?.name??'kol');
+    phoneController = TextEditingController(text: userCacheModel?.phone??'011');
+  }
+
+
+  String? profilePicURL;
+
+  Future<void> uploadProfilePic(
+
+      ) async {
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child(Uri.file(profileImage!.path).pathSegments.last)
+        .putFile(profileImage!)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        editUserData(
+          image: value,
+        );
+        emit(UploadProfilePicSuccessState());
+      }).catchError((error) {
+        print(error.toString());
+        emit(UploadProfilePicErrorState());
+      });
+      emit(UploadProfilePicSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(UploadProfilePicErrorState());
+    });
+  }
+  File? profileImage;
+  ImagePicker? picker = ImagePicker();
+
+  Future? getProfileImage() async {
+    final pickedFile = await picker?.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      profileImage =  File(pickedFile.path);
+      await uploadProfilePic();
+      emit(GetProfilePicSuccessState());
+    } else {
+      print('No Image Selected');
+      emit(GetProfilePicErrorState());
+    }
+  }
+  void editUserData({
+    String? firstName,
+    String? lastName,
+    String? phone,
+    String? image,
+  }) async {
+    emit(EditUserDataLoadingState());
+    final user = FirebaseAuth.instance.currentUser;
+    final updateData = <String, Object?>{};
+    final notificationData = <String, dynamic>{};
+    //// Retrieve the user data from the cache
+    // UserCacheModel userData = CacheHelper.getUser();
+    //
+    // // Update the specific attribute
+    // userData.hourlyRate = newHourlyRate;
+    //
+    // // Save the updated user data back to the cache
+    // CacheHelper.saveUser(userData);
+    //CacheHelper.getUser();
+    // UserCacheModel? userData =await CacheHelper.getUser();
+    if (firstName != null) {
+      updateData['fname'] = firstName;
+      //userData!.fname = firstName;
+      notificationData['message'] = 'تم تحديث الاسم الأول إلى $firstName';
+    }
+    if (lastName != null) {
+      updateData['lname'] = lastName;
+     // userData!.lname = lastName;
+      notificationData['message'] = 'تم تحديث الاسم الأخير إلى $lastName';
+    }
+    if (phone != null) {
+      updateData['phone'] = phone;
+     // userData!.phone = phone;
+      notificationData['message'] = 'تم تحديث رقم الهاتف إلى $phone';
+    }
+    if (image != null) {
+      updateData['image'] = image;
+      //userData!.image = image;
+      notificationData['message'] = 'تم تحديث الصورة إلى $image';
+    }
+
+    // Update the user data
+    try {
+     // CacheHelper.saveUser(userData);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .update(updateData);
+
+      // Update the local cache
+      CacheHelper.getUser()!.then((userData) async {
+          if (firstName != null) {
+            userData!.fname = firstName ;
+          }
+          if (lastName != null) {
+            userData!.lname = lastName ;
+          }
+        if (firstName != null) {
+          userData!.name = firstName + ' ' + (lastName ?? '');
+        }
+        if (phone != null) {
+          userData!.phone = phone;
+        }
+        if (image != null) {
+          userData!.image = image;
+        }
+        CacheHelper.saveUser(userData);
+       await getUserData();
+
+      });
+      // Add notification to the subcollection
+      notificationData['timestamp'] = FieldValue.serverTimestamp();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('notifications')
+          .add(notificationData);
+
+      emit(EditUserDataSuccessState());
+    } catch (error) {
+      print(error.toString());
+      emit(EditUserDataErrorState(error.toString()));
+    }
+  }
 //static Future<UserCacheModel?> getUser() async {
 //     final jsonString = sharedPreferences.getString(AppStrings.userCacheModel);
 //     if (jsonString == null) {
@@ -93,6 +232,7 @@ class HomeCubit extends Cubit<HomeState> {
       TabItem(icon: Icons.qr_code_scanner, title: 'مسح الكود'),
       TabItem(icon: Icons.person, title: 'الملف الشخصي'),
       TabItem(icon: Icons.notifications, title: 'الاشعارات'),
+    // TabItem(icon: Icons.person, title: 'الملف الشخصي'),
   ];
   List<BottomBarItem> items2 = [
     BottomBarItem(
@@ -106,9 +246,13 @@ class HomeCubit extends Cubit<HomeState> {
    ScreenTwo(),
    ScreenThree(),
    ScreenFour(),
+    EditProfile(),
   ];
 //function to select screen
   int _currentIndex = 0;
+  //setter for current index
+
+
   int get currentIndex => _currentIndex;
   Widget get currentScreen => _screens[_currentIndex];
   void changeBottomNav(int index) {

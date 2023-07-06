@@ -6,9 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:swimmer_app/home/presenation/widget/widget.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 
 import '../../core/cashe_helper.dart';
 import '../../registeration/data/user_cache_model.dart';
+import '../../registeration/presenation/widget/component.dart';
 import '../business_logic/Home/home_cubit.dart';
 import '../business_logic/Home/home_state.dart';
 //call
@@ -18,8 +20,11 @@ class HomeLayout extends StatefulWidget {
 }
 
 class _HomeLayoutState extends State<HomeLayout> {
+
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocBuilder<HomeCubit, HomeState>(
@@ -119,71 +124,83 @@ class ScreenThree extends StatelessWidget {
           child: Container(
             height: 40.h,
             width: double.infinity,
-            child: Row(
-             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(width: 10.w),
-                ImageIcon(
-                  AssetImage('assets/images/Month Chevron.png'),
-                  size: 40,
-                ),
-                Spacer(),
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                  //Text(
-                    //   text = "معلومات حسابك",
-                    //   fontSize = 13.sp,
-                    //   fontFamily = FontFamily(Font(R.font.dm sans),
-                    //   fontWeight = FontWeight(500),
-                    //   color = Color(0xFF181D27),
-                    //   textAlign = TextAlign.Right)
-                    Text(
-                      'معلومات حسابك',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat-Arabic',
-                        fontStyle: FontStyle.normal,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13.sp,
-                        height: 19 / 13,
-                        color: Color(0xFF181D27),
-                      ),
-                    ),
-                   //Text(
-                    //   text = "الاسم, الرقم...",
-                    //   fontSize = 11.sp,
-                    //   fontFamily = FontFamily(Font(R.font.dm sans),
-                    //   color = Color(0xFFABABAB),
-                    //   textAlign = TextAlign.Right)
-                    Text(
-                      'الاسم, الرقم...',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat-Arabic',
-                        fontStyle: FontStyle.normal,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 11.sp,
-                        height: 19 / 11,
-                        color: Color(0xFFABABAB),
-                      ),
-                    ),
-                  ],
-                ),
-                //image.asset
-                // Image.asset(
-                //   'assets/images/Profile.png',
-                //   width: 40.w,
-                //   height: 40.h,
-                //   fit: BoxFit.cover,
-                // ),
-                SizedBox(width: 20.w),
-            ImageIcon(
-              AssetImage('assets/images/Profile.png'),
-              size: 40,
+            child: InkWell(
+              onTap: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => EditProfile(),
+                //   ),
+                // );
+                HomeCubit.get(context).changeBottomNav(4);
 
+              },
+              child: Row(
+               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(width: 10.w),
+                  ImageIcon(
+                    AssetImage('assets/images/Month Chevron.png'),
+                    size: 40,
+                  ),
+                  Spacer(),
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                    //Text(
+                      //   text = "معلومات حسابك",
+                      //   fontSize = 13.sp,
+                      //   fontFamily = FontFamily(Font(R.font.dm sans),
+                      //   fontWeight = FontWeight(500),
+                      //   color = Color(0xFF181D27),
+                      //   textAlign = TextAlign.Right)
+                      Text(
+                        'معلومات حسابك',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat-Arabic',
+                          fontStyle: FontStyle.normal,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13.sp,
+                          height: 19 / 13,
+                          color: Color(0xFF181D27),
+                        ),
+                      ),
+                     //Text(
+                      //   text = "الاسم, الرقم...",
+                      //   fontSize = 11.sp,
+                      //   fontFamily = FontFamily(Font(R.font.dm sans),
+                      //   color = Color(0xFFABABAB),
+                      //   textAlign = TextAlign.Right)
+                      Text(
+                        'الاسم, الرقم...',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat-Arabic',
+                          fontStyle: FontStyle.normal,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 11.sp,
+                          height: 19 / 11,
+                          color: Color(0xFFABABAB),
+                        ),
+                      ),
+                    ],
+                  ),
+                  //image.asset
+                  // Image.asset(
+                  //   'assets/images/Profile.png',
+                  //   width: 40.w,
+                  //   height: 40.h,
+                  //   fit: BoxFit.cover,
+                  // ),
+                  SizedBox(width: 20.w),
+              ImageIcon(
+                AssetImage('assets/images/Profile.png'),
+                size: 40,
+
+                ),
+               SizedBox(width: 10.w),
+                   ],
               ),
-             SizedBox(width: 10.w),
-                 ],
             ),
           ),
         ),
@@ -934,7 +951,204 @@ class ScreenOne extends StatelessWidget {
   }
 }
 
-class ScreenTwo extends StatelessWidget {
+class EditProfile extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        HomeCubit.get(context).initControllers();
+        return BlocConsumer<HomeCubit, HomeState>(
+  listener: (context, state) {
+        // TODO: implement listener
+  },
+  builder: (context, state) {
+        return Column(
+          children: [
+            SizedBox(height:30.0.h),
+            Center(
+              child: CircleAvatar(
+                radius: 50, // adjust the size as needed
+                backgroundImage: //networkImage
+                NetworkImage(
+                  HomeCubit.get(context).userCacheModel!.image!,
+                )
+              ),
+            ),
+            SizedBox(height: 10.0.h),
+            Text(
+              '${HomeCubit.get(context).userCacheModel!.name}',
+              style: TextStyle(
+                fontFamily: 'Montserrat-Arabic',
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w300,
+                fontSize: 16,
+                height: 19 / 16,
+                color: Color(0xFF333333),
+              ),
+            ),
+            SizedBox(height: 8.0.h),
+
+            Text(
+              '34ج.م / ساعة',
+              style: TextStyle(
+                fontFamily: 'Montserrat-Arabic',
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w300,
+                fontSize: 14.sp,
+                height: 19 / 14,
+                color: Color(0xFF2196F3),
+              ),
+            ),
+          //15.h
+            SizedBox(height: 15.0.h),
+          InkWell(
+            onTap: () {
+               HomeCubit.get(context).getProfileImage();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                      color: Color(0xFF2196F3),
+                      borderRadius: BorderRadius.circular(15.0.r),
+                      border: Border.all(
+                        color: Color(0xFF2196F3),
+                        width: 1.0.w,
+                      ),
+                    ),
+
+                    width: 180.0.w,
+                    height: 50.0.h,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.0.w,
+                        vertical: 9.0.h,
+                      ),
+                      child:
+                      Center(
+                        child: Text(
+                          'تعديل الصورة',
+                          style: TextStyle(
+                            fontFamily: 'Montserrat-Arabic',
+                            fontStyle: FontStyle.normal,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 18.sp,
+                            height: 21 / 18,
+                            color: Color(0xFFFFFFFF),
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+            //35
+            SizedBox(height: 35.0.h),
+
+            Form(
+              key: HomeCubit.get(context).formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                    child: BuildTextFormField('الاسم الاول',
+        HomeCubit.get(context).firstNameController
+        ,TextInputType.name, 'ادخل الاسم الاول', (value) {
+                      if (value!.isEmpty) {
+                        return ' الرجاء ادخال الاسم الاول';
+                      }
+                      return null;
+                    },'assets/images/Vector.png' ),
+                  ),
+                  SizedBox(height: 15.0.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                    child: BuildTextFormField('الاسم الاخير', HomeCubit.get(context).lastNameController
+                        , TextInputType.name,'ادخل الاسم الاخير', (value) {
+                      if (value!.isEmpty) {
+                        return 'الرجاء ادخال الاسم الاخير';
+                      }
+                      return null;
+                    },'assets/images/Vector.png'),
+                  ),
+                  SizedBox(height: 15.0),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                    child: BuildTextFormField('رقم الهاتف',HomeCubit.get(context).phoneController,
+                        TextInputType.phone,'ادخل رقم الهاتف', (value) {
+                      if (value!.isEmpty) {
+                        return 'الرجاء ادخال رقم الهاتف';
+                      }
+                      return null;
+                    },'assets/images/Vector.png'),
+                  ),
+                  SizedBox(height: 15.0.h),
+
+                  // BlocConsumer<OtpCubit,OtpState >(
+                  ConditionalBuilder(
+                    condition: true,
+                    builder: (context) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            left: 31.w,
+                            right: 31.w,
+                            top: 20.h
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (HomeCubit.get(context).formKey.currentState!.validate()) {
+                           HomeCubit.get(context).editUserData(
+                             firstName: HomeCubit.get(context).firstNameController.text,
+                              lastName: HomeCubit.get(context).lastNameController.text,
+                              phone: HomeCubit.get(context).phoneController.text,
+                           );
+                            }
+                          },
+                          child: Text(
+                            'حفظ التعديلات',
+                            style: TextStyle(
+                              fontFamily: 'Montserrat-Arabic',
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18,
+                              height: 26 / 18,
+                              color: Color(0xFFFFFFFF),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFF2196F3), // Background color
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            textStyle: TextStyle(
+                              fontSize: 18, // Adjust the font size if needed
+                            ),
+                          ),
+                        ),
+
+                      );
+
+                    },
+                    fallback: (context) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+          ],
+        );
+  },
+);
+      }
+    );
+  }
+}
+
+    class ScreenTwo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(

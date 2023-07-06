@@ -32,6 +32,8 @@ class UserModel
   String? fname;
   String? lname;
   String? image;
+  String? token;
+
 
 
 

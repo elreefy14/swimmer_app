@@ -1,6 +1,6 @@
 class UserCacheModel {
    String? token;
-   String? uid;
+   String? uId;
    String? email;
    String? name;
    String? phone;
@@ -11,10 +11,12 @@ class UserCacheModel {
    int? totalSalary;
    int? currentMonthHours;
    int? currentMonthSalary;
+   String? fname;
+   String? lname;
 
   UserCacheModel({
    this.token,
-   this.uid,
+   this.uId,
    this.email,
    this.name,
    this.phone,
@@ -25,12 +27,16 @@ class UserCacheModel {
    this.currentMonthHours,
    this.currentMonthSalary,
     this.image,
+    this.fname,
+    this.lname,
   });
 
   factory UserCacheModel.fromJson(Map<String, dynamic> json) {
     return UserCacheModel(
+      fname: json['fname'],
+      lname: json['lname'],
       token: json['token'],
-      uid: json['uid'],
+      uId: json['uid'],
       email: json['email'],
       name: json['name'],
       phone: json['phone'],
@@ -45,9 +51,11 @@ class UserCacheModel {
   }
 
   Map<String, dynamic> toJson() => {
+    'fname': fname,
+    'lname': lname,
     'image': image,
     'token': token,
-    'uid': uid,
+    'uid': uId,
     'email': email,
     'name': name,
     'phone': phone,

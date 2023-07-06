@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppRoutes {
+  //editProfile
+  static const String editProfile = "/editProfile";
   //welcome
   static const String welcome = "/welcome";
 //otpVerification

@@ -9,7 +9,7 @@ Widget BuildTextFormField(
     TextInputType input,
     String hintText,
     String? Function(String?) validator,
-    IconData? icon,
+    icon,
     ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -29,7 +29,11 @@ Widget BuildTextFormField(
         keyboardType: input,
         obscureText: labelText == 'كلمة المرور' ? true : false,
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: Colors.grey),
+          prefixIcon: ImageIcon(
+            AssetImage(icon),
+            color: //#333333
+            Color(0xFF333333),
+          ),
           hintText: hintText,
           hintStyle: TextStyle(
             fontFamily: 'IBM Plex Sans Arabic',
