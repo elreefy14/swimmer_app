@@ -1148,14 +1148,6 @@ class EditProfile extends StatelessWidget {
   }
 }
 
-    class ScreenTwo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Screen Two'),
-    );
-  }
-}
 
 
 class ScreenFour extends StatelessWidget {

@@ -1,20 +1,20 @@
 class NotificationModel {
-  final String body;
-  final DateTime date;
+   String? message;
+  DateTime? timestamp;
 
-  NotificationModel({required this.body, required this.date});
+  NotificationModel({required this.message, required this.timestamp});
 //fromJson
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
-      body: json['body'],
-      date: DateTime.parse(json['date']),
+      message: json['message'],
+      timestamp: DateTime.parse(json['timestamp']),
     );
   }
 //toJson
   Map<String, dynamic> toJson() {
     return {
-      'body': body,
-      'date': date.toString(),
+      'message': message,
+      'timestamp': timestamp.toString(),
     };
   }
 

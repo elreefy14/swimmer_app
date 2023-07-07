@@ -24,6 +24,7 @@ import '../../data/Notification.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
 import '../../presenation/home_lauout.dart';
+import '../../presenation/notification_screen.dart';
 import 'home_state.dart';
 // ****this is my firestore Collections and Documents:**
 // - *users*: A collection to store the information of all coaches.
@@ -189,7 +190,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       });
       // Add notification to the subcollection
-      notificationData['timestamp'] = FieldValue.serverTimestamp();
+      notificationData['timestamp'] = DateTime.now();
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -243,7 +244,7 @@ class HomeCubit extends Cubit<HomeState> {
   ];
   final List<Widget> _screens = [
    ScreenOne(),
-   ScreenTwo(),
+   NotificationScreen(),
    ScreenThree(),
    ScreenFour(),
     EditProfile(),
@@ -292,27 +293,29 @@ class HomeCubit extends Cubit<HomeState> {
     prefs.setStringList('latest_notifications', jsonList);
   }
   Future<List<NotificationModel>> getNotifications() async {
-  // await clearNotificationsfromcache();
-
+   //await clearNotificationsfromcache();
+   emit(GetNotificationsLoadingState());
     final prefs = await SharedPreferences.getInstance();
     final jsonList = prefs.getStringList('latest_notifications') ?? [];
-    final latestNotification =
+   NotificationModel? latestNotification =
     jsonList.isNotEmpty ? NotificationModel.fromJson(jsonDecode(jsonList.first)) : null;
-    print('latestNotification: $latestNotification');
+    print('latestNotification: ${latestNotification?.timestamp}}');
+    //chang latest notification to be Timestamp
+
 
     final notifications = await FirebaseFirestore.instance
         .collection('users')
-        .doc('fnBisJY3vGgHL3on0tYeAJWI5GA2')
+        .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
         .collection('notifications')
-        .where('date', isGreaterThan: latestNotification?.date ?? DateTime.fromMicrosecondsSinceEpoch(0))
-        .orderBy('date', descending: true)
-        .limit(20 - jsonList.length)
+       .where('timestamp', isGreaterThan: latestNotification?.timestamp ?? DateTime.fromMicrosecondsSinceEpoch(0))
+       .orderBy('timestamp', descending: true)
+       .limit(20 - jsonList.length)
         .get()
         .then((querySnapshot) {
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
         doc.reference.delete(); // Delete the notification from Firestore
-        return NotificationModel(body: data['body'], date: data['date'].toDate());
+        return NotificationModel(message: data['message'], timestamp: data['timestamp'].toDate());
       }).toList();
     });
 
@@ -320,14 +323,17 @@ class HomeCubit extends Cubit<HomeState> {
       ...notifications,
       ...jsonList.map((json) => NotificationModel.fromJson(jsonDecode(json)))
     ];
-    allNotifications.sort((a, b) => b.date.compareTo(a.date));
+    allNotifications.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
     if (allNotifications.length > 20) {
       allNotifications.removeRange(20, allNotifications.length);
     }
 
     await saveLatestNotifications(allNotifications);
-    print('allNotifications: ${allNotifications.map((n) => n.body).toList()}');
+    print('allNotifications: ${allNotifications.map((n) => n.message).toList()}');
+    emit(GetNotificationsSuccessState(
+      notifications:  allNotifications,
+    ));
     return allNotifications;
   }
 

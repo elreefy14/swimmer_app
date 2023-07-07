@@ -86,3 +86,10 @@ class UploadProfilePicErrorState extends HomeState {}
 class GetProfilePicSuccessState extends HomeState {}
 //GetProfilePicErrorState
 class GetProfilePicErrorState extends HomeState {}
+//GetNotificationsSuccessState
+class GetNotificationsSuccessState extends HomeState {
+  final List notifications;
+  GetNotificationsSuccessState({required this.notifications});
+}
+//GetNotificationsLoadingState
+class GetNotificationsLoadingState extends HomeState {}
