@@ -81,13 +81,14 @@ class ScreenThree extends StatelessWidget {
         Center(
           child: CircleAvatar(
             radius: 50, // adjust the size as needed
-            backgroundImage: AssetImage('assets/images/Ellipse 1.jpg'), // replace with your image path
-          ),
+            backgroundImage:     NetworkImage(
+              HomeCubit.get(context).userCacheModel!.image!,
+            )    ),
         ),
         SizedBox(height: 10.0.h),
         Text(
-          ' ahmed',
-         // '${HomeCubit.get(context).userCacheModel!.name}',
+
+          '${HomeCubit.get(context).userCacheModel!.name}',
           style: TextStyle(
             fontFamily: 'Montserrat-Arabic',
             fontStyle: FontStyle.normal,
@@ -106,7 +107,7 @@ class ScreenThree extends StatelessWidget {
         //   textAlign = TextAlign.Center,
         //   letterSpacing = 0.1.sp)
         Text(
-          '34ج.م / ساعة',
+          '${HomeCubit.get(context).userCacheModel!.hourlyRate}ج.م / ساعة',
           style: TextStyle(
             fontFamily: 'Montserrat-Arabic',
             fontStyle: FontStyle.normal,
@@ -237,12 +238,6 @@ class ScreenThree extends StatelessWidget {
             horizontal: 20.w,
           ),
           child:
-            //Modifier
-          //   .offset(x = 0.dp, y = 31.dp)
-          //   .border(width = 2.dp, color = Color(0xFF2196F3), shape = RoundedCornerShape(size = 4.dp)))
-          //   .width(332.dp)
-          //   .height(185.dp)
-          //   .padding(start = 50.dp, top = 10.dp, end = 50.dp, bottom = 10.dp)
           Container(
     height: 170.h,
     margin: EdgeInsets.symmetric(
@@ -325,7 +320,7 @@ class ScreenThree extends StatelessWidget {
                     //   color = Color(0xFF2196F3),
                     //   textAlign = TextAlign.Right)
                     Text(
-                      ' 10,200 ج.م',
+                      HomeCubit.get(context).userCacheModel!.totalSalary.toString() + 'ج.م',
                       style: TextStyle(
                         fontFamily: 'Montserrat-Arabic',
                         fontStyle: FontStyle.normal,
@@ -342,7 +337,7 @@ class ScreenThree extends StatelessWidget {
                     //   color = Color(0xFF2196F3),
                     //   textAlign = TextAlign.Right)
                     Text(
-                      '300 ساعة',
+                      HomeCubit.get(context).userCacheModel!.totalHours.toString() + 'ساعة',
                       style: TextStyle(
                         fontFamily: 'Montserrat-Arabic',
                         fontStyle: FontStyle.normal,
@@ -428,7 +423,7 @@ class ScreenThree extends StatelessWidget {
                     //   color = Color(0xFF2196F3),
                     //   textAlign = TextAlign.Right)
                     Text(
-                      ' 10,200 ج.م',
+                      HomeCubit.get(context).userCacheModel?.currentMonthSalary.toString()??'' + ' ج.م',
                       style: TextStyle(
                         fontFamily: 'Montserrat-Arabic',
                         fontStyle: FontStyle.normal,
@@ -445,7 +440,7 @@ class ScreenThree extends StatelessWidget {
                     //   color = Color(0xFF2196F3),
                     //   textAlign = TextAlign.Right)
                     Text(
-                      '300 ساعة',
+                      HomeCubit.get(context).userCacheModel?.currentMonthHours.toString()??'' + ' ساعة',
                       style: TextStyle(
                         fontFamily: 'Montserrat-Arabic',
                         fontStyle: FontStyle.normal,
@@ -1056,7 +1051,7 @@ class EditProfile extends StatelessWidget {
                         return ' الرجاء ادخال الاسم الاول';
                       }
                       return null;
-                    },'assets/images/Vector.png' ),
+                    },'assets/images/Vector.png' ,null),
                   ),
                   SizedBox(height: 15.0.h),
                   Padding(
@@ -1067,7 +1062,7 @@ class EditProfile extends StatelessWidget {
                         return 'الرجاء ادخال الاسم الاخير';
                       }
                       return null;
-                    },'assets/images/Vector.png'),
+                    },'assets/images/Vector.png',null),
                   ),
                   SizedBox(height: 15.0),
                   Padding(
@@ -1078,7 +1073,7 @@ class EditProfile extends StatelessWidget {
                         return 'الرجاء ادخال رقم الهاتف';
                       }
                       return null;
-                    },'assets/images/Vector.png'),
+                    },'assets/images/Vector.png',null),
                   ),
                   SizedBox(height: 15.0.h),
 

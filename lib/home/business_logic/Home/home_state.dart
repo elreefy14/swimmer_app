@@ -93,3 +93,8 @@ class GetNotificationsSuccessState extends HomeState {
 }
 //GetNotificationsLoadingState
 class GetNotificationsLoadingState extends HomeState {}
+//GetUserDataErrorState
+class GetNotificationsErrorState extends HomeState {
+  final String error;
+  GetNotificationsErrorState({required this.error});
+}

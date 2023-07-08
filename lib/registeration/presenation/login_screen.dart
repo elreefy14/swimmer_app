@@ -65,7 +65,7 @@ class SignInScreen extends StatelessWidget {
                       return 'الرجاء ادخال رقم الهاتف';
                     }
                     return null;
-                  },'assets/images/Call.png',),
+                  },'assets/images/Call.png',null),
                 ),
                 SizedBox(height: 20.0.h),
                 Padding(
@@ -81,7 +81,8 @@ class SignInScreen extends StatelessWidget {
                           return 'يجب ادخال كلمة مرور اكثر من ٦ أحرف او ارقام';
                         }
                         return null;
-                      },'assets/images/Call.png'),
+                      }, null, null
+                      ),
                       SizedBox(height: 10.0.h),
                       Container(
                         width: 80.0,

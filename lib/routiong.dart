@@ -15,8 +15,8 @@ class RouteGenerator {
       //HomeScreen
       case AppRoutes.welcome:
         return MaterialPageRoute(builder: (_) => HomeScreen());
-        case AppRoutes.signUp:
-          return MaterialPageRoute(builder: (_) =>SignUpScreen());
+  //      case AppRoutes.signUp:
+    //      return MaterialPageRoute(builder: (_) =>SignUpScreen());
         case AppRoutes.login:
           return MaterialPageRoute(builder: (_) =>SignInScreen());
           case AppRoutes.home:

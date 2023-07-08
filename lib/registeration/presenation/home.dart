@@ -14,11 +14,12 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 54.0.h),
+              SizedBox(height: 45.0.h),
               Image.asset(
-                'assets/images/chatEmpty@2x.png', // Replace with your logo asset path
-                height: 200.0.h,
+                'assets/images/photo_5814288303556509507_y.jpg', // Replace with your logo asset path
+                height: 250.0.h,
                 width: double.infinity,
+                fit: BoxFit.fitHeight
               ),
               SizedBox(height: 5.0.h),
               Container(
@@ -54,50 +55,12 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.0.h),
               Image.asset(
-                'assets/images/chatEmpty@2x.png', // Replace with your logo asset path
-                height: 88.0.h,
-                width: 88.0.w,
+                'assets/images/photo_5814288303556509506_m.jpg', // Replace with your logo asset path
+                height: 50.0.h,
+                width: 45.0.w,
               ),
               SizedBox(height: 30.0.h),
-            Padding(
-              padding: EdgeInsets.only(
-                  left: 31.w,
-                  right: 31.w,
-                  top: 30.h
-              ),
-              child: Container(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.login);
-                  },
-                  child: Text(
-                    'تسجيل ',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat-Arabic',
-                      fontStyle: FontStyle.normal,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 18,
-                      height: 26 / 18,
-                      color: Color(0xFFFFFFFF),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF2196F3), // Background color
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    textStyle: TextStyle(
-                      fontSize: 18, // Adjust the font size if needed
-                    ),
-                  ),
-                ),
-              ),
 
-            ),
-              SizedBox(height: 10.0.h),
           Padding(
             padding: EdgeInsets.only(
                 left: 31.w,
@@ -119,13 +82,13 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     fontSize: 18,
                     height: 26 / 18,
-                    color: Color(0xFF333333),
+                    color: Color(0xFFFFFFFF),
                   ),
                   textAlign: TextAlign.center,
                 ),
                 style: ElevatedButton.styleFrom(
                   //use this colot background: #F4F4F4;
-                 primary: Color(0xFFF4F4F4), // Background color
+                 primary: Color(0xFF2196F3), // Background color
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

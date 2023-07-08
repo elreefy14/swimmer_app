@@ -65,6 +65,18 @@ class HomeCubit extends Cubit<HomeState> {
     //initControllers();
   }
 
+//check internet connection without using connectivity package
+  Future<bool> checkInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } on SocketException catch (_) {
+      return false;
+    }
+    return false;
+  }
 
   static HomeCubit get(context) => BlocProvider.of(context);
 
@@ -74,8 +86,8 @@ class HomeCubit extends Cubit<HomeState> {
   late TextEditingController phoneController;
 
   void initControllers() {
-    firstNameController = TextEditingController(text: userCacheModel?.name);
-    lastNameController = TextEditingController(text: userCacheModel?.name??'kol');
+    firstNameController = TextEditingController(text: userCacheModel?.fname);
+    lastNameController = TextEditingController(text: userCacheModel?.lname??'kol');
     phoneController = TextEditingController(text: userCacheModel?.phone??'011');
   }
 
@@ -142,22 +154,29 @@ class HomeCubit extends Cubit<HomeState> {
     if (firstName != null) {
       updateData['fname'] = firstName;
       //userData!.fname = firstName;
-      notificationData['message'] = 'تم تحديث الاسم الأول إلى $firstName';
+      notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
     }
     if (lastName != null) {
       updateData['lname'] = lastName;
      // userData!.lname = lastName;
-      notificationData['message'] = 'تم تحديث الاسم الأخير إلى $lastName';
+      notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
     }
     if (phone != null) {
       updateData['phone'] = phone;
      // userData!.phone = phone;
-      notificationData['message'] = 'تم تحديث رقم الهاتف إلى $phone';
+      notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
     }
     if (image != null) {
       updateData['image'] = image;
       //userData!.image = image;
-      notificationData['message'] = 'تم تحديث الصورة إلى $image';
+      notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
+    //'personal info '
+      //translation
+
+       }
+    if (firstName != null || lastName != null) {
+      updateData['name'] = firstName??'' + ' ' + (lastName ?? '');
+      //userData!.name = firstName + ' ' + (lastName ?? '');
     }
 
     // Update the user data
@@ -212,9 +231,48 @@ class HomeCubit extends Cubit<HomeState> {
 //   }
   //get user data from shared pref
   UserCacheModel? userCacheModel;
+  //checkInternetConnection
+  //if true
+  //get data from firebase
+  //else
+  //get data from shared pre
   Future<void> getUserData() async {
     emit(GetUserDataLoadingState());
-    userCacheModel =await CacheHelper.getUser() ;
+    if (await checkInternetConnection()) {
+      final user = FirebaseAuth.instance.currentUser;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get()
+          .then((value) {
+        if (value.exists) {
+          var data = value.data();
+          userCacheModel = UserCacheModel(
+              image: data?['image']??'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
+              email: user.email??'${data?['phone']}@placeholder.com',
+              phone: data?['phone'],
+              token:data?['deviceToken'][0],
+              uId: user.uid,
+              fname: data?['fname'],
+              lname: data?['lname'],
+              name: data?['name'],
+              level: data?['level'],
+              hourlyRate: data?['hourlyRate']??30,
+              totalHours: data?['totalHours']??0,
+              totalSalary: data?['totalSalary']??0,
+              currentMonthHours: data?['currentMonthHours']??0,
+              currentMonthSalary: data?['currentMonthSalary']??0,
+            );
+            CacheHelper.saveUser(userCacheModel);
+        emit(GetUserDataSuccessState());}
+      }).catchError((error) {
+        print(error.toString());
+        emit(GetUserDataErrorState(error: error.toString()));
+      });
+    } else {
+      userCacheModel = await CacheHelper.getUser();
+      emit(GetUserDataSuccessState());
+    }
   }
 //   List<String> listOfImages = [
 //     'assets/images/dashboard-2_svgrepo.com.png',
@@ -244,9 +302,9 @@ class HomeCubit extends Cubit<HomeState> {
   ];
   final List<Widget> _screens = [
    ScreenOne(),
-   NotificationScreen(),
-   ScreenThree(),
    ScreenFour(),
+    ScreenThree(),
+    NotificationScreen(),
     EditProfile(),
   ];
 //function to select screen
@@ -292,32 +350,38 @@ class HomeCubit extends Cubit<HomeState> {
     final jsonList = notifications.map((n) => jsonEncode(n)).toList();
     prefs.setStringList('latest_notifications', jsonList);
   }
+  List<NotificationModel> todayNotifications = [];
+  List<NotificationModel> oldNotifications = [];
   Future<List<NotificationModel>> getNotifications() async {
-   //await clearNotificationsfromcache();
-   emit(GetNotificationsLoadingState());
+    oldNotifications = [];
+    todayNotifications = [];
+    emit(GetNotificationsLoadingState());
+
     final prefs = await SharedPreferences.getInstance();
     final jsonList = prefs.getStringList('latest_notifications') ?? [];
-   NotificationModel? latestNotification =
+    NotificationModel? latestNotification =
     jsonList.isNotEmpty ? NotificationModel.fromJson(jsonDecode(jsonList.first)) : null;
     print('latestNotification: ${latestNotification?.timestamp}}');
-    //chang latest notification to be Timestamp
 
+    List<NotificationModel> notifications = [];
 
-    final notifications = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
-        .collection('notifications')
-       .where('timestamp', isGreaterThan: latestNotification?.timestamp ?? DateTime.fromMicrosecondsSinceEpoch(0))
-       .orderBy('timestamp', descending: true)
-       .limit(20 - jsonList.length)
-        .get()
-        .then((querySnapshot) {
-      return querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        doc.reference.delete(); // Delete the notification from Firestore
-        return NotificationModel(message: data['message'], timestamp: data['timestamp'].toDate());
-      }).toList();
-    });
+    if (await checkInternetConnection()) {
+      notifications = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
+          .collection('notifications')
+          .where('timestamp', isGreaterThan: latestNotification?.timestamp ?? DateTime.fromMicrosecondsSinceEpoch(0))
+          .orderBy('timestamp', descending: true)
+          .limit(20 - jsonList.length)
+          .get()
+          .then((querySnapshot) {
+        return querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          doc.reference.delete(); // Delete the notification from Firestore
+          return NotificationModel(message: data['message'], timestamp: data['timestamp'].toDate());
+        }).toList();
+      });
+    }
 
     final allNotifications = [
       ...notifications,
@@ -330,12 +394,21 @@ class HomeCubit extends Cubit<HomeState> {
     }
 
     await saveLatestNotifications(allNotifications);
+
+    allNotifications.forEach((element) {
+      if(element.timestamp!.day == DateTime.now().day){
+        todayNotifications.add(element);
+      }else{
+        oldNotifications.add(element);
+      }
+    });
     print('allNotifications: ${allNotifications.map((n) => n.message).toList()}');
     emit(GetNotificationsSuccessState(
       notifications:  allNotifications,
     ));
     return allNotifications;
   }
+
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
