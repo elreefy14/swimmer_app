@@ -238,6 +238,8 @@ static LoginCubit get(context) => BlocProvider.of(context);
                                       totalSalary: data['totalSalary']??0,
                                       currentMonthHours: data['currentMonthHours']??0,
                                       currentMonthSalary: data['currentMonthSalary']??0,
+
+                   branches: (data['branches'] as List<dynamic>).map((branch) => branch.toString()).toList(),
                                     );
                                     CacheHelper.saveUser(userData);
 

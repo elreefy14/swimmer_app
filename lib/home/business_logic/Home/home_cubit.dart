@@ -23,6 +23,7 @@ import '../../../registeration/data/user_cache_model.dart';
 import '../../data/Notification.dart';
 import '../../data/schedules.dart';
 import '../../data/userModel.dart';
+import '../../presenation/dash_board_screan.dart';
 import '../../presenation/home_lauout.dart';
 import '../../presenation/notification_screen.dart';
 import 'home_state.dart';
@@ -262,6 +263,7 @@ class HomeCubit extends Cubit<HomeState> {
               totalSalary: data?['totalSalary']??0,
               currentMonthHours: data?['currentMonthHours']??0,
               currentMonthSalary: data?['currentMonthSalary']??0,
+            branches: (data?['branches'] as List<dynamic>).map((branch) => branch.toString()).toList(),
             );
             CacheHelper.saveUser(userCacheModel);
         emit(GetUserDataSuccessState());}
@@ -301,7 +303,7 @@ class HomeCubit extends Cubit<HomeState> {
     ),
   ];
   final List<Widget> _screens = [
-   ScreenOne(),
+   DashBoard(),
    ScreenFour(),
     ScreenThree(),
     NotificationScreen(),
@@ -408,7 +410,87 @@ class HomeCubit extends Cubit<HomeState> {
     ));
     return allNotifications;
   }
-
+  //
+  // Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
+  //   await initializeDateFormatting('ar');
+  //  // await CacheHelper.clearSchedulesFromSharedPreferences();
+  //   emit(LoadingState());
+  //   print('Getting all schedules for specific coach');
+  //
+  //   // Check if there is an internet connection
+  //   bool hasInternet = await checkInternetConnection();
+  //
+  //   // Retrieve schedules from the cache
+  //   List<SchedulesModel>? schedules = await CacheHelper.getSchedulesFromSharedPreferences();
+  //   print('schedules.length: ${schedules.length}');
+  //   print('\n\n\n\n\n');
+  //
+  //   // If there is no internet connection, return schedules from the cache
+  //   if (!hasInternet) {
+  //
+  //     emit(GetAllSchedulesForSpecificCoachSuccessState(
+  //       schedules: schedules ?? [],
+  //     ));
+  //
+  //     return schedules;
+  //   }
+  //
+  //   // If there is an internet connection, retrieve schedules from Firestore
+  //   if (schedules.length < 20) {
+  //     DateTime now = DateTime.now();
+  //     DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.date!.toDate() : //DATETIME.now -5 days
+  //     DateTime(now.year, now.month, now.day - 5);
+  //     print('lastDateInSharedPreferences: $lastDateInSharedPreferences');
+  //     print('now: $now');
+  //
+  //     FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
+  //         .collection('schedules')
+  //         .orderBy('start_time', descending: false)
+  //         .startAfter([
+  //       if (lastDateInSharedPreferences != null) Timestamp.fromDate(lastDateInSharedPreferences),
+  //       if (schedules.isNotEmpty && schedules.last.startTime != null) schedules.last.startTime!,
+  //     ])
+  //         .limit(20 - schedules.length)
+  //         .get()
+  //         .then((querySnapshot) async {
+  //       print('Successfully retrieved all schedules for specific coach');
+  //       print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+  //       //edit this to show start time like this 12:00 am
+  //       querySnapshot.docs.forEach((doc) {
+  //         var schedule = SchedulesModel.fromJson2(doc.data());
+  //         var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
+  //         var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.startTime!.toDate());
+  //         var formattedSchedule = '$startTime $date';
+  //         print('formattedSchedule: $formattedSchedule');
+  //         schedules?.add(schedule);
+  //       });
+  //
+  //       // Sort schedules in descending order based on the date
+  //       schedules?.sort((a, b) => b.startTime!.compareTo(a.startTime!));
+  //
+  //       // Keep only the latest 20 schedules
+  //       schedules = schedules?.take(20).toList();
+  //
+  //       await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
+  //       print('schedules.lengthtt: ${schedules?.length}');
+  //       emit(GetAllSchedulesForSpecificCoachSuccessState(
+  //         schedules: schedules ?? [],
+  //       ));
+  //     }).catchError((error) {
+  //       print('Failed to retrieve all schedules for specific coach due to error: $error');
+  //       emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
+  //     });
+  //   } else {
+  //     emit(GetAllSchedulesForSpecificCoachSuccessState(
+  //       schedules: schedules ?? [],
+  //     ));
+  //   }
+  //
+  //   return schedules;
+  // }
+//
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
@@ -428,7 +510,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     if (schedules.length < 20) {
       DateTime now = DateTime.now();
-      DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.date!.toDate() : //DATETIME.now -5 days
+      DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.startTime!.toDate() : //DATETIME.now -5 days
       DateTime(now.year, now.month, now.day - 5);
       print('lastDateInSharedPreferences: $lastDateInSharedPreferences');
       print('now: $now');
@@ -457,8 +539,8 @@ class HomeCubit extends Cubit<HomeState> {
           schedules?.add(schedule);
         });
 
-        // Sort schedules in descending order based on the date
-        schedules?.sort((a, b) => b.startTime!.compareTo(a.startTime!));
+        // Sort schedules in ascendingn order based on the date
+        schedules?.sort((a, b) => a.startTime!.compareTo(b.startTime!));
 
         // Keep only the latest 20 schedules
         schedules = schedules?.take(20).toList();
@@ -466,7 +548,7 @@ class HomeCubit extends Cubit<HomeState> {
         await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
         print('schedules.lengthtt: ${schedules?.length}');
         emit(GetAllSchedulesForSpecificCoachSuccessState(
-            schedules: schedules ?? [],
+          schedules: schedules ?? [],
         ));
       }).catchError((error) {
         print('Failed to retrieve all schedules for specific coach due to error: $error');

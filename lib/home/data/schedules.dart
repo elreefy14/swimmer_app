@@ -15,7 +15,7 @@ class SchedulesModel {
   String? branchId;
   Timestamp? startTime;
   Timestamp? endTime;
-  Timestamp? date;
+
   bool? finished;
 
   SchedulesModel({
@@ -23,7 +23,7 @@ class SchedulesModel {
     required this.branchId,
     required this.startTime,
     required this.endTime,
-    required this.date,
+
     required this.finished,
 
   });
@@ -34,7 +34,6 @@ class SchedulesModel {
       'branch_id': branchId,
       'start_time': startTime?.toDate().toIso8601String(),
       'end_time': endTime?.toDate().toIso8601String(),
-      'date': date?.toDate().toIso8601String(),
       'finished': finished,
     };
   }
@@ -50,7 +49,7 @@ factory SchedulesModel.fromJson2(Map<String, dynamic> json) {
       branchId: json['branch_id'],
       startTime: json['start_time'],
       endTime: json['end_time'],
-      date: json['date'],
+
       finished: json['finished'],
 
 
@@ -64,7 +63,7 @@ factory SchedulesModel.fromJson2(Map<String, dynamic> json) {
       branchId: json['branch_id'],
       startTime: json['start_time'] != null ? Timestamp.fromMillisecondsSinceEpoch(DateTime.parse(json['start_time']).millisecondsSinceEpoch) : null,
       endTime: json['end_time'] != null ? Timestamp.fromMillisecondsSinceEpoch(DateTime.parse(json['end_time']).millisecondsSinceEpoch) : null,
-      date: json['date'] != null ? Timestamp.fromMillisecondsSinceEpoch(DateTime.parse(json['date']).millisecondsSinceEpoch) : null,
+
       finished: json['finished'],
     );
   }

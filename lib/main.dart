@@ -109,7 +109,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
         //..getNotifications()
-        ..getAllSchedulesForSpecificUser()
+       ..getAllSchedulesForSpecificUser()
           ..getUserData()
         //..getNotifications()
          // ..generateRandomNotifications()
