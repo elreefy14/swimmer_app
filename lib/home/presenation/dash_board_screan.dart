@@ -44,7 +44,7 @@ class DashBoard extends StatelessWidget {
                     SizedBox(height: 2.0.h),
                     Text(
                       // 'مرحباً',
-                      '${HomeCubit.get(context).userCacheModel!.name}',
+                      '${HomeCubit.get(context).userCacheModel!.fname} ${HomeCubit.get(context).userCacheModel!.lname}',
                       style: TextStyle(
                         fontFamily: 'Montserrat-Arabic',
                         fontStyle: FontStyle.normal,
@@ -62,24 +62,25 @@ class DashBoard extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'اقرب موعد',
-                            style: TextStyle(
-                              fontFamily: 'IBM Plex Sans Arabic',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                              height: 14 / 12,
-                              color: Color(0xFFFFFFFF),
-                            ),
-                          ),
-                          SizedBox(width: 5.0.w),
                           // Text(
-                          //   state is LoadingState
-                          //   ?
-                          // 'جاري التحميل'
-                          //       : state is GetAllSchedulesForSpecificCoachSuccessState && state.schedules.length > 0 ?
-                          //   '${DateFormat('yyyy-MM-dd').format(state.schedules[0].startTime!.toDate())} ${DateFormat('hh:mm a').format(state.schedules[0].startTime!.toDate())}': 'لا يوجد مواعيد',
+                          //   'اقرب موعد',
                           //   style: TextStyle(
+                          //     fontFamily: 'IBM Plex Sans Arabic',
+                          //     fontWeight: FontWeight.w600,
+                          //     fontSize: 12,
+                          //     height: 14 / 12,
+                          //     color: Color(0xFFFFFFFF),
+                          //   ),
+                          // ),
+                          SizedBox(width: 5.0.w),
+                          //  Text(
+                          // //   state is LoadingState
+                          // //   ?
+                          // // 'جاري التحميل'
+                          // //       : state is GetAllSchedulesForSpecificCoachSuccessState && state.schedules.length > 0 ?
+                          // // //  '${DateFormat('yyyy-MM-dd').format(state.schedules[0].startTime!.toDate())} ${DateFormat('hh:mm a').format(state.schedules[0].startTime!.toDate())}': 'لا يوجد مواعيد',
+                          //  HomeCubit.get(context).firstDateInSharedPreferences == null ? 'لا يوجد مواعيد' : '${DateFormat('yyyy-MM-dd').format(HomeCubit().firstDateInSharedPreferences!)} ${DateFormat('hh:mm a').format(HomeCubit().firstDateInSharedPreferences!)}'
+                          //    ,style: TextStyle(
                           //     fontFamily: 'Montserrat-Arabic',
                           //     fontStyle: FontStyle.normal,
                           //     fontWeight: FontWeight.w300,
@@ -419,7 +420,7 @@ class DashBoard extends StatelessWidget {
 
             ],
           ),
-          condition: HomeCubit.get(context).userCacheModel != null && state is GetAllSchedulesForSpecificCoachSuccessState,
+          condition: HomeCubit.get(context).userCacheModel != null && state is GetAllSchedulesForSpecificCoachSuccessState ,
           fallback: (context) => Center(
             child: CircularProgressIndicator(),
           ),

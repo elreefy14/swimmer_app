@@ -88,7 +88,7 @@ class ScreenThree extends StatelessWidget {
         SizedBox(height: 10.0.h),
         Text(
 
-          '${HomeCubit.get(context).userCacheModel!.name}',
+          '${HomeCubit.get(context).userCacheModel!.fname} ${HomeCubit.get(context).userCacheModel!.lname}',
           style: TextStyle(
             fontFamily: 'Montserrat-Arabic',
             fontStyle: FontStyle.normal,
@@ -488,7 +488,7 @@ class ScreenThree extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
-              'فرع الجيزة: القاهرة / الجيزة/ مقابل فلان',
+              HomeCubit.get(context).userCacheModel!.branches.toString().replaceAll('[', '').replaceAll(']', ''),
               style: TextStyle(
                 fontFamily: 'Montserrat-Arabic',
                 fontStyle: FontStyle.normal,
@@ -503,24 +503,6 @@ class ScreenThree extends StatelessWidget {
           ],
         ),
         SizedBox(height: 7.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              'فرع الجيزة: القاهرة / الجيزة/ مقابل فلان',
-              style: TextStyle(
-                fontFamily: 'Montserrat-Arabic',
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                fontSize: 11.sp,
-                height: 19 / 11,
-                color: Color(0xFF333333),
-              ),
-            ),
-            SizedBox(width: 30.w),
-
-          ],
-        ),
       ],
     );
   }
@@ -554,7 +536,7 @@ class EditProfile extends StatelessWidget {
             ),
             SizedBox(height: 10.0.h),
             Text(
-              '${HomeCubit.get(context).userCacheModel!.name}',
+              '${HomeCubit.get(context).userCacheModel!.fname!} ${HomeCubit.get(context).userCacheModel!.lname!}',
               style: TextStyle(
                 fontFamily: 'Montserrat-Arabic',
                 fontStyle: FontStyle.normal,
@@ -669,38 +651,46 @@ class EditProfile extends StatelessWidget {
                             right: 31.w,
                             top: 20.h
                         ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (HomeCubit.get(context).formKey.currentState!.validate()) {
-                           HomeCubit.get(context).editUserData(
-                             firstName: HomeCubit.get(context).firstNameController.text,
-                              lastName: HomeCubit.get(context).lastNameController.text,
-                              phone: HomeCubit.get(context).phoneController.text,
-                           );
-                            }
-                          },
-                          child: Text(
-                            'حفظ التعديلات',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat-Arabic',
-                              fontStyle: FontStyle.normal,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 18,
-                              height: 26 / 18,
-                              color: Color(0xFFFFFFFF),
+                        child: ConditionalBuilder(
+                            builder: (context) =>  ElevatedButton(
+                              onPressed: () {
+                                if (HomeCubit.get(context).formKey.currentState!.validate()) {
+                                  HomeCubit.get(context).editUserData(
+                                    firstName: HomeCubit.get(context).firstNameController.text,
+                                    lastName: HomeCubit.get(context).lastNameController.text,
+                                    phone: HomeCubit.get(context).phoneController.text,
+                                  );
+                                }
+                              },
+                              child: Text(
+                                'حفظ التعديلات',
+                                style: TextStyle(
+                                  fontFamily: 'Montserrat-Arabic',
+                                  fontStyle: FontStyle.normal,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18,
+                                  height: 26 / 18,
+                                  color: Color(0xFFFFFFFF),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF2196F3), // Background color
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                textStyle: TextStyle(
+                                  fontSize: 18, // Adjust the font size if needed
+                                ),
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xFF2196F3), // Background color
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            textStyle: TextStyle(
-                              fontSize: 18, // Adjust the font size if needed
-                            ),
-                          ),
+                            fallback: (context) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          condition: state is! EditUserDataLoadingState,
                         ),
 
                       );

@@ -142,23 +142,21 @@ class HomeCubit extends Cubit<HomeState> {
     final user = FirebaseAuth.instance.currentUser;
     final updateData = <String, Object?>{};
     final notificationData = <String, dynamic>{};
-    //// Retrieve the user data from the cache
-    // UserCacheModel userData = CacheHelper.getUser();
-    //
-    // // Update the specific attribute
-    // userData.hourlyRate = newHourlyRate;
-    //
-    // // Save the updated user data back to the cache
-    // CacheHelper.saveUser(userData);
-    //CacheHelper.getUser();
-    // UserCacheModel? userData =await CacheHelper.getUser();
+
+    if (firstName != null || lastName != null) {
+      updateData['name'] = firstName??'' + ' ' + (lastName ?? '');
+      //userData!.name = firstName + ' ' + (lastName ?? '');
+    }
     if (firstName != null) {
       updateData['fname'] = firstName;
+      updateData['name'] = firstName + ' ' + (lastName ?? '');
+
       //userData!.fname = firstName;
       notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
     }
     if (lastName != null) {
       updateData['lname'] = lastName;
+      updateData['name'] = firstName??'' + ' ' + (lastName ?? '');
      // userData!.lname = lastName;
       notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
     }
@@ -169,16 +167,14 @@ class HomeCubit extends Cubit<HomeState> {
     }
     if (image != null) {
       updateData['image'] = image;
+
       //userData!.image = image;
       notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
     //'personal info '
       //translation
 
        }
-    if (firstName != null || lastName != null) {
-      updateData['name'] = firstName??'' + ' ' + (lastName ?? '');
-      //userData!.name = firstName + ' ' + (lastName ?? '');
-    }
+
 
     // Update the user data
     try {
@@ -196,8 +192,8 @@ class HomeCubit extends Cubit<HomeState> {
           if (lastName != null) {
             userData!.lname = lastName ;
           }
-        if (firstName != null) {
-          userData!.name = firstName + ' ' + (lastName ?? '');
+        if (firstName != null || lastName != null) {
+          userData!.name = firstName??'' + ' ' + (lastName ?? '');
         }
         if (phone != null) {
           userData!.phone = phone;
@@ -495,19 +491,24 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
     await initializeDateFormatting('ar');
-    await CacheHelper.clearSchedulesFromSharedPreferences();
+    //await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
     print('Getting all schedules for specific coach');
-
     print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
     List<SchedulesModel>? schedules = await CacheHelper.getSchedulesFromSharedPreferences();
-    print('schedules.length: ${schedules.length}');
+    print('schedules.length: ${schedules?.length ?? 0}');
     print('\n\n\n\n\n');
 //daebug dateTimes.now
     print('DateTime.now(): ${DateTime.now()}');
     // Delete schedules with start time before today
     schedules?.removeWhere((schedule) => schedule.startTime!.toDate().isBefore(DateTime.now()));
-
+     bool hasInternet = await checkInternetConnection();
+    if (!hasInternet) {
+      emit(GetAllSchedulesForSpecificCoachSuccessState(
+        schedules: schedules ?? [],
+      ));
+      return schedules;
+    }
     if (schedules.length < 20) {
       DateTime now = DateTime.now();
       DateTime lastDateInSharedPreferences = schedules.isNotEmpty ? schedules.last.startTime!.toDate() : //DATETIME.now -5 days
@@ -521,36 +522,43 @@ class HomeCubit extends Cubit<HomeState> {
           .collection('schedules')
           .orderBy('start_time', descending: false)
           .startAfter([
-        if (lastDateInSharedPreferences != null) Timestamp.fromDate(lastDateInSharedPreferences),
-        if (schedules.isNotEmpty && schedules.last.startTime != null) schedules.last.startTime!,
-      ])
-          .limit(20 - schedules.length)
+       // if (lastDateInSharedPreferences != null) Timestamp.fromDate(lastDateInSharedPreferences),
+        if (schedules.isNotEmpty && schedules.last.startTime != null) schedules.last.startTime! else
+          Timestamp.fromDate(DateTime.now()),
+           ]).limit(20 - schedules.length)
           .get()
           .then((querySnapshot) async {
         print('Successfully retrieved all schedules for specific coach');
         print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
         //edit this to show start time like this 12:00 am
-        querySnapshot.docs.forEach((doc) {
-          var schedule = SchedulesModel.fromJson2(doc.data());
-          var startTime = DateFormat('hh a', 'ar').format(schedule.startTime!.toDate());
-          var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.startTime!.toDate());
-          var formattedSchedule = '$startTime $date';
-          print('formattedSchedule: $formattedSchedule');
-          schedules?.add(schedule);
-        });
+        if( querySnapshot.docs.length != 0) {
+          querySnapshot.docs.forEach((doc) {
+            var schedule = SchedulesModel.fromJson2(doc.data());
+            var startTime = DateFormat('hh:mm a', 'ar').format(
+                schedule.startTime!.toDate());
+            var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(
+                schedule.startTime!.toDate());
+            var formattedSchedule = '$startTime $date';
+            print('formattedSchedule: $formattedSchedule');
+            schedules?.add(schedule);
+          });
 
-        // Sort schedules in ascendingn order based on the date
-        schedules?.sort((a, b) => a.startTime!.compareTo(b.startTime!));
+          // Sort schedules in ascending order based on the date
+          //schedules?.sort((a, b) => b.startTime!.compareTo(a.startTime!));
+          schedules?.sort((a, b) => a.startTime!.compareTo(b.startTime!));
 
-        // Keep only the latest 20 schedules
-        schedules = schedules?.take(20).toList();
+          // Keep only the latest 20 schedules
+          schedules = schedules?.take(20).toList();
 
-        await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
-        print('schedules.lengthtt: ${schedules?.length}');
+          await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
+          print('schedules.lengthtt: ${schedules?.length}');
+
+        }
         emit(GetAllSchedulesForSpecificCoachSuccessState(
           schedules: schedules ?? [],
         ));
-      }).catchError((error) {
+      },
+      ).catchError((error) {
         print('Failed to retrieve all schedules for specific coach due to error: $error');
         emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
       });
