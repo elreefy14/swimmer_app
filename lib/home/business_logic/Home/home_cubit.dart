@@ -490,6 +490,7 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
+    SharedPreferences.setMockInitialValues({});
     await initializeDateFormatting('ar');
     //await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
@@ -565,25 +566,6 @@ class HomeCubit extends Cubit<HomeState> {
     }
     return schedules;
   }
-
-  //todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 lw 3atz t3ed schedules yb2a kda
-//ListView.builder(
-//   itemCount: userSchedules.length,
-//   itemBuilder: (context, index) {
-//     var schedule = userSchedules[index];
-//     var startTime = DateFormat('hh a', 'ar').format(schedule.startTime.toDate());
-//     var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(schedule.date.toDate());
-//     var formattedSchedule = '$startTime $date';
-//
-//     return Text(formattedSchedule);
-//   },
-// ),
-  //Todo: mohm dh ya rafiiiiiiiiiiiiiiiiiik11 bos fo2
-
-
-
-  //edit this function to save list of schedules for current coach in a list
-
   ///////////////////////////////////////////////////////////////////
   // Add this method to listen for connectivity changes
   // void _listenToConnectivityChanges() {

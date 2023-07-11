@@ -1,16 +1,24 @@
+import 'dart:developer';
+import 'dart:io';
+import 'package:flutter/material.dart';
+
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:swimmer_app/home/presenation/widget/widget.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 
 import '../../core/cashe_helper.dart';
 import '../../registeration/data/user_cache_model.dart';
 import '../../registeration/presenation/widget/component.dart';
+import '../../registeration/presenation/widget/widget.dart';
 import '../business_logic/Home/home_cubit.dart';
 import '../business_logic/Home/home_state.dart';
 //call
@@ -251,7 +259,7 @@ class ScreenThree extends StatelessWidget {
                 //   text = "جميع الايام",
                 //   fontSize = 14.sp,
                 //   fontFamily = FontFamily(Font(R.font.montserrat-arabic),
-                //   fontWeight = FontWeight(300),
+                //   fontWeight = FontWeight(250),
                 //   color = Color(0xFF333333),
                 //   textAlign = TextAlign.Right)
                 Text(
@@ -331,7 +339,7 @@ class ScreenThree extends StatelessWidget {
                       ),
                     ),
                     //Text(
-                    //   text = "300 ساعة",
+                    //   text = "250 ساعة",
                     //   fontSize = 12.sp,
                     //   fontFamily = FontFamily(Font(R.font.ibm plex sans arabic),
                     //   color = Color(0xFF2196F3),
@@ -353,7 +361,7 @@ class ScreenThree extends StatelessWidget {
                 //   text = "هذا الشهر",
                 //   fontSize = 14.sp,
                 //   fontFamily = FontFamily(Font(R.font.montserrat-arabic),
-                //   fontWeight = FontWeight(300),
+                //   fontWeight = FontWeight(250),
                 //   color = Color(0xFF333333),
                 //   textAlign = TextAlign.Right)
               SizedBox(height: 15.h),
@@ -434,7 +442,7 @@ class ScreenThree extends StatelessWidget {
                       ),
                     ),
                     //Text(
-                    //   text = "300 ساعة",
+                    //   text = "250 ساعة",
                     //   fontSize = 12.sp,
                     //   fontFamily = FontFamily(Font(R.font.ibm plex sans arabic),
                     //   color = Color(0xFF2196F3),
@@ -716,12 +724,410 @@ class EditProfile extends StatelessWidget {
 }
 
 
+//
+// class ScreenFour extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         Column(
+//           children: [
+//             Row(
+//               children: [
+//                 Column(
+//                   children: [
+//                     Row(
+//                       children: [
+//                         Column(
+//                           children: [
+//                             Image.asset(
+//                               "assets/Vector.png",
+//                               width: 8,
+//                               height: 9,
+//                             ),
+//                             Image.asset(
+//                               "assets/Vector.png",
+//                               width: 5,
+//                               height: 16,
+//                             ),
+//                             Image.asset(
+//                               "assets/Vector.png",
+//                               width: 8,
+//                               height: 4,
+//                             )
+//                           ],
+//                         )
+//                       ],
+//                     ),
+//                     Column(
+//                       children: [
+//                         Text(
+//                             "لوحة التحكم",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               fontWeight: FontWeight.w400,
+//                             )
+//                         )
+//                       ],
+//                     )
+//                   ],
+//                 ),
+//                 Column(
+//                   children: [
+//                     Column(
+//                       children: [
+//                         Row(
+//                           children: [
+//                             Column(
+//                               children: [
+//                                 Image.asset(
+//                                   "assets/Vector.png",
+//                                   width: 24,
+//                                   height: 24,
+//                                 )
+//                               ],
+//                             )
+//                           ],
+//                         ),
+//                         Text(
+//                             "امسح QR",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               fontWeight: FontWeight.w400,
+//                             )
+//                         )
+//                       ],
+//                     )
+//                   ],
+//                 ),
+//                 Column(
+//                   children: [
+//                     Column(
+//                       children: [
+//                         Row(
+//                           children: [
+//                             Column(
+//                               children: [
+//                                 Image.asset(
+//                                   "assets/Vector.png",
+//                                   width: 24,
+//                                   height: 24,
+//                                 )
+//                               ],
+//                             )
+//                           ],
+//                         ),
+//                         Text(
+//                             "الملف الشخصي",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               fontWeight: FontWeight.w400,
+//                             )
+//                         )
+//                       ],
+//                     )
+//                   ],
+//                 ),
+//                 Column(
+//                   children: [
+//                     Column(
+//                       children: [
+//                         Row(
+//                           children: [
+//                             Image.asset(
+//                               "assets/Vector.png",
+//                               width: 20,
+//                               height: 24.444576263427734,
+//                             )
+//                           ],
+//                         ),
+//                         Text(
+//                             "الاشعارات",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               fontWeight: FontWeight.w400,
+//                             )
+//                         )
+//                       ],
+//                     )
+//                   ],
+//                 )
+//               ],
+//             )
+//           ],
+//         ),
+//         Column(
+//           children: [
+//             Column(
+//               children: [
+//                 Column(
+//                   children: [
+//                     Text(
+//                         "جار البحث عن رمز QR...",
+//                         style: TextStyle(
+//                           fontSize: 20,
+//                           fontWeight: FontWeight.w300,
+//                         )
+//                     )
+//                   ],
+//                 ),
+//                 Column(
+//                   children: [
+//                     Column(
+//                       children: [
+//                         Row(
+//                           children: [
+//                             Container(
+//                                 width: 30,
+//                                 height: 30,
+//                                 decoration:     BoxDecoration()
+//                             ),
+//                             Container(
+//                                 width: 30.000003814697266,
+//                                 height: 30.000003814697266,
+//                                 decoration:     BoxDecoration()
+//                             )
+//                           ],
+//                         ),
+//                         Row(
+//                           children: [
+//                             Container(
+//                                 width: 30,
+//                                 height: 30,
+//                                 decoration:     BoxDecoration()
+//                             ),
+//                             Container(
+//                                 width: 30.000003814697266,
+//                                 height: 30.000003814697266,
+//                                 decoration:     BoxDecoration()
+//                             )
+//                           ],
+//                         )
+//                       ],
+//                     )
+//                   ],
+//                 )
+//               ],
+//             ),
+//             Column(
+//               children: [
+//                 Row(
+//                   children: [
+//                     Text(
+//                         "تعليمات",
+//                         style: TextStyle(
+//                           fontSize: 14,
+//                           fontWeight: FontWeight.w400,
+//                         )
+//                     )
+//                   ],
+//                 ),
+//                 Column(
+//                   children: [
+//                     Text(
+//                         "- تأكد ان رمز QR يظهر بوضوح.",
+//                         style: TextStyle(
+//                           fontSize: 12,
+//                           fontWeight: FontWeight.w400,
+//                         )
+//                     ),
+//                     Text(
+//                         "- اقترب من رمز  QR",
+//                         style: TextStyle(
+//                           fontSize: 12,
+//                           fontWeight: FontWeight.w400,
+//                         )
+//                     ),
+//                     Text(
+//                         "- تأكد من ان المكان ليس معتم.",
+//                         style: TextStyle(
+//                           fontSize: 12,
+//                           fontWeight: FontWeight.w400,
+//                         )
+//                     )
+//                   ],
+//                 )
+//               ],
+//             )
+//           ],
+//         )
+//       ],
+//     );
+//   }
+// }
+
 
 class ScreenFour extends StatelessWidget {
+  const ScreenFour({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Screen Four'),
+    return Scaffold(
+      //make screen to scan qr code using camera and pr
+
+      body: Column(
+        children: [
+          SizedBox(
+            height: 160.h,
+          ),
+        Text(
+              ' QR...جار البحث عن رمز ',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+              //    height: 26,
+              ),
+          ),
+          SizedBox(
+            height: 5.h
+          ),
+          Stack(
+            children: [
+              Center(
+                child: Container(
+                  height: 250.h,
+                  width: 250.w,
+                  child: MobileScanner(onDetect: (BarcodeCapture barcodes) {
+                   //print bar code as string
+                    print(barcodes.raw.toString());
+                    //[{corners: [{x: 55.0, y: 101.0}, {x: 388.0, y: 88.0}, {x: 380.0, y: 413.0}, {x: 78.0, y: 417.0}], format: 256, rawBytes: [114, 110, 70, 50, 82, 49, 49, 101, 104, 83, 104, 121, 68, 115, 84, 80, 82, 109, 48, 86], rawValue: rnF2R11ehShyDsTPRm0V, type: 7, calendarEvent: null, contactInfo: null, driverLicense: null, email: null, geoPoint: null, phone: null, sms: null, url: null, wifi: null, displayValue: rnF2R11ehShyDsTPRm0V}]
+                    String? displayValue = barcodes.barcodes[0].displayValue;
+                    print(displayValue);
+                    showToast(
+                      //display value of bar code
+                      msg:displayValue.toString(),
+                      state: ToastStates.SUCCESS,
+                    );
+                    //stop camera
+
+                  },
+                  fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            Center(
+              child: Container(
+                height: 250.h,
+                width: 250.w,
+                child: const QrScannerOverlay(
+                    borderColor: Colors.blue,
+                  ),
+              ),
+            ),
+            ],
+            ),
+          SizedBox(
+            height: 15.h,
+          ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Text(
+                        "تعليمات",
+                      style: TextStyle(
+                        color: Color(0xFF333333),
+                        fontSize: 14,
+                        fontFamily: 'IBM Plex Sans Arabic',
+                        fontWeight: FontWeight.w400,
+                       // height: 16.80,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                      "- تأكد ان رمز QR يظهر بوضوح.",
+                    style: TextStyle(
+                      color: Color(0xFFB9B9B9),
+                      fontSize: 12,
+                      fontFamily: 'IBM Plex Sans Arabic',
+                      fontWeight: FontWeight.w400,
+                     // height: 18,
+                    ),
+                  ),
+                  Text(
+                      "- اقترب من رمز  QR",
+                    style: TextStyle(
+                      color: Color(0xFFB9B9B9),
+                      fontSize: 12,
+                      fontFamily: 'IBM Plex Sans Arabic',
+                      fontWeight: FontWeight.w400,
+                    //  height: 18,
+                    ),
+                  ),
+                  Text(
+                      "- تأكد من ان المكان ليس معتم.",
+                    style: TextStyle(
+                      color: Color(0xFFB9B9B9),
+                      fontSize: 12,
+                      fontFamily: 'IBM Plex Sans Arabic',
+                      fontWeight: FontWeight.w400,
+                  //    height: 18,
+                    ),
+                  )
+                ],
+              )
+            ],
+          )
+            ],
+      ),
     );
+  }
+}
+
+
+class QrScannerOverlay extends StatelessWidget {
+  final Color borderColor;
+
+  const QrScannerOverlay({Key? key, required this.borderColor})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _QrScannerOverlayPainter(borderColor),
+    );
+  }
+}
+
+class _QrScannerOverlayPainter extends CustomPainter {
+  final Color borderColor;
+
+  _QrScannerOverlayPainter(this.borderColor);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
+
+    final scanAreaWidth = size.width * 0.7;
+    final scanAreaHeight = size.height * 0.5;
+    final scanAreaRect = Rect.fromCenter(
+      center: rect.center,
+      width: scanAreaWidth,
+      height: scanAreaHeight,
+    );
+
+    final borderPath = Path()
+      ..addRect(rect);
+    //..addRect(scanAreaRect);
+
+    canvas.drawPath(borderPath, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(_QrScannerOverlayPainter oldDelegate) {
+    return oldDelegate.borderColor != borderColor;
   }
 }
