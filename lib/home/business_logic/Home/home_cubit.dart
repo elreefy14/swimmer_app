@@ -300,7 +300,7 @@ class HomeCubit extends Cubit<HomeState> {
   ];
   final List<Widget> _screens = [
    DashBoard(),
-   ScreenFour(),
+   QrScreen(),
     ScreenThree(),
     NotificationScreen(),
     EditProfile(),
@@ -347,6 +347,11 @@ class HomeCubit extends Cubit<HomeState> {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = notifications.map((n) => jsonEncode(n)).toList();
     prefs.setStringList('latest_notifications', jsonList);
+  }
+  //clear notifications
+  Future<void> clearNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('latest_notifications');
   }
   List<NotificationModel> todayNotifications = [];
   List<NotificationModel> oldNotifications = [];
@@ -490,7 +495,7 @@ class HomeCubit extends Cubit<HomeState> {
 
 
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
-    SharedPreferences.setMockInitialValues({});
+   // SharedPreferences.setMockInitialValues({});
     await initializeDateFormatting('ar');
     //await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
@@ -529,6 +534,7 @@ class HomeCubit extends Cubit<HomeState> {
            ]).limit(20 - schedules.length)
           .get()
           .then((querySnapshot) async {
+
         print('Successfully retrieved all schedules for specific coach');
         print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
         //edit this to show start time like this 12:00 am
@@ -550,7 +556,10 @@ class HomeCubit extends Cubit<HomeState> {
 
           // Keep only the latest 20 schedules
           schedules = schedules?.take(20).toList();
-
+ //loop on schedules and print each one
+          schedules?.forEach((element) {
+            print('element: ${element.startTime}');
+          });
           await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
           print('schedules.lengthtt: ${schedules?.length}');
 

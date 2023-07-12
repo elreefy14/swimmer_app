@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 //import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
+import 'package:swimmer_app/home/business_logic/Home/qr_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
@@ -95,20 +96,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => LoginCubit()
-           // ..editUserData(
-           //   firstName: 'ahmed',
-           // )
-          //..getProfileImage()
-          //  ..signIn(
-      //    phone: '01097051812',
-      //    password: '123456',
-      //  )
-        ),
-        BlocProvider(create: (context) => OtpCubit()),
-        BlocProvider(create: (context) => SignUpCubit()),
+        BlocProvider(create: (context) => LoginCubit()),
+        BlocProvider(create: (context) => QrCubit()),
+       // BlocProvider(create: (context) => OtpCubit()),
+       // BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
         //..getNotifications()
+        //..clearNotifications()
        ..getAllSchedulesForSpecificUser()
           ..getUserData()
         //..getNotifications()

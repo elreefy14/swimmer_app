@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:swimmer_app/home/business_logic/Home/qr_cubit.dart';
 import 'package:swimmer_app/home/presenation/widget/widget.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 
@@ -957,8 +959,8 @@ class EditProfile extends StatelessWidget {
 // }
 
 
-class ScreenFour extends StatelessWidget {
-  const ScreenFour({Key? key}) : super(key: key);
+class QrScreen extends StatelessWidget {
+  const QrScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -990,22 +992,30 @@ class ScreenFour extends StatelessWidget {
                 child: Container(
                   height: 250.h,
                   width: 250.w,
-                  child: MobileScanner(onDetect: (BarcodeCapture barcodes) {
+                  child: BlocBuilder<QrCubit, QrState>(
+  builder: (context, state) {
+    return MobileScanner(onDetect: (BarcodeCapture barcodes) {
                    //print bar code as string
                     print(barcodes.raw.toString());
                     //[{corners: [{x: 55.0, y: 101.0}, {x: 388.0, y: 88.0}, {x: 380.0, y: 413.0}, {x: 78.0, y: 417.0}], format: 256, rawBytes: [114, 110, 70, 50, 82, 49, 49, 101, 104, 83, 104, 121, 68, 115, 84, 80, 82, 109, 48, 86], rawValue: rnF2R11ehShyDsTPRm0V, type: 7, calendarEvent: null, contactInfo: null, driverLicense: null, email: null, geoPoint: null, phone: null, sms: null, url: null, wifi: null, displayValue: rnF2R11ehShyDsTPRm0V}]
                     String? displayValue = barcodes.barcodes[0].displayValue;
                     print(displayValue);
+                    QrCubit.get(context).onQRCodeScanned(
+                        coachId: FirebaseAuth.instance.currentUser!.uid,
+                        scheduleId: displayValue.toString());
                     showToast(
                       //display value of bar code
                       msg:displayValue.toString(),
                       state: ToastStates.SUCCESS,
                     );
-                    //stop camera
+                    HomeCubit.get(context).changeBottomNav(0);
+
 
                   },
                   fit: BoxFit.cover,
-                  ),
+                  );
+  },
+),
                 ),
               ),
             Center(
