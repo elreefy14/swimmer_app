@@ -39,7 +39,7 @@ class QrCubit extends Cubit<QrState> {
   //   return connectivityResult != ConnectivityResult.none;
   // }
 
-  Future<void> syncOfflineAttendanceData() async {
+  Future<void> syncOfflineAttendanceData(context) async {
 
     final sharedPreferences = await SharedPreferences.getInstance();
     List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
@@ -55,7 +55,7 @@ class QrCubit extends Cubit<QrState> {
         // Get the scheduleid and timestamp from the attendance data
         // then go to the schedules collection and make finished = true for the schedule with this id and timestamp
         print('Syncing attendance data for schedule ID ${attendanceData['schedule_id']}');
-        await addAttendance(attendanceData['schedule_id']);
+        await addAttendance(attendanceData['schedule_id'],hourlyRate: HomeCubit.get(context).userCacheModel?.hourlyRate);
       }
       // Clear the locally stored attendance data after successful sync
       sharedPreferences.remove('offlineAttendance');
@@ -69,8 +69,9 @@ class QrCubit extends Cubit<QrState> {
       context,
       ) async {
     if (await checkInternetConnection()) {
-          await syncOfflineAttendanceData();
           await HomeCubit.get(context).getUserData();
+          await syncOfflineAttendanceData(context);
+
         } else {
           print('No internet connection');
         }
@@ -130,77 +131,52 @@ class QrCubit extends Cubit<QrState> {
     }
   }
   Future<void> addAttendance(String scheduleId,{int? hourlyRate}) async {
+try {
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc( FirebaseAuth.instance.currentUser!.uid )
+      .collection('schedules')
+      .doc(scheduleId)
+      .get().then((value) async {
+    if(value['finished'] == false){
+      await  FirebaseFirestore.instance.collection('users')
+          .doc( FirebaseAuth.instance.currentUser!.uid )
+          .collection('schedules')
+          .doc(scheduleId)
+          .update({
+        'finished': true,
+      });
+      final start = value['start_time'] as Timestamp;
+      final end = value['end_time'] as Timestamp ;
+      //plus 1 minute
+      final start_time = start.toDate();
+      final end_time = end.toDate();
+      //add 1 minute to end time
+      // end_time.add(Duration(minutes: 2));
+      final duration = end_time.add(Duration(minutes: 1)).difference(start_time).inHours;
+      final duration2 = end_time.add(Duration(minutes: 1)).difference(start_time).inMinutes;
+      print('duration is $duration');
+      print('duration2 is $duration2');
+      print('hourly rate is $hourlyRate');
+      //go to users collection and update total hours and total salary by multiplying duration by hourly rate
+      await  FirebaseFirestore.instance
+          .collection('users')
+          .doc( FirebaseAuth.instance.currentUser!.uid )
+          .update({'totalHours': FieldValue.increment(duration),
+        'totalSalary': FieldValue.increment(duration*hourlyRate!),
+      });
+      print('Attendance added successfully');
+      //await getUserData();
+    }
+    else{
+      print('Attendance already added');
+    }
+  });
+} catch (e) {
+  print('Error adding attendance');
+  print(e.toString());
+}
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc( FirebaseAuth.instance.currentUser!.uid )
-        .collection('schedules')
-        .doc(scheduleId)
-        .get().then((value) async {
-          if(value['finished'] == true){
-            return;
-          }
-          else{
-            FirebaseFirestore.instance.collection('users')
-            .doc( FirebaseAuth.instance.currentUser!.uid )
-            .collection('schedules')
-            .doc(scheduleId)
-            .update({
-             'finished': true,
-            });
-            // ****this is my firestore Collections and Documents:**
-// - *users*: A collection to store the information of all coaches.
-// - Document ID: unique coach ID
-// - Fields: *`name`, *`level`*, *`hourly_rate`*, *`total_hours`*, *`total_salary`*, *`current_month_hours`*, *`current_month_salary`**
-// - Subcollection: *`schedules`*
-// - Document ID: unique schedule ID
-// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`*, *`finished`**
-// - Subcollection: *`attendance`*
-// - Document ID: unique attendance ID (usually just the coach ID)
-// - Fields: *`attended`, *`qr_code`**
-// - Subcollection: *`salaryHistory`*
-// - Document ID: unique salary history ID (usually just the month and year)
-// - Fields: *`month`, *`year`*, *`total_hours`*, *`total_salary`**
-// - Fields: *`branches`* (array of branch IDs that the coach works at)
-//
-// - *branches*: A collection to store the information of all branches.
-// - Document ID: unique branch ID
-// - Fields: *`name`, *`address`**
-// - Subcollection: *`coaches`*
-// - Document ID: unique coach ID who works at this branch
-//
-// - *admins*: A collection to store the information of all admins.
-// - Document ID: unique admin ID
-// - Fields: *`name`, *`email`*, *`branch_id`** (the ID of the branch they're responsible for)
-//
-// - *schedules*: A collection to store the information of all schedules.
-// - Document ID: unique schedule ID
-// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`**
-// - Subcollection: *`attendance`*
-// - Document ID: unique attendance ID (usually just the coach ID)
-// - Fields: *`attended`, *`qr_code`**
-            final start = value['start_time'] as Timestamp;
-            final end = value['end_time'] as Timestamp ;
-               //plus 1 minute
-            final start_time = start.toDate();
-            final end_time = end.toDate();
-            //add 1 minute to end time
-            // end_time.add(Duration(minutes: 2));
-            final duration = end_time.add(Duration(minutes: 1)).difference(start_time).inHours;
-            final duration2 = end_time.add(Duration(minutes: 1)).difference(start_time).inMinutes;
-            print('duration is $duration');
-            print('duration2 is $duration2');
-            //go to users collection and update total hours and total salary by multiplying duration by hourly rate
-             FirebaseFirestore.instance
-            .collection('users')
-            .doc( FirebaseAuth.instance.currentUser!.uid )
-            .update({'totalHours': FieldValue.increment(duration),
-             'totalSalary': FieldValue.increment(duration*hourlyRate!),
-            });
-            print('Attendance added successfully');
-          //await getUserData();
-          }
-    });
 
 
 

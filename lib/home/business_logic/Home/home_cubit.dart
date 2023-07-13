@@ -285,12 +285,12 @@ class HomeCubit extends Cubit<HomeState> {
 //     'assets/images/🦆 icon _person_.png',
 //     'assets/images/Vector.png',
 //   ];
-//   List<String> listOfTitles = [
-//   'لوحة التحكم',
-//   'مسح الكود',
-//   'الملف الشخصي',
-//   'الاشعارات',
-// ];
+  List<String> listOfTitles = [
+  'لوحة التحكم',
+  'مسح الكود',
+  'الملف الشخصي',
+  'الاشعارات',
+];
    List<TabItem> items = [
      TabItem(icon: Icons.home, title: 'لوحة التحكم'),
       TabItem(icon: Icons.qr_code_scanner, title: 'مسح الكود'),

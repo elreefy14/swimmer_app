@@ -999,9 +999,7 @@ class QrScreen extends StatelessWidget {
                       state: ToastStates.SUCCESS,
                     );
                     HomeCubit.get(context).changeBottomNav(0);
-
-
-                  },
+    },
                   fit: BoxFit.cover,
                   );
   },
