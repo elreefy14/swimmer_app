@@ -7,6 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
+
+import '../../../registeration/data/user_cache_model.dart';
 
 part 'qr_state.dart';
 
@@ -37,6 +40,7 @@ class QrCubit extends Cubit<QrState> {
   // }
 
   Future<void> syncOfflineAttendanceData() async {
+
     final sharedPreferences = await SharedPreferences.getInstance();
     List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
 
@@ -61,6 +65,17 @@ class QrCubit extends Cubit<QrState> {
     }
   }
 
+  Future<void> syncData(
+      context,
+      ) async {
+    if (await checkInternetConnection()) {
+          await syncOfflineAttendanceData();
+          await HomeCubit.get(context).getUserData();
+        } else {
+          print('No internet connection');
+        }
+  }
+
   //edit this function to get schedules for current coach and date(timeStamp) equal to today and finished = false
   //subtract start time for each schedule from timestamp.now and get the smallest one
   //make bool finished = true for the smallest one
@@ -70,7 +85,9 @@ class QrCubit extends Cubit<QrState> {
 // 3. **schedules**: A collection to store the information of all schedules.   - Document ID: unique schedule ID   - Fields: `coach_id`, `branch_id`, `start_time`, `end_time`, `date`,  `finished `,
 // 4. **attendanceRequests**: A collection to store the attendance requests sent by coaches.   - Document ID: unique attendance request ID   - Fields: `coach_id`, `schedule_id`, `status`(e.g. 'pending', 'accepted', 'rejected')
 // 5. **salaryHistory**: A subcollection inside the coach document to store the salary history of each coach.   - Document ID: unique salary history ID (usually just the month and year)   - Fields: `month`, `year`, `total_hours`, `total_salary`
-  Future<void> onQRCodeScanned({required String coachId, required String scheduleId}) async {
+  Future<void> onQRCodeScanned({required String coachId, required String scheduleId ,
+    required int hourlyRate
+  }) async {
     DateTime timestamp = DateTime.now();
     Timestamp today = Timestamp.fromDate(DateTime.now());
 
@@ -105,52 +122,88 @@ class QrCubit extends Cubit<QrState> {
       //     .collection('schedules')
       //     .doc(scheduleId)
       //     .update({'finished': true});
-      addAttendance(scheduleId);
+      addAttendance(scheduleId, hourlyRate: hourlyRate);
       //  }
     } else {
       print('No internet connection, saving attendance data locally');
       await saveAttendanceDataLocally(coachId, scheduleId, timestamp);
     }
   }
-  Future<void> addAttendance(String scheduleId) async {
-    await FirebaseFirestore.instance
-          .collection('users')
-          .doc( FirebaseAuth.instance.currentUser!.uid )
-          .collection('schedules')
-          .doc(scheduleId)
-          .update({
-           'finished': true,
-    });
+  Future<void> addAttendance(String scheduleId,{int? hourlyRate}) async {
 
-    final scheduleSnapshot = await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
         .doc( FirebaseAuth.instance.currentUser!.uid )
         .collection('schedules')
         .doc(scheduleId)
-        .get();
-//number of hours equals end time minus start time
-    final start = scheduleSnapshot['start_time'] as Timestamp;
-    final end = scheduleSnapshot['end_time'] as Timestamp ;
-       //plus 1 minute
-    final start_time = start.toDate();
-    final end_time = end.toDate();
-    //add 1 minute to end time
-    // end_time.add(Duration(minutes: 2));
+        .get().then((value) async {
+          if(value['finished'] == true){
+            return;
+          }
+          else{
+            FirebaseFirestore.instance.collection('users')
+            .doc( FirebaseAuth.instance.currentUser!.uid )
+            .collection('schedules')
+            .doc(scheduleId)
+            .update({
+             'finished': true,
+            });
+            // ****this is my firestore Collections and Documents:**
+// - *users*: A collection to store the information of all coaches.
+// - Document ID: unique coach ID
+// - Fields: *`name`, *`level`*, *`hourly_rate`*, *`total_hours`*, *`total_salary`*, *`current_month_hours`*, *`current_month_salary`**
+// - Subcollection: *`schedules`*
+// - Document ID: unique schedule ID
+// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`*, *`finished`**
+// - Subcollection: *`attendance`*
+// - Document ID: unique attendance ID (usually just the coach ID)
+// - Fields: *`attended`, *`qr_code`**
+// - Subcollection: *`salaryHistory`*
+// - Document ID: unique salary history ID (usually just the month and year)
+// - Fields: *`month`, *`year`*, *`total_hours`*, *`total_salary`**
+// - Fields: *`branches`* (array of branch IDs that the coach works at)
+//
+// - *branches*: A collection to store the information of all branches.
+// - Document ID: unique branch ID
+// - Fields: *`name`, *`address`**
+// - Subcollection: *`coaches`*
+// - Document ID: unique coach ID who works at this branch
+//
+// - *admins*: A collection to store the information of all admins.
+// - Document ID: unique admin ID
+// - Fields: *`name`, *`email`*, *`branch_id`** (the ID of the branch they're responsible for)
+//
+// - *schedules*: A collection to store the information of all schedules.
+// - Document ID: unique schedule ID
+// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`**
+// - Subcollection: *`attendance`*
+// - Document ID: unique attendance ID (usually just the coach ID)
+// - Fields: *`attended`, *`qr_code`**
+            final start = value['start_time'] as Timestamp;
+            final end = value['end_time'] as Timestamp ;
+               //plus 1 minute
+            final start_time = start.toDate();
+            final end_time = end.toDate();
+            //add 1 minute to end time
+            // end_time.add(Duration(minutes: 2));
+            final duration = end_time.add(Duration(minutes: 1)).difference(start_time).inHours;
+            final duration2 = end_time.add(Duration(minutes: 1)).difference(start_time).inMinutes;
+            print('duration is $duration');
+            print('duration2 is $duration2');
+            //go to users collection and update total hours and total salary by multiplying duration by hourly rate
+             FirebaseFirestore.instance
+            .collection('users')
+            .doc( FirebaseAuth.instance.currentUser!.uid )
+            .update({'totalHours': FieldValue.increment(duration),
+             'totalSalary': FieldValue.increment(duration*hourlyRate!),
+            });
+            print('Attendance added successfully');
+          //await getUserData();
+          }
+    });
 
-    final duration = end_time.add(Duration(minutes: 1)).difference(start_time).inHours;
-
-    final duration2 = end_time.add(Duration(minutes: 1)).difference(start_time).inMinutes;
-    print('duration is $duration');
-    print('duration2 is $duration2');
 
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        //.doc(scheduleSnapshot['coachId'])
-        .doc( FirebaseAuth.instance.currentUser!.uid )
-        .update({'totalHours': FieldValue.increment(duration)});
-
-    print('Attendance added successfully');
   }
 // void _listenToConnectivityChanges() {
 //   Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {

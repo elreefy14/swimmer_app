@@ -65,7 +65,52 @@ class HomeCubit extends Cubit<HomeState> {
    // _listenToConnectivityChanges();
     //initControllers();
   }
-
+  Future<void> getUserData() async {
+    emit(GetUserDataLoadingState());
+    if (await checkInternetConnection()) {
+      final user = FirebaseAuth.instance.currentUser;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get()
+          .then((value) {
+        if (value.exists) {
+          var data = value.data();
+          userCacheModel = UserCacheModel(
+            image: data?['image']??'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
+            email: user.email??'${data?['phone']}@placeholder.com',
+            phone: data?['phone'],
+            token:data?['deviceToken'][0],
+            uId: user.uid,
+            fname: data?['fname'],
+            lname: data?['lname'],
+            name: data?['name'],
+            level: data?['level'],
+            hourlyRate: data?['hourlyRate']??30,
+            totalHours: data?['totalHours']??0,
+            totalSalary: data?['totalSalary']??0,
+            currentMonthHours: data?['currentMonthHours']??0,
+            currentMonthSalary: data?['currentMonthSalary']??0,
+            branches: (data?['branches'] as List<dynamic>).map((branch) => branch.toString()).toList(),
+          );
+          CacheHelper.saveUser(userCacheModel);
+          emit(GetUserDataSuccessState());}
+      }).catchError((error) {
+        print(error.toString());
+        emit(GetUserDataErrorState(error: error.toString()));
+      });
+    } else {
+      userCacheModel = await CacheHelper.getUser();
+      emit(GetUserDataSuccessState());
+    }
+  }
+  final List<Widget> _screens = [
+    DashBoard(),
+    QrScreen(),
+    ScreenThree(),
+    NotificationScreen(),
+    EditProfile(),
+  ];
 //check internet connection without using connectivity package
   Future<bool> checkInternetConnection() async {
     try {
@@ -233,45 +278,7 @@ class HomeCubit extends Cubit<HomeState> {
   //get data from firebase
   //else
   //get data from shared pre
-  Future<void> getUserData() async {
-    emit(GetUserDataLoadingState());
-    if (await checkInternetConnection()) {
-      final user = FirebaseAuth.instance.currentUser;
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .get()
-          .then((value) {
-        if (value.exists) {
-          var data = value.data();
-          userCacheModel = UserCacheModel(
-              image: data?['image']??'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-              email: user.email??'${data?['phone']}@placeholder.com',
-              phone: data?['phone'],
-              token:data?['deviceToken'][0],
-              uId: user.uid,
-              fname: data?['fname'],
-              lname: data?['lname'],
-              name: data?['name'],
-              level: data?['level'],
-              hourlyRate: data?['hourlyRate']??30,
-              totalHours: data?['totalHours']??0,
-              totalSalary: data?['totalSalary']??0,
-              currentMonthHours: data?['currentMonthHours']??0,
-              currentMonthSalary: data?['currentMonthSalary']??0,
-            branches: (data?['branches'] as List<dynamic>).map((branch) => branch.toString()).toList(),
-            );
-            CacheHelper.saveUser(userCacheModel);
-        emit(GetUserDataSuccessState());}
-      }).catchError((error) {
-        print(error.toString());
-        emit(GetUserDataErrorState(error: error.toString()));
-      });
-    } else {
-      userCacheModel = await CacheHelper.getUser();
-      emit(GetUserDataSuccessState());
-    }
-  }
+
 //   List<String> listOfImages = [
 //     'assets/images/dashboard-2_svgrepo.com.png',
 //     'assets/images/scan-qrcode_svgrepo.com.png',
@@ -298,13 +305,15 @@ class HomeCubit extends Cubit<HomeState> {
       activeColor: Colors.blue,
     ),
   ];
-  final List<Widget> _screens = [
-   DashBoard(),
-   QrScreen(),
-    ScreenThree(),
-    NotificationScreen(),
-    EditProfile(),
+
+  //listOfIcons which is list of ImageIcons
+  final List<String> listOfIcons = [
+   'assets/images/dashboard-2_svgrepo.com.svg',
+   'assets/images/scan-qrcode_svgrepo.com.svg',
+   'assets/images/🦆 icon _person_.svg',
+   'assets/images/Vector.svg',
   ];
+
 //function to select screen
   int _currentIndex = 0;
   //setter for current index
@@ -494,9 +503,9 @@ class HomeCubit extends Cubit<HomeState> {
 //
 
 
-  Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
-   // SharedPreferences.setMockInitialValues({});
-    await initializeDateFormatting('ar');
+  Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser2() async {
+    //SharedPreferences.setMockInitialValues({});
+   await initializeDateFormatting('ar');
     //await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
     print('Getting all schedules for specific coach');
@@ -541,12 +550,12 @@ class HomeCubit extends Cubit<HomeState> {
         if( querySnapshot.docs.length != 0) {
           querySnapshot.docs.forEach((doc) {
             var schedule = SchedulesModel.fromJson2(doc.data());
-            var startTime = DateFormat('hh:mm a', 'ar').format(
-                schedule.startTime!.toDate());
-            var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(
-                schedule.startTime!.toDate());
-            var formattedSchedule = '$startTime $date';
-            print('formattedSchedule: $formattedSchedule');
+            // var startTime = DateFormat('hh:mm a', 'ar').format(
+            //     schedule.startTime!.toDate());
+            // var date = DateFormat('yyyy/MM/dd EEEE', 'ar').format(
+            //     schedule.startTime!.toDate());
+            // var formattedSchedule = '$startTime $date';
+            // print('formattedSchedule: $formattedSchedule');
             schedules?.add(schedule);
           });
 
@@ -563,7 +572,7 @@ class HomeCubit extends Cubit<HomeState> {
           await CacheHelper.storeSchedulesInSharedPreferences(schedules!);
           print('schedules.lengthtt: ${schedules?.length}');
 
-        }
+        }else
         emit(GetAllSchedulesForSpecificCoachSuccessState(
           schedules: schedules ?? [],
         ));
@@ -574,6 +583,87 @@ class HomeCubit extends Cubit<HomeState> {
       });
     }
     return schedules;
+  }
+
+
+  List<SchedulesModel>? schedulesList;
+
+  Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
+//SharedPreferences.setMockInitialValues({});
+    await initializeDateFormatting('ar');
+//await CacheHelper.clearSchedulesFromSharedPreferences();
+    emit(LoadingState());
+    print('Getting all schedules for specific coach');
+    print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
+    schedulesList = await CacheHelper.getSchedulesFromSharedPreferences();
+    print('schedules.length: ${schedulesList?.length ?? 0}');
+    print('\n\n\n\n\n');
+//daebug dateTimes.now
+    print('DateTime.now(): ${DateTime.now()}');
+// Delete schedules with start time before today
+    schedulesList?.removeWhere((schedule) => schedule.startTime!.toDate().isBefore(DateTime.now()));
+    bool hasInternet = await checkInternetConnection();
+    if (!hasInternet) {
+      emit(GetAllSchedulesForSpecificCoachSuccessState(
+        schedules: schedulesList ?? [],
+      ));
+      return schedulesList;
+    }
+    //if ((schedulesList?.length ?? 0) < 20) {
+    if ((schedulesList?.length ?? 0) < 20) {
+    //if (schedulesList?.length   < 20) {
+      DateTime now = DateTime.now();
+      DateTime? lastDateInSharedPreferences = schedulesList!.isNotEmpty ? schedulesList?.last.startTime!.toDate() : //DATETIME.now -5 days
+      DateTime(now.year, now.month, now.day - 5);
+      print('lastDateInSharedPreferences: $lastDateInSharedPreferences');
+      print('now: $now');
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid ?? 'fnBisJY3vGgHL3on0tYeAJWI5GA2')
+          .collection('schedules')
+          .orderBy('start_time', descending: false)
+          .startAfter([
+        // if (lastDateInSharedPreferences != null) Timestamp.fromDate(lastDateInSharedPreferences),
+        if (schedulesList!.isNotEmpty && schedulesList!.last.startTime != null) schedulesList!.last.startTime! else
+          Timestamp.fromDate(DateTime.now()),
+      ]).limit(20 - schedulesList!.length??0)
+          .get()
+          .then((querySnapshot) async {
+
+        print('Successfully retrieved all schedules for specific coach');
+        print('querySnapshot.docs.length: ${querySnapshot.docs.length}');
+        //edit this to show start time like this 12:00 am
+        if( querySnapshot.docs.length != 0) {
+          querySnapshot.docs.forEach((doc) {
+            var schedule = SchedulesModel.fromJson2(doc.data());
+            schedulesList?.add(schedule);
+          });
+
+          // Sort schedules in ascending order based on the date
+          schedulesList?.sort((a, b) => a.startTime!.compareTo(b.startTime!));
+
+          // Keep only the latest 20 schedules
+          schedulesList = schedulesList?.take(20).toList();
+          //loop on schedules and print each one
+          schedulesList?.forEach((element) {
+            print('element: ${element.startTime}');
+          });
+          await CacheHelper.storeSchedulesInSharedPreferences(schedulesList!);
+          print('schedules.lengthtt: ${schedulesList?.length}');
+          emit(GetAllSchedulesForSpecificCoachSuccessState(
+            schedules: schedulesList ?? [],
+          ));
+        }else
+          emit(GetAllSchedulesForSpecificCoachSuccessState(
+            schedules: schedulesList ?? [],
+          ));
+      },
+      ).catchError((error) {
+        print('Failed to retrieve all schedules for specific coach due to error: $error');
+        emit(GetAllSchedulesForSpecificCoachErrorState(error: error.toString()));
+      });
+    }
+    return schedulesList;
   }
   ///////////////////////////////////////////////////////////////////
   // Add this method to listen for connectivity changes

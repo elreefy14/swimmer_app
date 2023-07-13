@@ -62,18 +62,7 @@ class _HomeLayoutState extends State<HomeLayout> {
     //       },
     // ),
     // );
-      BottomBarSalomon(
-        items: HomeCubit.get(context).items,
-        color: Colors.blue,
-        backgroundColor: Colors.white,
-        colorSelected: Colors.white,
-        backgroundSelected: Colors.blue,
-        borderRadius: BorderRadius.circular(0),
-        indexSelected: HomeCubit.get(context).currentIndex,
-        onTap: (index) {
-          HomeCubit.get(context).changeBottomNav(index);
-        },
-      );
+      BottomNavBar();
   },
 ),
 
@@ -1001,8 +990,9 @@ class QrScreen extends StatelessWidget {
                     String? displayValue = barcodes.barcodes[0].displayValue;
                     print(displayValue);
                     QrCubit.get(context).onQRCodeScanned(
-                        coachId: FirebaseAuth.instance.currentUser!.uid,
-                        scheduleId: displayValue.toString());
+                      hourlyRate: HomeCubit.get(context).userCacheModel!.hourlyRate??0,
+                        coachId:HomeCubit.get(context).userCacheModel!.uId??'',
+                        scheduleId: displayValue.toString()).then((value) => HomeCubit.get(context).getUserData());
                     showToast(
                       //display value of bar code
                       msg:displayValue.toString(),
