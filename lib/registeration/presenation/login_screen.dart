@@ -1,6 +1,5 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
@@ -8,7 +7,6 @@ import 'package:swimmer_app/registeration/presenation/widget/component.dart';
 import 'package:swimmer_app/registeration/presenation/widget/widget.dart';
 
 import '../../core/constants/routes_manager.dart';
-import '../../home/presenation/widget/widget.dart';
 
 
 class SignInScreen extends StatelessWidget {
@@ -21,7 +19,7 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
   return Scaffold(
-    // resizeToAvoidBottomInset: false,
+     resizeToAvoidBottomInset: false,
     body: SingleChildScrollView(
       scrollDirection: Axis.vertical,
       physics: BouncingScrollPhysics(),
@@ -71,10 +69,7 @@ class SignInScreen extends StatelessWidget {
                   SizedBox(height: 20.0.h),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        BuildTextFormField('كلمة المرور', passwordController,TextInputType.text, 'ادخل كلمة المرور', (value) {
+                    child: BuildTextFormField('كلمة المرور', passwordController,TextInputType.text, 'ادخل كلمة المرور', (value) {
                           if (value!.isEmpty) {
                             return 'الرجاء ادخال كلمة المرور';
                           }
@@ -84,24 +79,11 @@ class SignInScreen extends StatelessWidget {
                           return null;
                         }, null, null
                         ),
-                        SizedBox(height: 10.0.h),
-                        // Container(
-                        //   width: 80.0,
-                        //   height: 15.0,
-                        //   child: Text(
-                        //     'نسيت كلمة المرور؟',
-                        //     style: TextStyle(
-                        //       fontFamily: 'IBM Plex Sans Arabic',
-                        //       fontSize: 10.0, // Assuming this is the font size you want
-                        //       color: Color(0xFF2196F3),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
+
+
+
                   ),
-
-
+                  SizedBox(height: 20.0.h),
                   BlocConsumer<LoginCubit, LoginState>(
   listener: (context, state) {
 

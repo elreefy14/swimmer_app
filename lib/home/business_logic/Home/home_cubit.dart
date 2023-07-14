@@ -26,6 +26,7 @@ import '../../data/userModel.dart';
 import '../../presenation/dash_board_screan.dart';
 import '../../presenation/home_lauout.dart';
 import '../../presenation/notification_screen.dart';
+import '../../presenation/qr_screen.dart';
 import 'home_state.dart';
 // ****this is my firestore Collections and Documents:**
 // - *users*: A collection to store the information of all coaches.

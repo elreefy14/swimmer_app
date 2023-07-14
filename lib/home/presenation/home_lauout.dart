@@ -993,39 +993,87 @@ class QrScreen extends StatelessWidget {
           ),
         )
             : state is QrCodeScannedSuccessfully ?
-        Text(
-          'تم تسجيل حضورك',
+        RichText(
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color(0xFF333333),
-            fontSize: 20,
-            fontFamily: 'Montserrat-Arabic',
-            fontWeight: FontWeight.w300,
-            //    height: 26,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'تم',
+                style: TextStyle(
+                  color: Color(0xFF00CE39),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+               //   height:
+                ),
+              ),
+              TextSpan(
+                text: ' تسجيل حضورك',
+                style: TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+                 // height: 26,
+                ),
+              ),
+            ],
           ),
-        )  : state is QrError ?
-        Text(
-          'فشل التعرف على رمز QR...',
+        ) : state is QrError ?
+        RichText(
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color(0xFF333333),
-            fontSize: 20,
-            fontFamily: 'Montserrat-Arabic',
-            fontWeight: FontWeight.w300,
-            //    height: 26,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'فشل',
+                style: TextStyle(
+                  color: Color(0xFFFF0000),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+                  //   height:
+                ),
+              ),
+              TextSpan(
+                text: '  التعرف على رمز QR...',
+                style: TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+                  // height: 26,
+                ),
+              ),
+            ],
           ),
         ) : state is QrCodeScannedSuccessfullyWithNoInternet ?
-        Text(
-          'تم تسجيل حضورك',
+        RichText(
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color(0xFF333333),
-            fontSize: 20,
-            fontFamily: 'Montserrat-Arabic',
-            fontWeight: FontWeight.w300,
-            //    height: 26,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'تم',
+                style: TextStyle(
+                  color: Color(0xFF00CE39),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+                  height: 26,
+                ),
+              ),
+              TextSpan(
+                text: ' تسجيل حضورك',
+                style: TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 20,
+                  fontFamily: 'Montserrat-Arabic',
+                  fontWeight: FontWeight.w300,
+                  height: 26,
+                ),
+              ),
+            ],
           ),
-        ) : Text(
+        ): Text(
           'جار البحث عن رمز QR...',
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -1052,10 +1100,10 @@ class QrScreen extends StatelessWidget {
   builder: (context, state) {
         return MobileScanner(onDetect: (BarcodeCapture barcodes) {
           if(QrCubit.get(context).qrCodeScanned == true) {
-            showToast(
-              msg: "A QR code has already been scanned.",
-              state: ToastStates.ERROR,
-            );
+           // showToast(
+            //  msg: "A QR code has already been scanned.",
+            //  state: ToastStates.ERROR,
+           // );
             return;}else{
             String? displayValue = barcodes.barcodes[0].displayValue;
             QrCubit.get(context).onQRCodeScanned(
@@ -1069,12 +1117,8 @@ class QrScreen extends StatelessWidget {
                     .uId ?? '',
                 scheduleId: displayValue.toString()).then((value) =>
                 HomeCubit.get(context).getUserData());
-            showToast(
-              //display value of bar code
-              msg: displayValue.toString(),
-              state: ToastStates.SUCCESS,
-            );
-            HomeCubit.get(context).changeBottomNav(0);
+                 QrCubit.get(context).qrCodeScanned =true;
+          //  HomeCubit.get(context).changeBottomNav(0);
           }
         },
                       fit: BoxFit.cover,

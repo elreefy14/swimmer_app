@@ -104,6 +104,7 @@ class QrCubit extends Cubit<QrState> {
         emit(QrCodeScannedSuccessfullyWithNoInternet());
       }
     } catch (e) {
+      qrCodeScanned = false;
       print(e.toString());
       emit(QrError(e.toString()));
     }
