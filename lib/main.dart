@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,7 @@ import 'core/network/web_services.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message:\n\n\n ${message.messageId}');
-}
+}late String mainRoute;
 Future<void> main() async {
   //await initializeDateFormatting('ar', null);
 
@@ -57,6 +58,14 @@ Future<void> main() async {
   await Firebase.initializeApp(
     //options: DefaultFirebaseOptions.currentPlatform,
   );
+  //if frebase login is null
+  //late String mainRoute;
+  if (FirebaseAuth.instance.currentUser == null) {
+    mainRoute = AppRoutes.welcome;
+  } else {
+    mainRoute = AppRoutes.home;
+
+  }
   await DioHelper.init();
   FirebaseMessaging.onMessage.listen((event) {
     print('onMessage\n\n\n');
@@ -168,7 +177,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: AppRoutes.home,
+          initialRoute:mainRoute,
           onGenerateRoute:RouteGenerator.generateRoute,
         ),
       ),

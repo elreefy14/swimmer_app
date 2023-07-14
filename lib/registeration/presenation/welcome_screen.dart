@@ -5,7 +5,7 @@ import 'package:swimmer_app/registeration/presenation/SignUpScreen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
 
 
-class HomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +72,7 @@ class HomeScreen extends StatelessWidget {
               child: ElevatedButton(
 
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.signUp);
+                  Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: Text(
                   'تسجيل دخول',

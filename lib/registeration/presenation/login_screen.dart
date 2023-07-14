@@ -21,87 +21,88 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
   return Scaffold(
-    body: ListView(
-     // mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding:  EdgeInsets.only(
-            top: 82.0.h,
-            // horizontal: 145.w,
-          ),
-          child: Center(
-            child: Container(
+    // resizeToAvoidBottomInset: false,
+    body: SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      physics: BouncingScrollPhysics(),
+      child: Form(
+        key: _formKey,
+        child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+               SizedBox(height: 45.0.h),
 
-              alignment: Alignment.center,
-              child: Text(
-                'تسجيل الدخول',
-                style: TextStyle(
-                  fontFamily: 'Montserrat-Arabic',
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 32,
-                  height: 26 / 32,
-                  color: Color(0xFF333333),
-                ),
-                textAlign: TextAlign.center,
+              Padding(
+              padding:  EdgeInsets.only(
+                top: 82.0.h,
+                // horizontal: 145.w,
               ),
-            ),
-          ),
-        ),
-          SizedBox(height: 120.0.h),
-        //use media query instead of 80 knowing that app has 690 height and 360 width calculate media query fraction
+              child: Center(
+                child: Container(
 
-        Form(
-          key: _formKey,
-          child: Directionality(
-            textDirection: TextDirection.rtl,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                  child: BuildTextFormField('رقم الهاتف', phoneController, TextInputType.phone,'ادخل رقم الهاتف', (value) {
-                    if (value!.isEmpty) {
-                      return 'الرجاء ادخال رقم الهاتف';
-                    }
-                    return null;
-                  },'assets/images/Call.png',null),
-                ),
-                SizedBox(height: 20.0.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BuildTextFormField('كلمة المرور', passwordController,TextInputType.text, 'ادخل كلمة المرور', (value) {
-                        if (value!.isEmpty) {
-                          return 'الرجاء ادخال كلمة المرور';
-                        }
-                        else if (value.length < 6) {
-                          return 'يجب ادخال كلمة مرور اكثر من ٦ أحرف او ارقام';
-                        }
-                        return null;
-                      }, null, null
-                      ),
-                      SizedBox(height: 10.0.h),
-                      Container(
-                        width: 80.0,
-                        height: 15.0,
-                        child: Text(
-                          'نسيت كلمة المرور؟',
-                          style: TextStyle(
-                            fontFamily: 'IBM Plex Sans Arabic',
-                            fontSize: 10.0, // Assuming this is the font size you want
-                            color: Color(0xFF2196F3),
-                          ),
-                        ),
-                      ),
-                    ],
+                  alignment: Alignment.center,
+                  child: Text(
+                    'تسجيل الدخول',
+                    style: TextStyle(
+                      fontFamily: 'Montserrat-Arabic',
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 32,
+                      height: 26 / 32,
+                      color: Color(0xFF333333),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
+              ),
+            ),
+            SizedBox(height: 120.0.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                    child: BuildTextFormField('رقم الهاتف', phoneController, TextInputType.phone,'ادخل رقم الهاتف', (value) {
+                      if (value!.isEmpty) {
+                        return 'الرجاء ادخال رقم الهاتف';
+                      }
+                      return null;
+                    },'assets/images/Call.png',null),
+                  ),
+                  SizedBox(height: 20.0.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BuildTextFormField('كلمة المرور', passwordController,TextInputType.text, 'ادخل كلمة المرور', (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال كلمة المرور';
+                          }
+                          else if (value.length < 6) {
+                            return 'يجب ادخال كلمة مرور اكثر من ٦ أحرف او ارقام';
+                          }
+                          return null;
+                        }, null, null
+                        ),
+                        SizedBox(height: 10.0.h),
+                        // Container(
+                        //   width: 80.0,
+                        //   height: 15.0,
+                        //   child: Text(
+                        //     'نسيت كلمة المرور؟',
+                        //     style: TextStyle(
+                        //       fontFamily: 'IBM Plex Sans Arabic',
+                        //       fontSize: 10.0, // Assuming this is the font size you want
+                        //       color: Color(0xFF2196F3),
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                  ),
 
 
-                BlocConsumer<LoginCubit, LoginState>(
+                  BlocConsumer<LoginCubit, LoginState>(
   listener: (context, state) {
 
     if (state is LoginSuccessState) {
@@ -119,66 +120,66 @@ class SignInScreen extends StatelessWidget {
     );
     }
   },
-                  builder: (context, state) {
-                    return ConditionalBuilder(
-                        condition: state is! LoginLoadingState,
-                      builder: (context) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                              left: 31.w,
-                              right: 31.w,
-                              top: 80.h
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                LoginCubit.get(context).userLogin(
-                                  phone: phoneController.text,
-                                  password: passwordController.text,
-                                );
-                              }
-                            },
-                            child: Text(
-                              'تسجيل دخول',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat-Arabic',
-                                fontStyle: FontStyle.normal,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 18.sp,
-                                height: 26 / 18,
-                                color: Color(0xFFFFFFFF),
-                              ),
-                              textAlign: TextAlign.center,
+                    builder: (context, state) {
+                      return ConditionalBuilder(
+                          condition: state is! LoginLoadingState,
+                        builder: (context) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                left: 31.w,
+                                right: 31.w,
+                                top: 80.h
                             ),
-                            style: ElevatedButton.styleFrom(
-                              primary: Color(0xFF2196F3), // Background color
-                              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 9.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  LoginCubit.get(context).userLogin(
+                                    phone: phoneController.text,
+                                    password: passwordController.text,
+                                  );
+                                }
+                              },
+                              child: Text(
+                                'تسجيل دخول',
+                                style: TextStyle(
+                                  fontFamily: 'Montserrat-Arabic',
+                                  fontStyle: FontStyle.normal,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18.sp,
+                                  height: 26 / 18,
+                                  color: Color(0xFFFFFFFF),
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textStyle: TextStyle(
-                                fontSize: 18.sp, // Adjust the font size if needed
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF2196F3), // Background color
+                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 9.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                textStyle: TextStyle(
+                                  fontSize: 18.sp, // Adjust the font size if needed
+                                ),
                               ),
                             ),
-                          ),
 
-                        );
+                          );
 
-                      },
-                      fallback: (context) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                    );
+                        },
+                        fallback: (context) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      );
 
-                  },
-                ),
-              ],
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-      ],
+      ),
     ),
-  );
+
+    );
 }}

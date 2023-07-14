@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swimmer_app/home/presenation/home_lauout.dart';
 import 'package:swimmer_app/registeration/presenation/SignUpScreen.dart';
-import 'package:swimmer_app/registeration/presenation/home.dart';
+import 'package:swimmer_app/registeration/presenation/welcome_screen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
 import 'package:swimmer_app/registeration/presenation/otp.dart';
 
@@ -14,7 +14,7 @@ class RouteGenerator {
     switch (settings.name) {
       //HomeScreen
       case AppRoutes.welcome:
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+        return MaterialPageRoute(builder: (_) => WelcomeScreen());
   //      case AppRoutes.signUp:
     //      return MaterialPageRoute(builder: (_) =>SignUpScreen());
         case AppRoutes.login:

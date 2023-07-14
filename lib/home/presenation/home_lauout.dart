@@ -953,130 +953,209 @@ class QrScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //make screen to scan qr code using camera and pr
+    return Builder(
+      builder: (context) {
+        QrCubit.get(context).qrCodeScanned =false;
+        return Scaffold(
+          //make screen to scan qr code using camera and pr
 
-      body: Column(
-        children: [
-          SizedBox(
-            height: 160.h,
-          ),
-        Text(
-              ' QR...جار البحث عن رمز ',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color(0xFF333333),
-                  fontSize: 20,
-                  fontFamily: 'Montserrat-Arabic',
-                  fontWeight: FontWeight.w300,
-              //    height: 26,
-              ),
-          ),
-          SizedBox(
-            height: 5.h
-          ),
-          Stack(
+          body: Column(
             children: [
-              Center(
-                child: Container(
-                  height: 250.h,
-                  width: 250.w,
-                  child: BlocBuilder<QrCubit, QrState>(
+              SizedBox(
+                height: 160.h,
+              ),
+            BlocConsumer<QrCubit, QrState>(
+  listener: (context, state) {
+
+  },
   builder: (context, state) {
-    return MobileScanner(onDetect: (BarcodeCapture barcodes) {
-                   //print bar code as string
-                    print(barcodes.raw.toString());
-                    //[{corners: [{x: 55.0, y: 101.0}, {x: 388.0, y: 88.0}, {x: 380.0, y: 413.0}, {x: 78.0, y: 417.0}], format: 256, rawBytes: [114, 110, 70, 50, 82, 49, 49, 101, 104, 83, 104, 121, 68, 115, 84, 80, 82, 109, 48, 86], rawValue: rnF2R11ehShyDsTPRm0V, type: 7, calendarEvent: null, contactInfo: null, driverLicense: null, email: null, geoPoint: null, phone: null, sms: null, url: null, wifi: null, displayValue: rnF2R11ehShyDsTPRm0V}]
-                    String? displayValue = barcodes.barcodes[0].displayValue;
-                    print(displayValue);
-                    QrCubit.get(context).onQRCodeScanned(
-                      hourlyRate: HomeCubit.get(context).userCacheModel!.hourlyRate??0,
-                        coachId:HomeCubit.get(context).userCacheModel!.uId??'',
-                        scheduleId: displayValue.toString()).then((value) => HomeCubit.get(context).getUserData());
-                    showToast(
-                      //display value of bar code
-                      msg:displayValue.toString(),
-                      state: ToastStates.SUCCESS,
-                    );
-                    HomeCubit.get(context).changeBottomNav(0);
-    },
-                  fit: BoxFit.cover,
-                  );
+        //class QrCodeScannedSuccessfully extends QrState {
+        // }
+        // //QrError
+        // class QrError extends QrState {
+        //   final String message;
+        //
+        //   QrError(this.message);
+        // }
+        // //qrCodeScannedSuccessfully
+        // class QrCodeScannedSuccessfullyWithNoInternet extends QrState {
+        // }
+        return state is QrLoading
+            ?    Text(
+          ' جار التعرف على رمز QR',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 20,
+            fontFamily: 'Montserrat-Arabic',
+            fontWeight: FontWeight.w300,
+            //    height: 26,
+          ),
+        )
+            : state is QrCodeScannedSuccessfully ?
+        Text(
+          'تم تسجيل حضورك',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 20,
+            fontFamily: 'Montserrat-Arabic',
+            fontWeight: FontWeight.w300,
+            //    height: 26,
+          ),
+        )  : state is QrError ?
+        Text(
+          'فشل التعرف على رمز QR...',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 20,
+            fontFamily: 'Montserrat-Arabic',
+            fontWeight: FontWeight.w300,
+            //    height: 26,
+          ),
+        ) : state is QrCodeScannedSuccessfullyWithNoInternet ?
+        Text(
+          'تم تسجيل حضورك',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 20,
+            fontFamily: 'Montserrat-Arabic',
+            fontWeight: FontWeight.w300,
+            //    height: 26,
+          ),
+        ) : Text(
+          'جار البحث عن رمز QR...',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 20,
+            fontFamily: 'Montserrat-Arabic',
+            fontWeight: FontWeight.w300,
+            //    height: 26,
+          ),
+        );
+
   },
 ),
-                ),
+              SizedBox(
+                height: 5.h
               ),
-            Center(
-              child: Container(
-                height: 250.h,
-                width: 250.w,
-                child: const QrScannerOverlay(
-                    borderColor: Colors.blue,
-                  ),
-              ),
-            ),
-            ],
-            ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Stack(
                 children: [
                   Center(
-                    child: Text(
-                        "تعليمات",
-                      style: TextStyle(
-                        color: Color(0xFF333333),
-                        fontSize: 14,
-                        fontFamily: 'IBM Plex Sans Arabic',
-                        fontWeight: FontWeight.w400,
-                       // height: 16.80,
-                      ),
+                    child: Container(
+                      height: 250.h,
+                      width: 250.w,
+                      child: BlocBuilder<QrCubit, QrState>(
+  builder: (context, state) {
+        return MobileScanner(onDetect: (BarcodeCapture barcodes) {
+          if(QrCubit.get(context).qrCodeScanned == true) {
+            showToast(
+              msg: "A QR code has already been scanned.",
+              state: ToastStates.ERROR,
+            );
+            return;}else{
+            String? displayValue = barcodes.barcodes[0].displayValue;
+            QrCubit.get(context).onQRCodeScanned(
+                hourlyRate: HomeCubit
+                    .get(context)
+                    .userCacheModel!
+                    .hourlyRate ?? 0,
+                coachId: HomeCubit
+                    .get(context)
+                    .userCacheModel!
+                    .uId ?? '',
+                scheduleId: displayValue.toString()).then((value) =>
+                HomeCubit.get(context).getUserData());
+            showToast(
+              //display value of bar code
+              msg: displayValue.toString(),
+              state: ToastStates.SUCCESS,
+            );
+            HomeCubit.get(context).changeBottomNav(0);
+          }
+        },
+                      fit: BoxFit.cover,
+                      );
+  },
+),
                     ),
-                  )
+                  ),
+                Center(
+                  child: Container(
+                    height: 250.h,
+                    width: 250.w,
+                    child: const QrScannerOverlay(
+                        borderColor: Colors.blue,
+                      ),
+                  ),
+                ),
                 ],
+                ),
+              SizedBox(
+                height: 15.h,
               ),
               Column(
                 children: [
-                  Text(
-                      "- تأكد ان رمز QR يظهر بوضوح.",
-                    style: TextStyle(
-                      color: Color(0xFFB9B9B9),
-                      fontSize: 12,
-                      fontFamily: 'IBM Plex Sans Arabic',
-                      fontWeight: FontWeight.w400,
-                     // height: 18,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text(
+                            "تعليمات",
+                          style: TextStyle(
+                            color: Color(0xFF333333),
+                            fontSize: 14,
+                            fontFamily: 'IBM Plex Sans Arabic',
+                            fontWeight: FontWeight.w400,
+                           // height: 16.80,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  Text(
-                      "- اقترب من رمز  QR",
-                    style: TextStyle(
-                      color: Color(0xFFB9B9B9),
-                      fontSize: 12,
-                      fontFamily: 'IBM Plex Sans Arabic',
-                      fontWeight: FontWeight.w400,
-                    //  height: 18,
-                    ),
-                  ),
-                  Text(
-                      "- تأكد من ان المكان ليس معتم.",
-                    style: TextStyle(
-                      color: Color(0xFFB9B9B9),
-                      fontSize: 12,
-                      fontFamily: 'IBM Plex Sans Arabic',
-                      fontWeight: FontWeight.w400,
-                  //    height: 18,
-                    ),
+                  Column(
+                    children: [
+                      Text(
+                          "- تأكد ان رمز QR يظهر بوضوح.",
+                        style: TextStyle(
+                          color: Color(0xFFB9B9B9),
+                          fontSize: 12,
+                          fontFamily: 'IBM Plex Sans Arabic',
+                          fontWeight: FontWeight.w400,
+                         // height: 18,
+                        ),
+                      ),
+                      Text(
+                          "- اقترب من رمز  QR",
+                        style: TextStyle(
+                          color: Color(0xFFB9B9B9),
+                          fontSize: 12,
+                          fontFamily: 'IBM Plex Sans Arabic',
+                          fontWeight: FontWeight.w400,
+                        //  height: 18,
+                        ),
+                      ),
+                      Text(
+                          "- تأكد من ان المكان ليس معتم.",
+                        style: TextStyle(
+                          color: Color(0xFFB9B9B9),
+                          fontSize: 12,
+                          fontFamily: 'IBM Plex Sans Arabic',
+                          fontWeight: FontWeight.w400,
+                      //    height: 18,
+                        ),
+                      )
+                    ],
                   )
                 ],
               )
-            ],
-          )
-            ],
-      ),
+                ],
+          ),
+        );
+      }
     );
   }
 }

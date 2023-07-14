@@ -18,7 +18,7 @@ class QrCubit extends Cubit<QrState> {
    // _listenToConnectivityChanges();
   }
   static QrCubit get(context) => BlocProvider.of(context);
-
+  bool qrCodeScanned = false;
   Future<void> saveAttendanceDataLocally(String coachId, String scheduleId, DateTime timestamp) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     List<String> attendanceList = sharedPreferences.getStringList('offlineAttendance') ?? [];
@@ -89,45 +89,23 @@ class QrCubit extends Cubit<QrState> {
   Future<void> onQRCodeScanned({required String coachId, required String scheduleId ,
     required int hourlyRate
   }) async {
-    DateTime timestamp = DateTime.now();
-    Timestamp today = Timestamp.fromDate(DateTime.now());
+    try {
+      DateTime timestamp = DateTime.now();
+      Timestamp today = Timestamp.fromDate(DateTime.now());
 
-    if (await checkInternetConnection()) {
-      // Get today's unfinished schedules for the current coach
-      // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      //     .collection('schedules')
-      //     .where('coach_id', isEqualTo: coachId)
-      //     .where('date', isEqualTo: today)
-      //     .where('finished', isEqualTo: false)
-      //     .get();
-      //
-      // // If there are any unfinished schedules
-      // if (querySnapshot.docs.isNotEmpty) {
-      //   // Find the schedule closest to the current time
-      //   DocumentSnapshot closestSchedule = querySnapshot.docs.first;
-      //   Duration smallestDuration = timestamp
-      //       .difference(closestSchedule['start_time'].toDate())
-      //       .abs();
-      //
-      //   for (DocumentSnapshot doc in querySnapshot.docs) {
-      //     Duration currentDuration =
-      //     timestamp.difference(doc['start_time'].toDate()).abs();
-      //     if (currentDuration < smallestDuration) {
-      //       smallestDuration = currentDuration;
-      //       closestSchedule = doc;
-      //     }
-      //   }
-
-      // Update the closest schedule's finished status to true
-      // await FirebaseFirestore.instance
-      //     .collection('schedules')
-      //     .doc(scheduleId)
-      //     .update({'finished': true});
-      addAttendance(scheduleId, hourlyRate: hourlyRate);
-      //  }
-    } else {
-      print('No internet connection, saving attendance data locally');
-      await saveAttendanceDataLocally(coachId, scheduleId, timestamp);
+      if (await checkInternetConnection()) {
+        emit(QrLoading());
+        await addAttendance(scheduleId, hourlyRate: hourlyRate);
+        emit(QrCodeScannedSuccessfully());
+        //  }
+      } else {
+        print('No internet connection, saving attendance data locally');
+        await saveAttendanceDataLocally(coachId, scheduleId, timestamp);
+        emit(QrCodeScannedSuccessfullyWithNoInternet());
+      }
+    } catch (e) {
+      print(e.toString());
+      emit(QrError(e.toString()));
     }
   }
   Future<void> addAttendance(String scheduleId,{int? hourlyRate}) async {
