@@ -342,86 +342,90 @@ class DashBoard extends StatelessWidget {
                       // //     return Text(formattedSchedule);
                       // //   },
                       // // ),
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) => SizedBox(height: 10.0.h),
-                        //   physics: NeverScrollableScrollPhysics(),
-                        itemBuilder:(context, index) {
-                          if(state is LoadingState)
-                            return Center(child: CircularProgressIndicator());
-                          else if(HomeCubit.get(context).schedulesList !=0)
-                          {
-                            var schedule = HomeCubit.get(context).schedulesList![index];
-                            var startTime =
-                            DateFormat('hh a', 'ar').format(schedule.startTime?.toDate()??DateTime.now());
-                            var date = DateFormat('yyyy/MM/dd ', 'ar').format(schedule.startTime?.toDate()??DateTime.now());
-                            var day = DateFormat('EEEE', 'ar').format(schedule.startTime?.toDate()??DateTime.now());
-                            var formattedSchedule = '$startTime $date';
-                            return Container(
-                              width: 310.0.w,
-                              height: 20.0.h,
-                              decoration: BoxDecoration(
-                                color: Color(0xFFFFFFFF),
-                                borderRadius: BorderRadius.circular(4.0.r),
-                                border: Border.all(
-                                  color: Color(0xFF2196F3),
-                                  width: 1.0.w,
+                      child: ConditionalBuilder(
+                         condition: HomeCubit.get(context).schedulesList?.length == 0,
+                        builder: (context) =>  Center(child: Text('No Data')),
+                        fallback: (context) =>ListView.separated(
+                          separatorBuilder: (context, index) => SizedBox(height: 10.0.h),
+                          //   physics: NeverScrollableScrollPhysics(),
+                          itemBuilder:(context, index) {
+                            if(state is LoadingState)
+                              return Center(child: CircularProgressIndicator());
+                            else if(HomeCubit.get(context).schedulesList !=0)
+                            {
+                              var schedule = HomeCubit.get(context).schedulesList![index];
+                              var startTime =
+                              DateFormat('hh a', 'ar').format(schedule.startTime?.toDate()??DateTime.now());
+                              var date = DateFormat('yyyy/MM/dd ', 'ar').format(schedule.startTime?.toDate()??DateTime.now());
+                              var day = DateFormat('EEEE', 'ar').format(schedule.startTime?.toDate()??DateTime.now());
+                              var formattedSchedule = '$startTime $date';
+                              return Container(
+                                width: 310.0.w,
+                                height: 20.0.h,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFFFFFFF),
+                                  borderRadius: BorderRadius.circular(4.0.r),
+                                  border: Border.all(
+                                    color: Color(0xFF2196F3),
+                                    width: 1.0.w,
+                                  ),
                                 ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(
-                                    day,
-                                    style: TextStyle(
-                                      fontFamily: 'IBM Plex Sans Arabic',
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                      height: 14 / 12,
-                                      color: Color(0xFF333333),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      day,
+                                      style: TextStyle(
+                                        fontFamily: 'IBM Plex Sans Arabic',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        height: 14 / 12,
+                                        color: Color(0xFF333333),
+                                      ),
                                     ),
-                                  ),
-                                  //Text(
-                                  //   text = "2023/04/23",
-                                  //   fontSize = 12.sp,
-                                  //   fontFamily = FontFamily(Font(R.font.ibm plex sans arabic),
-                                  //   color = Color(0xFF333333),
-                                  //   textAlign = TextAlign.Right)
-                                  Text(
-                                    date,
+                                    //Text(
+                                    //   text = "2023/04/23",
+                                    //   fontSize = 12.sp,
+                                    //   fontFamily = FontFamily(Font(R.font.ibm plex sans arabic),
+                                    //   color = Color(0xFF333333),
+                                    //   textAlign = TextAlign.Right)
+                                    Text(
+                                      date,
 
-                                    style: TextStyle(
-                                      fontFamily: 'IBM Plex Sans Arabic',
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                      height: 14 / 12,
-                                      color: Color(0xFF333333),
+                                      style: TextStyle(
+                                        fontFamily: 'IBM Plex Sans Arabic',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        height: 14 / 12,
+                                        color: Color(0xFF333333),
+                                      ),
                                     ),
-                                  ),
-                                  //Text(
-                                  //   text = "10 AM",
-                                  //   fontSize = 12.sp,
-                                  //   fontFamily = FontFamily(Font(R.font.ibm plex sans arabic),
-                                  //   color = Color(0xFF333333),
-                                  //   textAlign = TextAlign.Center)
-                                  Text(
-                                    startTime,
-                                    style: TextStyle(
-                                      fontFamily: 'IBM Plex Sans Arabic',
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                      height: 14 / 12,
-                                      color: Color(0xFF333333),
+                                    //Text(
+                                    //   text = "10 AM",
+                                    //   fontSize = 12.sp,
+                                    //   fontFamily = FontFamily(Font(R.font.ibm plex sans arabic),
+                                    //   color = Color(0xFF333333),
+                                    //   textAlign = TextAlign.Center)
+                                    Text(
+                                      startTime,
+                                      style: TextStyle(
+                                        fontFamily: 'IBM Plex Sans Arabic',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        height: 14 / 12,
+                                        color: Color(0xFF333333),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          else
-                            return Center(child: Text('Error'));
-                        },
-                        itemCount: HomeCubit.get(context).schedulesList?.length??0,
+                                  ],
+                                ),
+                              );
+                            }
+                            else
+                              return Center(child: Text('Error'));
+                          },
+                          itemCount: HomeCubit.get(context).schedulesList?.length??0,
 
+                        ),
                       ),
                     ),
                   ),
@@ -429,7 +433,7 @@ class DashBoard extends StatelessWidget {
 
                 ],
               ),
-              condition: HomeCubit.get(context).userCacheModel != null && HomeCubit.get(context).schedulesList?.length != 0,
+              condition: HomeCubit.get(context).userCacheModel != null  ,
               fallback: (context) => Center(
                 child: CircularProgressIndicator(),
               ),

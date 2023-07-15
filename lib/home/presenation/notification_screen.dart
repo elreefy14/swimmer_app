@@ -11,9 +11,12 @@ import '../business_logic/Home/home_state.dart';
 class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        HomeCubit.get(context).getNotifications();
+    return FutureBuilder(
+      future: HomeCubit.get(context).getNotifications(),
+      builder: (context, snapshot) {
+        //if loading
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return Center(child: CircularProgressIndicator());
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -70,9 +73,7 @@ class NotificationScreen extends StatelessWidget {
       separatorBuilder: (context, index) => SizedBox(height: 10.0.h),
       //   physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-          if (state is GetNotificationsLoadingState)
-            return Center(child: CircularProgressIndicator());
-          else if (state is GetNotificationsSuccessState || HomeCubit
+         if ( HomeCubit
               .get(context)
               .todayNotifications
               .length > 0) {
@@ -123,39 +124,40 @@ class NotificationScreen extends StatelessWidget {
               ],
             );
           }
-          else
-            return Container(
-              // padding:EdgeInsets.only(top: 6, left: 8, bottom: 6),
-              padding: EdgeInsets.only(
-                top: 6.h,
-                left: 8.w,
-                bottom: 6.h,
-              ),
-
-
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'لاتوجد اشعارات اليوم',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      color: Color(0xFF333333),
-                      fontSize: 12,
-                      fontFamily: 'IBM Plex Sans Arabic',
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ],
-              ),
-            );
+          else return
+             //Text(
+        //     'لاتوجد اشعارات اليوم',
+        //     textAlign: TextAlign.right,
+        //     style: TextStyle(
+        //         color: Color(0xFF333333),
+        //         fontSize: 12,
+        //         fontFamily: 'IBM Plex Sans Arabic',
+        //         fontWeight: FontWeight.w300,
+        //     ),
+        // )
+        Text(
+          'لاتوجد اشعارات اليوم',
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 12,
+            fontFamily: 'IBM Plex Sans Arabic',
+            fontWeight: FontWeight.w300,
+          ),
+        );
       },
-      itemCount: HomeCubit
-            .get(context)
-            .todayNotifications
-            .length,
+      itemCount:
+
+      HomeCubit
+          .get(context)
+          .todayNotifications
+          .length == 0
+          ? 1
+          : HomeCubit
+              .get(context)
+              .todayNotifications
+              .length,
+
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
     );

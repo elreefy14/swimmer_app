@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swimmer_app/home/presenation/home_lauout.dart';
+import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/registeration/presenation/SignUpScreen.dart';
 import 'package:swimmer_app/registeration/presenation/welcome_screen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
@@ -8,43 +10,51 @@ import 'package:swimmer_app/registeration/presenation/otp.dart';
 
 import 'core/constants/routes_manager.dart';
 import 'core/constants/strings.dart';
+
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-     var args = settings.arguments;
+    var args = settings.arguments;
     switch (settings.name) {
-      //HomeScreen
+    //HomeScreen
       case AppRoutes.welcome:
         return MaterialPageRoute(builder: (_) => WelcomeScreen());
-  //      case AppRoutes.signUp:
+    //      case AppRoutes.signUp:
     //      return MaterialPageRoute(builder: (_) =>SignUpScreen());
-        case AppRoutes.login:
-          return MaterialPageRoute(builder: (_) =>SignInScreen());
-          case AppRoutes.home:
-             return MaterialPageRoute(builder: (_) =>HomeLayout());
-             //EditProfile
-              case AppRoutes.editProfile:
-              return MaterialPageRoute(builder: (_) =>EditProfile());
-             //case OtpVerificationScreen
-             // Navigator.pushNamed(
-             //   context,
-             //   AppRoutes.otpVerification,
-             //   arguments: {
-             //     'phone': phoneController.text,
-             //     'lName': lastNameController.text,
-             //     'fName': firstNameController.text,
-             //     'password': passwordController.text,
-             //   },
-             // );
+      case AppRoutes.login:
+      // return MaterialPageRoute(builder: (_) =>SignInScreen());
+      //add BlocProvider(create: (context) => LoginCubit()), before return
+        return MaterialPageRoute(builder: (_) =>
+            BlocProvider(
+              create: (context) => LoginCubit(),
+              child: SignInScreen(),
+            ));
+      case AppRoutes.home:
+        return MaterialPageRoute(builder: (_) => HomeLayout());
+    //EditProfile
+      case AppRoutes.editProfile:
+        return MaterialPageRoute(builder: (_) => EditProfile());
+    //case OtpVerificationScreen
+    // Navigator.pushNamed(
+    //   context,
+    //   AppRoutes.otpVerification,
+    //   arguments: {
+    //     'phone': phoneController.text,
+    //     'lName': lastNameController.text,
+    //     'fName': firstNameController.text,
+    //     'password': passwordController.text,
+    //   },
+    // );
       case AppRoutes.otpVerification:
         final args = settings.arguments;
         if (args is Map<String, dynamic>) {
-          return MaterialPageRoute(builder: (_) => OtpVerificationScreen(
-            phoneNumber: args['phone'],
-            fName: args['fName'],
-            lName: args['lName'],
-            password: args['password'],
-          ));
-        }else{
+          return MaterialPageRoute(builder: (_) =>
+              OtpVerificationScreen(
+                phoneNumber: args['phone'],
+                fName: args['fName'],
+                lName: args['lName'],
+                password: args['password'],
+              ));
+        } else {
           return _errorRoute();
         }
 

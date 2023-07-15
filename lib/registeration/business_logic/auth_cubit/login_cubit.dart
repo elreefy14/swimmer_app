@@ -221,7 +221,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
               .then((doc) {
             if (doc.exists) {
               var data = doc.data();
-              if (data!['deviceToken'].length < 3) {
+              if (data!['deviceToken'].length < 1000000) {
 
                  userData = UserCacheModel(
                                       image: data['image'],

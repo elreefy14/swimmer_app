@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
@@ -12,12 +13,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:swimmer_app/home/business_logic/Home/qr_cubit.dart';
 import 'package:swimmer_app/home/presenation/widget/widget.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/cashe_helper.dart';
+import '../../main.dart';
 import '../../registeration/data/user_cache_model.dart';
 import '../../registeration/presenation/widget/component.dart';
 import '../../registeration/presenation/widget/widget.dart';
@@ -35,37 +39,45 @@ class _HomeLayoutState extends State<HomeLayout> {
   Widget build(BuildContext context) {
 
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) {
-          return HomeCubit.get(context).currentScreen;
-        },
+    return FutureBuilder(
+      future: checkForAppUpdate(
+        context,
       ),
-      bottomNavigationBar: //BottomNavBar(),
-      BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, snapshot) {
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              return HomeCubit.get(context).currentScreen;
+            },
+          ),
+          bottomNavigationBar: //BottomNavBar(),
+          BlocBuilder<HomeCubit, HomeState>(
   builder: (context, state) {
-    return
-      //  Container(
-    //padding:const EdgeInsets.only(bottom: 30, right: 32, left: 32),
-    // child: BottomBarFloating(
-    //   items: HomeCubit.get(context).items,
-    //
-    //     color: Colors.blue,
-    //     backgroundColor: Colors.white,
-    //     colorSelected: Colors.blue,
-    //   //  backgroundSelected: Colors.blue,
-    //   indexSelected: HomeCubit.get(context).currentIndex,
-    // paddingVertical: 24,
-    //   onTap: (index) {
-    //         HomeCubit.get(context).changeBottomNav(index);
-    //       },
-    // ),
-    // );
-      BottomNavBar();
+        return
+          //  Container(
+        //padding:const EdgeInsets.only(bottom: 30, right: 32, left: 32),
+        // child: BottomBarFloating(
+        //   items: HomeCubit.get(context).items,
+        //
+        //     color: Colors.blue,
+        //     backgroundColor: Colors.white,
+        //     colorSelected: Colors.blue,
+        //   //  backgroundSelected: Colors.blue,
+        //   indexSelected: HomeCubit.get(context).currentIndex,
+        // paddingVertical: 24,
+        //   onTap: (index) {
+        //         HomeCubit.get(context).changeBottomNav(index);
+        //       },
+        // ),
+        // );
+          BottomNavBar();
   },
 ),
 
+        );
+      }
     );
   }
 }
@@ -73,16 +85,17 @@ class _HomeLayoutState extends State<HomeLayout> {
 class ScreenThree extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ConditionalBuilder(condition: HomeCubit.get(context).userCacheModel != null,
+      builder: (context) => Column(
 
       children: [
         SizedBox(height:50.0.h),
         Center(
           child: CircleAvatar(
-            radius: 50, // adjust the size as needed
-            backgroundImage:     NetworkImage(
-              HomeCubit.get(context).userCacheModel!.image!,
-            )    ),
+              radius: 50, // adjust the size as needed
+              backgroundImage:     NetworkImage(
+                HomeCubit.get(context).userCacheModel!.image!,
+              )    ),
         ),
         SizedBox(height: 10.0.h),
         Text(
@@ -136,7 +149,7 @@ class ScreenThree extends StatelessWidget {
 
               },
               child: Row(
-               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   SizedBox(width: 10.w),
@@ -148,7 +161,7 @@ class ScreenThree extends StatelessWidget {
                   Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                    //Text(
+                      //Text(
                       //   text = "معلومات حسابك",
                       //   fontSize = 13.sp,
                       //   fontFamily = FontFamily(Font(R.font.dm sans),
@@ -166,7 +179,7 @@ class ScreenThree extends StatelessWidget {
                           color: Color(0xFF181D27),
                         ),
                       ),
-                     //Text(
+                      //Text(
                       //   text = "الاسم, الرقم...",
                       //   fontSize = 11.sp,
                       //   fontFamily = FontFamily(Font(R.font.dm sans),
@@ -193,13 +206,13 @@ class ScreenThree extends StatelessWidget {
                   //   fit: BoxFit.cover,
                   // ),
                   SizedBox(width: 20.w),
-              ImageIcon(
-                AssetImage('assets/images/Profile.png'),
-                size: 40,
+                  ImageIcon(
+                    AssetImage('assets/images/Profile.png'),
+                    size: 40,
 
-                ),
-               SizedBox(width: 10.w),
-                   ],
+                  ),
+                  SizedBox(width: 10.w),
+                ],
               ),
             ),
           ),
@@ -231,18 +244,18 @@ class ScreenThree extends StatelessWidget {
             ],
           ),
         ),
-          SizedBox(height: 5.0.h),
+        SizedBox(height: 5.0.h),
         Padding(
           padding:  EdgeInsets.symmetric(
             horizontal: 20.w,
           ),
           child:
           Container(
-    height: 170.h,
-    margin: EdgeInsets.symmetric(
-    horizontal: 50.w,
-    vertical: 10.h,
-    ),
+            height: 170.h,
+            margin: EdgeInsets.symmetric(
+              horizontal: 50.w,
+              vertical: 10.h,
+            ),
             color: Colors.white,
             child: Column(
               children: [
@@ -355,7 +368,7 @@ class ScreenThree extends StatelessWidget {
                 //   fontWeight = FontWeight(250),
                 //   color = Color(0xFF333333),
                 //   textAlign = TextAlign.Right)
-              SizedBox(height: 15.h),
+                SizedBox(height: 15.h),
                 Text(
                   'هذا الشهر',
                   style: TextStyle(
@@ -453,7 +466,7 @@ class ScreenThree extends StatelessWidget {
                 ),
               ],
             ),
-        ),
+          ),
         ),
         Padding(
           padding: EdgeInsets.only(
@@ -503,7 +516,8 @@ class ScreenThree extends StatelessWidget {
         ),
         SizedBox(height: 7.h),
       ],
-    );
+    ),
+        fallback: (context) => Center(child: CircularProgressIndicator(),),);
   }
 }
 
@@ -1250,5 +1264,47 @@ class _QrScannerOverlayPainter extends CustomPainter {
   @override
   bool shouldRepaint(_QrScannerOverlayPainter oldDelegate) {
     return oldDelegate.borderColor != borderColor;
+  }
+}
+Future checkForAppUpdate(context) async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  print('packageInfo \n\n\n\n\n\n\n ${packageInfo.version}');
+  await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: Duration(seconds: 60  ),
+      minimumFetchInterval: Duration(seconds: 1)
+  ));
+  await remoteConfig.fetchAndActivate();
+
+  bool forceUpdate = //if packageInfo.version is less than the version in firebase
+  //
+  remoteConfig.getString('app_version').compareTo(packageInfo.version) > 0;
+  String appVersion = remoteConfig.getString('app_version');
+  print('force_update \n\n\n\n\n\n\n $forceUpdate');
+  print('app_version \n\n\n\n\n\n\n $appVersion');
+  if (forceUpdate) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+              title: Text("Update Available"),
+              content: Text("A new version of the app is available."),
+              actions: [
+                TextButton(
+                    child: Text("Update"),
+                    onPressed: () {
+                      //url_launcher to https://play.google.com/store/apps/details?id=kaleo.chat.app
+
+                      final Uri _url = Uri.parse('https://play.google.com/store/apps/details?id=kaleo.chat.app');
+                      launchUrl(_url);
+                    }
+                ),
+                // TextButton(
+                //     child: Text("Cancel"),
+                //     onPressed: () { Navigator.pop(context); }
+                // )
+              ]
+          );
+        }
+    );
   }
 }

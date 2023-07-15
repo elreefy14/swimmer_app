@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,8 @@ import 'core/network/web_services.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message:\n\n\n ${message.messageId}');
 }late String mainRoute;
+final remoteConfig = //firabase remote config
+FirebaseRemoteConfig.instance;
 Future<void> main() async {
   //await initializeDateFormatting('ar', null);
 
@@ -28,12 +31,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await AndroidAlarmManager.initialize();
 
-  //init git it
-  //initGetIt();
-  //init shared pref
-//  await PurshaseApi.init();
-//  await CacheHelper.init();
-  //prevent landscape mode
   SystemChrome.setPreferredOrientations(
     [
       DeviceOrientation.portraitUp,
@@ -92,12 +89,15 @@ Future<void> main() async {
     sound: true,
   );
 
+  //checkForAppUpdate();
+    BlocOverrides.runZoned(() => runApp(const MyApp()),
+        blocObserver: MyBlocObserver());
 
   //setupDependencies();
-  BlocOverrides.runZoned(() => runApp(const MyApp()),
-      blocObserver: MyBlocObserver());
+
 
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -105,56 +105,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => LoginCubit()),
         BlocProvider(create: (context) => QrCubit()),
-       // BlocProvider(create: (context) => OtpCubit()),
-       // BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => HomeCubit()
-        //..getNotifications()
-        //..clearNotifications()
           ..getAllSchedulesForSpecificUser()
           ..getUserData()
-        //..getNotifications()
-         // ..generateRandomNotifications()
-        //    ..getAllSchedulesForSpecificUser()
-       // ..addScheduleToCoachCollection()
-      // ..getAllSchedulesForSpecificUser()
-       //   ..getSchedules(specificDate: DateTime.now())
-          //  ..getAllSchedulesForSpecificUser()
-        //    .._listenToConnectivityChanges()
-      //  ..onQRCodeScanned(
-      //    coachId: '4rC6uhZzsAbsdCFH0mHW6Qt0TTC3',
-      //    scheduleId: '3HEtmWiDk7K9iGVGNEsV'
-      //  )
-        //..generateQrImageBasedOnNearestSchedule()
-        //..setUpPeriodicAlarm()
-        //   ..startScanning()
-        // ..getSchedules(specificDate:
-        // DateTime.now()
-       //  )
-          //..addSchedule('rafik',
-           //       '3', '4', 7)
     ),
-       // BlocProvider(create: (context) => SignUpCubit()),
-       // BlocProvider(create: (context) => HomeCubit()
-        //    ..searchCourse('mat')
-        //    ..addTeacherAndCourseAndachaptersAndLessons()
-        //   ..sendNotification(
-        //   'integration test yto one', 'math'
-        //    )
-        //     ..sendNotificationToAllStudent('1',
-        //       'integration test to math students')
-        //..enrollCourse(
-        // ' 7Ww1DVgs0gX6eeLochZfVHgIPKz2','1'
-        //),
-         // ..firebaseMessagingGetToken()
-         // ..sendFCMNotification(
-           //   token: 'fCM_RJZERkWTJ-gOF3HqLg:APA91bEaT3iRG6kXJfYFCxZYic5ylKTYtRVmf0U7vQCiTj0XLm4z6MQgMQU6SeqVjXcEUt2WrX9v-fFwGzMqs58Gepf9HeFcnu_FxI4wIlUtpX6D2pOhNNeyAM00SUptj6esIpHc08dX', senderName: 'ahmed attack' ,messageImage: 'hiiii')
-          // ..sendNotification(
-          //  '6EAx9TEpHDc5N0ivwDEaTrufL2X2',
-          // 'math', 'en')
-          // ..getNotification('6EAx9TEpHDc5N0ivwDEaTrufL2X2')
-       // ),
+
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 690),
