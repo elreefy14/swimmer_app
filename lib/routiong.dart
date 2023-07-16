@@ -18,11 +18,7 @@ class RouteGenerator {
     //HomeScreen
       case AppRoutes.welcome:
         return MaterialPageRoute(builder: (_) => WelcomeScreen());
-    //      case AppRoutes.signUp:
-    //      return MaterialPageRoute(builder: (_) =>SignUpScreen());
       case AppRoutes.login:
-      // return MaterialPageRoute(builder: (_) =>SignInScreen());
-      //add BlocProvider(create: (context) => LoginCubit()), before return
         return MaterialPageRoute(builder: (_) =>
             BlocProvider(
               create: (context) => LoginCubit(),
@@ -33,36 +29,10 @@ class RouteGenerator {
     //EditProfile
       case AppRoutes.editProfile:
         return MaterialPageRoute(builder: (_) => EditProfile());
-    //case OtpVerificationScreen
-    // Navigator.pushNamed(
-    //   context,
-    //   AppRoutes.otpVerification,
-    //   arguments: {
-    //     'phone': phoneController.text,
-    //     'lName': lastNameController.text,
-    //     'fName': firstNameController.text,
-    //     'password': passwordController.text,
-    //   },
-    // );
-      case AppRoutes.otpVerification:
-        final args = settings.arguments;
-        if (args is Map<String, dynamic>) {
-          return MaterialPageRoute(builder: (_) =>
-              OtpVerificationScreen(
-                phoneNumber: args['phone'],
-                fName: args['fName'],
-                lName: args['lName'],
-                password: args['password'],
-              ));
-        } else {
-          return _errorRoute();
-        }
-
       default:
         return _errorRoute();
     }
   }
-
   static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(

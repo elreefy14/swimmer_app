@@ -256,6 +256,12 @@ static LoginCubit get(context) => BlocProvider.of(context);
     }).catchError((error) {
       String? errorMessage;
       switch (error.code) {
+        //network error
+        case "network-request-failed":
+          if (kDebugMode) {
+            errorMessage = 'Please check your internet connection';
+          }
+          break;
         case "invalid-email":
           if (kDebugMode) {
             //translate to arabic

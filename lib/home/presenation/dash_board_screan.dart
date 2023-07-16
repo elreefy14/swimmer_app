@@ -264,34 +264,39 @@ class DashBoard extends StatelessWidget {
                   //   .offset(x = 8.dp, y = 11.dp)
                   //   .width(63.dp)
                   //   .height(59.dp)
-                  Container(
-                    width: 80.0.w,
-                    height: 80.0.h,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color(0xFF2196F3),
-                        width: 2.0.w,
-                      ),
-                      borderRadius: BorderRadius.circular(12.0.r),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //The element type 'AssetImage' can't be assigned to the list type 'Widget'.
-                        Image( image:   AssetImage('assets/images/scan-qrcode_svgrepo.com.jpg'),),
-                        Text(
-                          'امسح QR',
-                          style: TextStyle(
-                            fontFamily: 'Montserrat-Arabic',
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 14,
-                            height: 16 / 14,
-                            color: Color(0xFF333333),
-                          ),
+                  InkWell(
+                    onTap: () {
+                      HomeCubit.get(context).changeBottomNav(1);
+                    },
+                    child: Container(
+                      width: 80.0.w,
+                      height: 80.0.h,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color(0xFF2196F3),
+                          width: 2.0.w,
                         ),
+                        borderRadius: BorderRadius.circular(12.0.r),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          //The element type 'AssetImage' can't be assigned to the list type 'Widget'.
+                          Image( image:   AssetImage('assets/images/scan-qrcode_svgrepo.com.jpg'),),
+                          Text(
+                            'امسح QR',
+                            style: TextStyle(
+                              fontFamily: 'Montserrat-Arabic',
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 14,
+                              height: 16 / 14,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
 
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   //15 h

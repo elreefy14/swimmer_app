@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:awesome_bottom_bar/tab_item.dart';
-import 'package:bottom_bar/bottom_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
@@ -292,20 +290,8 @@ class HomeCubit extends Cubit<HomeState> {
   'الملف الشخصي',
   'الاشعارات',
 ];
-   List<TabItem> items = [
-     TabItem(icon: Icons.home, title: 'لوحة التحكم'),
-      TabItem(icon: Icons.qr_code_scanner, title: 'مسح الكود'),
-      TabItem(icon: Icons.person, title: 'الملف الشخصي'),
-      TabItem(icon: Icons.notifications, title: 'الاشعارات'),
-    // TabItem(icon: Icons.person, title: 'الملف الشخصي'),
-  ];
-  List<BottomBarItem> items2 = [
-    BottomBarItem(
-      icon: ImageIcon(AssetImage('assets/images/dashboard-2_svgrepo.com.png')),
-      title: Text('Home'),
-      activeColor: Colors.blue,
-    ),
-  ];
+
+
 
   //listOfIcons which is list of ImageIcons
   final List<String> listOfIcons = [
@@ -390,7 +376,7 @@ class HomeCubit extends Cubit<HomeState> {
           .then((querySnapshot) {
         return querySnapshot.docs.map((doc) {
           final data = doc.data();
-          doc.reference.delete(); // Delete the notification from Firestore
+        //  doc.reference.delete(); // Delete the notification from Firestore
           return NotificationModel(message: data['message'], timestamp: data['timestamp'].toDate());
         }).toList();
       });

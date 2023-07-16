@@ -30,15 +30,10 @@ dependencies:
   qr_code_scanner: ^1.0.1
   cloud_firestore: ^4.8.1
   cloud_firestore_platform_interface: ^5.15.1
-
-
-
   firebase_auth: ^4.6.3
-
   firebase_core: ^2.14.0
   mobile_scanner: ^3.3.0
   firebase_storage: ^11.2.3
-
   flutter_animate: ^4.2.0
   flutter_cache_manager: 3.3.0
   font_awesome_flutter: ^10.4.0
@@ -46,17 +41,12 @@ dependencies:
   upgrader:
   google_fonts: ^4.0.4
   google_sign_in: ^6.1.4
-  google_sign_in_ios: ^5.6.2
   google_sign_in_platform_interface: ^2.4.1
   image_picker: ^0.8.9
   image_picker_android: ^0.8.7+3
-  image_picker_ios: ^0.8.8
   image_picker_platform_interface: ^2.8.0
-  pin_code_fields: ^8.0.1
-
   json_path: ^0.6.0
   json_serializable: ^6.7.0
-
   page_transition: ^2.0.9
   plugin_platform_interface: ^2.1.4
   provider: ^6.0.5
@@ -64,31 +54,25 @@ dependencies:
   firebase_analytics: ^10.4.3
   shared_preferences: ^2.1.2
   shared_preferences_android: ^2.1.4
-  shared_preferences_ios: 2.1.1
   shared_preferences_platform_interface: 2.2.0
   flutter_svg: ^2.0.7
   visibility_detector: ^0.2.0
   sqflite: ^2.2.8+4
   timeago: ^3.4.0
-  video_player: ^2.6.1
-  video_player_android: ^2.4.9
-  video_player_avfoundation: ^2.4.6
-  video_player_platform_interface: ^6.1.0
   bloc: ^8.1.1
   flutter_bloc: ^8.1.2
   firebase_messaging: ^14.2.1
   dio: ^5.2.1+1
-  flutter_screenutil: ^5.6.1
+  flutter_screenutil: ^5.8.4
   package_info_plus: ^4.0.2
   url_launcher: ^6.1.12
+
   fluttertoast: ^8.0.8
   toast:
   conditional_builder_null_safety:
   bot_toast:
   json_annotation: ^4.8.0
   qr_flutter: ^4.0.0
-  awesome_bottom_bar: ^1.2.2
-  bottom_bar: ^2.0.3
   flutter_launcher_icons: ^0.13.1
 
   # The following adds the Cupertino Icons font to your application.

@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
+import 'package:swimmer_app/home/data/Notification.dart';
 
 import '../../../registeration/data/user_cache_model.dart';
 
@@ -97,6 +98,29 @@ class QrCubit extends Cubit<QrState> {
         emit(QrLoading());
         await addAttendance(scheduleId, hourlyRate: hourlyRate);
         emit(QrCodeScannedSuccessfully());
+        //class NotificationModel {
+        //    String? message;
+        //   DateTime? timestamp;
+        //
+        //   NotificationModel({required this.message, required this.timestamp});
+        // //fromJson
+        //   factory NotificationModel.fromJson(Map<String, dynamic> json) {
+        //     return NotificationModel(
+        //       message: json['message'],
+        //       timestamp: DateTime.parse(json['timestamp']),
+        //     );
+        //   }
+        // //toJson
+        //   Map<String, dynamic> toJson() {
+        //     return {
+        //       'message': message,
+        //       'timestamp': timestamp.toString(),
+        //     };
+        //   }
+        //
+        // }
+        // add notification
+
         //  }
       } else {
         print('No internet connection, saving attendance data locally');
@@ -145,6 +169,18 @@ try {
         'totalSalary': FieldValue.increment(duration*hourlyRate!),
       });
       print('Attendance added successfully');
+      //add notification to user
+      NotificationModel notificationModel = NotificationModel(
+       // message: 'Attendance added successfully with duration $duration hours ',
+        //translate this message to arabic
+        message: 'تم اضافة الحضور بنجاح بمدة $duration ساعة',
+        timestamp: DateTime.now(),
+      );
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc( FirebaseAuth.instance.currentUser!.uid )
+          .collection('notifications')
+          .add(notificationModel.toMap());
       //await getUserData();
     }
     else{

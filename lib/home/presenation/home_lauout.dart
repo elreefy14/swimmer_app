@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
-import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -535,191 +534,195 @@ class EditProfile extends StatelessWidget {
         // TODO: implement listener
   },
   builder: (context, state) {
-        return Column(
-          children: [
-            SizedBox(height:30.0.h),
-            Center(
-              child: CircleAvatar(
-                radius: 50, // adjust the size as needed
-                backgroundImage: //networkImage
-                NetworkImage(
-                  HomeCubit.get(context).userCacheModel!.image!,
-                )
-              ),
-            ),
-            SizedBox(height: 10.0.h),
-            Text(
-              '${HomeCubit.get(context).userCacheModel!.fname!} ${HomeCubit.get(context).userCacheModel!.lname!}',
-              style: TextStyle(
-                fontFamily: 'Montserrat-Arabic',
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w300,
-                fontSize: 16,
-                height: 19 / 16,
-                color: Color(0xFF333333),
-              ),
-            ),
-            SizedBox(height: 8.0.h),
+        return SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
 
-            Text(
-              '34ج.م / ساعة',
-              style: TextStyle(
-                fontFamily: 'Montserrat-Arabic',
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w300,
-                fontSize: 14.sp,
-                height: 19 / 14,
-                color: Color(0xFF2196F3),
+          child: Column(
+            children: [
+              SizedBox(height:30.0.h),
+              Center(
+                child: CircleAvatar(
+                  radius: 50, // adjust the size as needed
+                  backgroundImage: //networkImage
+                  NetworkImage(
+                    HomeCubit.get(context).userCacheModel!.image!,
+                  )
+                ),
               ),
-            ),
-          //15.h
-            SizedBox(height: 15.0.h),
-          InkWell(
-            onTap: () {
-               HomeCubit.get(context).getProfileImage();
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                      color: Color(0xFF2196F3),
-                      borderRadius: BorderRadius.circular(15.0.r),
-                      border: Border.all(
+              SizedBox(height: 10.0.h),
+              Text(
+                '${HomeCubit.get(context).userCacheModel!.fname!} ${HomeCubit.get(context).userCacheModel!.lname!}',
+                style: TextStyle(
+                  fontFamily: 'Montserrat-Arabic',
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                  height: 19 / 16,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              SizedBox(height: 8.0.h),
+
+              Text(
+                '34ج.م / ساعة',
+                style: TextStyle(
+                  fontFamily: 'Montserrat-Arabic',
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 14.sp,
+                  height: 19 / 14,
+                  color: Color(0xFF2196F3),
+                ),
+              ),
+            //15.h
+              SizedBox(height: 15.0.h),
+            InkWell(
+              onTap: () {
+                 HomeCubit.get(context).getProfileImage();
+              },
+              child: Container(
+                decoration: BoxDecoration(
                         color: Color(0xFF2196F3),
-                        width: 1.0.w,
+                        borderRadius: BorderRadius.circular(15.0.r),
+                        border: Border.all(
+                          color: Color(0xFF2196F3),
+                          width: 1.0.w,
+                        ),
                       ),
-                    ),
 
-                    width: 180.0.w,
-                    height: 50.0.h,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.0.w,
-                        vertical: 9.0.h,
-                      ),
-                      child:
-                      Center(
-                        child: Text(
-                          'تعديل الصورة',
-                          style: TextStyle(
-                            fontFamily: 'Montserrat-Arabic',
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 18.sp,
-                            height: 21 / 18,
-                            color: Color(0xFFFFFFFF),
+                      width: 180.0.w,
+                      height: 50.0.h,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.0.w,
+                          vertical: 9.0.h,
+                        ),
+                        child:
+                        Center(
+                          child: Text(
+                            'تعديل الصورة',
+                            style: TextStyle(
+                              fontFamily: 'Montserrat-Arabic',
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 18.sp,
+                              height: 21 / 18,
+                              color: Color(0xFFFFFFFF),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-            ),
-          ),
-            //35
-            SizedBox(height: 35.0.h),
-
-            Form(
-              key: HomeCubit.get(context).formKey,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                    child: BuildTextFormField('الاسم الاول',
-        HomeCubit.get(context).firstNameController
-        ,TextInputType.name, 'ادخل الاسم الاول', (value) {
-                      if (value!.isEmpty) {
-                        return ' الرجاء ادخال الاسم الاول';
-                      }
-                      return null;
-                    },'assets/images/Vector.png' ,null),
-                  ),
-                  SizedBox(height: 15.0.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                    child: BuildTextFormField('الاسم الاخير', HomeCubit.get(context).lastNameController
-                        , TextInputType.name,'ادخل الاسم الاخير', (value) {
-                      if (value!.isEmpty) {
-                        return 'الرجاء ادخال الاسم الاخير';
-                      }
-                      return null;
-                    },'assets/images/Vector.png',null),
-                  ),
-                  SizedBox(height: 15.0),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 35.0.w),
-                    child: BuildTextFormField('رقم الهاتف',HomeCubit.get(context).phoneController,
-                        TextInputType.phone,'ادخل رقم الهاتف', (value) {
-                      if (value!.isEmpty) {
-                        return 'الرجاء ادخال رقم الهاتف';
-                      }
-                      return null;
-                    },'assets/images/Vector.png',null),
-                  ),
-                  SizedBox(height: 15.0.h),
-
-                  // BlocConsumer<OtpCubit,OtpState >(
-                  ConditionalBuilder(
-                    condition: true,
-                    builder: (context) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            left: 31.w,
-                            right: 31.w,
-                            top: 20.h
-                        ),
-                        child: ConditionalBuilder(
-                            builder: (context) =>  ElevatedButton(
-                              onPressed: () {
-                                if (HomeCubit.get(context).formKey.currentState!.validate()) {
-                                  HomeCubit.get(context).editUserData(
-                                    firstName: HomeCubit.get(context).firstNameController.text,
-                                    lastName: HomeCubit.get(context).lastNameController.text,
-                                    phone: HomeCubit.get(context).phoneController.text,
-                                  );
-                                }
-                              },
-                              child: Text(
-                                'حفظ التعديلات',
-                                style: TextStyle(
-                                  fontFamily: 'Montserrat-Arabic',
-                                  fontStyle: FontStyle.normal,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 18,
-                                  height: 26 / 18,
-                                  color: Color(0xFFFFFFFF),
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                primary: Color(0xFF2196F3), // Background color
-                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                textStyle: TextStyle(
-                                  fontSize: 18, // Adjust the font size if needed
-                                ),
-                              ),
-                            ),
-                            fallback: (context) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            },
-                          condition: state is! EditUserDataLoadingState,
-                        ),
-
-                      );
-
-                    },
-                    fallback: (context) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    },
-                  ),
-                ],
               ),
             ),
+              //35
+              SizedBox(height: 35.0.h),
 
-          ],
+              Form(
+                key: HomeCubit.get(context).formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                      child: BuildTextFormField('الاسم الاول',
+          HomeCubit.get(context).firstNameController
+          ,TextInputType.name, 'ادخل الاسم الاول', (value) {
+                        if (value!.isEmpty) {
+                          return ' الرجاء ادخال الاسم الاول';
+                        }
+                        return null;
+                      },'assets/images/Vector.png' ,null),
+                    ),
+                    SizedBox(height: 15.0.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                      child: BuildTextFormField('الاسم الاخير', HomeCubit.get(context).lastNameController
+                          , TextInputType.name,'ادخل الاسم الاخير', (value) {
+                        if (value!.isEmpty) {
+                          return 'الرجاء ادخال الاسم الاخير';
+                        }
+                        return null;
+                      },'assets/images/Vector.png',null),
+                    ),
+                    SizedBox(height: 15.0),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 35.0.w),
+                      child: BuildTextFormField('رقم الهاتف',HomeCubit.get(context).phoneController,
+                          TextInputType.phone,'ادخل رقم الهاتف', (value) {
+                        if (value!.isEmpty) {
+                          return 'الرجاء ادخال رقم الهاتف';
+                        }
+                        return null;
+                      },'assets/images/Vector.png',null),
+                    ),
+                    SizedBox(height: 15.0.h),
+
+                    // BlocConsumer<OtpCubit,OtpState >(
+                    ConditionalBuilder(
+                      condition: true,
+                      builder: (context) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              left: 31.w,
+                              right: 31.w,
+                              top: 20.h
+                          ),
+                          child: ConditionalBuilder(
+                              builder: (context) =>  ElevatedButton(
+                                onPressed: () {
+                                  if (HomeCubit.get(context).formKey.currentState!.validate()) {
+                                    HomeCubit.get(context).editUserData(
+                                      firstName: HomeCubit.get(context).firstNameController.text,
+                                      lastName: HomeCubit.get(context).lastNameController.text,
+                                      phone: HomeCubit.get(context).phoneController.text,
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  'حفظ التعديلات',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat-Arabic',
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 18,
+                                    height: 26 / 18,
+                                    color: Color(0xFFFFFFFF),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xFF2196F3), // Background color
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 18, // Adjust the font size if needed
+                                  ),
+                                ),
+                              ),
+                              fallback: (context) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            condition: state is! EditUserDataLoadingState,
+                          ),
+
+                        );
+
+                      },
+                      fallback: (context) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+            ],
+          ),
         );
   },
 );
@@ -727,239 +730,6 @@ class EditProfile extends StatelessWidget {
     );
   }
 }
-
-
-//
-// class ScreenFour extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         Column(
-//           children: [
-//             Row(
-//               children: [
-//                 Column(
-//                   children: [
-//                     Row(
-//                       children: [
-//                         Column(
-//                           children: [
-//                             Image.asset(
-//                               "assets/Vector.png",
-//                               width: 8,
-//                               height: 9,
-//                             ),
-//                             Image.asset(
-//                               "assets/Vector.png",
-//                               width: 5,
-//                               height: 16,
-//                             ),
-//                             Image.asset(
-//                               "assets/Vector.png",
-//                               width: 8,
-//                               height: 4,
-//                             )
-//                           ],
-//                         )
-//                       ],
-//                     ),
-//                     Column(
-//                       children: [
-//                         Text(
-//                             "لوحة التحكم",
-//                             style: TextStyle(
-//                               fontSize: 12,
-//                               fontWeight: FontWeight.w400,
-//                             )
-//                         )
-//                       ],
-//                     )
-//                   ],
-//                 ),
-//                 Column(
-//                   children: [
-//                     Column(
-//                       children: [
-//                         Row(
-//                           children: [
-//                             Column(
-//                               children: [
-//                                 Image.asset(
-//                                   "assets/Vector.png",
-//                                   width: 24,
-//                                   height: 24,
-//                                 )
-//                               ],
-//                             )
-//                           ],
-//                         ),
-//                         Text(
-//                             "امسح QR",
-//                             style: TextStyle(
-//                               fontSize: 12,
-//                               fontWeight: FontWeight.w400,
-//                             )
-//                         )
-//                       ],
-//                     )
-//                   ],
-//                 ),
-//                 Column(
-//                   children: [
-//                     Column(
-//                       children: [
-//                         Row(
-//                           children: [
-//                             Column(
-//                               children: [
-//                                 Image.asset(
-//                                   "assets/Vector.png",
-//                                   width: 24,
-//                                   height: 24,
-//                                 )
-//                               ],
-//                             )
-//                           ],
-//                         ),
-//                         Text(
-//                             "الملف الشخصي",
-//                             style: TextStyle(
-//                               fontSize: 12,
-//                               fontWeight: FontWeight.w400,
-//                             )
-//                         )
-//                       ],
-//                     )
-//                   ],
-//                 ),
-//                 Column(
-//                   children: [
-//                     Column(
-//                       children: [
-//                         Row(
-//                           children: [
-//                             Image.asset(
-//                               "assets/Vector.png",
-//                               width: 20,
-//                               height: 24.444576263427734,
-//                             )
-//                           ],
-//                         ),
-//                         Text(
-//                             "الاشعارات",
-//                             style: TextStyle(
-//                               fontSize: 12,
-//                               fontWeight: FontWeight.w400,
-//                             )
-//                         )
-//                       ],
-//                     )
-//                   ],
-//                 )
-//               ],
-//             )
-//           ],
-//         ),
-//         Column(
-//           children: [
-//             Column(
-//               children: [
-//                 Column(
-//                   children: [
-//                     Text(
-//                         "جار البحث عن رمز QR...",
-//                         style: TextStyle(
-//                           fontSize: 20,
-//                           fontWeight: FontWeight.w300,
-//                         )
-//                     )
-//                   ],
-//                 ),
-//                 Column(
-//                   children: [
-//                     Column(
-//                       children: [
-//                         Row(
-//                           children: [
-//                             Container(
-//                                 width: 30,
-//                                 height: 30,
-//                                 decoration:     BoxDecoration()
-//                             ),
-//                             Container(
-//                                 width: 30.000003814697266,
-//                                 height: 30.000003814697266,
-//                                 decoration:     BoxDecoration()
-//                             )
-//                           ],
-//                         ),
-//                         Row(
-//                           children: [
-//                             Container(
-//                                 width: 30,
-//                                 height: 30,
-//                                 decoration:     BoxDecoration()
-//                             ),
-//                             Container(
-//                                 width: 30.000003814697266,
-//                                 height: 30.000003814697266,
-//                                 decoration:     BoxDecoration()
-//                             )
-//                           ],
-//                         )
-//                       ],
-//                     )
-//                   ],
-//                 )
-//               ],
-//             ),
-//             Column(
-//               children: [
-//                 Row(
-//                   children: [
-//                     Text(
-//                         "تعليمات",
-//                         style: TextStyle(
-//                           fontSize: 14,
-//                           fontWeight: FontWeight.w400,
-//                         )
-//                     )
-//                   ],
-//                 ),
-//                 Column(
-//                   children: [
-//                     Text(
-//                         "- تأكد ان رمز QR يظهر بوضوح.",
-//                         style: TextStyle(
-//                           fontSize: 12,
-//                           fontWeight: FontWeight.w400,
-//                         )
-//                     ),
-//                     Text(
-//                         "- اقترب من رمز  QR",
-//                         style: TextStyle(
-//                           fontSize: 12,
-//                           fontWeight: FontWeight.w400,
-//                         )
-//                     ),
-//                     Text(
-//                         "- تأكد من ان المكان ليس معتم.",
-//                         style: TextStyle(
-//                           fontSize: 12,
-//                           fontWeight: FontWeight.w400,
-//                         )
-//                     )
-//                   ],
-//                 )
-//               ],
-//             )
-//           ],
-//         )
-//       ],
-//     );
-//   }
-// }
 
 
 class QrScreen extends StatelessWidget {
@@ -970,6 +740,7 @@ class QrScreen extends StatelessWidget {
     return Builder(
       builder: (context) {
         QrCubit.get(context).qrCodeScanned =false;
+        //
         return Scaffold(
           //make screen to scan qr code using camera and pr
 
@@ -1112,12 +883,11 @@ class QrScreen extends StatelessWidget {
                       width: 250.w,
                       child: BlocBuilder<QrCubit, QrState>(
   builder: (context, state) {
-        return MobileScanner(onDetect: (BarcodeCapture barcodes) {
+        return MobileScanner(
+          startDelay: true,
+
+          onDetect: (BarcodeCapture barcodes) {
           if(QrCubit.get(context).qrCodeScanned == true) {
-           // showToast(
-            //  msg: "A QR code has already been scanned.",
-            //  state: ToastStates.ERROR,
-           // );
             return;}else{
             String? displayValue = barcodes.barcodes[0].displayValue;
             QrCubit.get(context).onQRCodeScanned(
@@ -1306,5 +1076,45 @@ Future checkForAppUpdate(context) async {
           );
         }
     );
+  }
+}
+
+
+class QRScanner extends StatefulWidget {
+  const QRScanner({Key? key}) : super(key: key);
+
+  @override
+  _QRScannerState createState() => _QRScannerState();
+}
+
+class _QRScannerState extends State<QRScanner> {
+  final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
+  late QRViewController _controller;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return QRView(
+      key: _qrKey,
+      onQRViewCreated: _onQRViewCreated,
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    setState(() {
+      _controller = controller;
+    });
+
+    _controller.scannedDataStream.listen((scannedData) {
+      if (scannedData.code != null) {
+        // Do something with the scanned data, e.g. display it on the screen
+        print(scannedData.code);
+      }
+    });
   }
 }

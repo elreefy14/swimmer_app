@@ -26,6 +26,8 @@ Widget BuildTextFormField(
   ),
   SizedBox(height: 8),
   TextFormField(
+    scrollPadding: //50 from bottom of screen
+    EdgeInsets.only(bottom: 50.h),
   controller: controller,
   keyboardType: input,
   obscureText: labelText == 'كلمة المرور' ? true : false,
