@@ -57,7 +57,7 @@ Future<void> main() async {
   );
   //if frebase login is null
   //late String mainRoute;
-  if (FirebaseAuth.instance.currentUser == null) {
+  if (FirebaseAuth.instance.currentUser != null) {
     mainRoute = AppRoutes.welcome;
   } else {
     mainRoute = AppRoutes.home;

@@ -737,6 +737,8 @@ class QrScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey qrKey = GlobalKey();
+    QRViewController qrController;
     return Builder(
       builder: (context) {
         QrCubit.get(context).qrCodeScanned =false;
