@@ -26,6 +26,11 @@ class LoginCubit extends Cubit<LoginState> {
 
 
 static LoginCubit get(context) => BlocProvider.of(context);
+//form key
+  final formKey = GlobalKey<FormState>();
+  //text editing controller
+  final passwordController = TextEditingController();
+  final phoneController = TextEditingController();
   //
   // String? profilePicURL;
   //
