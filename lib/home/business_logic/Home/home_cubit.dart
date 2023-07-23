@@ -886,11 +886,12 @@ class HomeCubit extends Cubit<HomeState> {
 
     final Random random = Random();
 
-    for (int i = 0; i < 1; i++) {
+
       // Generate a random start time between 9:00 AM and 5:00 PM
       final int startHour = random.nextInt(8) + 9;
       final int startMinute = random.nextInt(4) * 15;
-      final DateTime startTime = DateTime(2040, 5, random.nextInt(9) + 17, startHour, startMinute);
+      final DateTime startTime = DateTime.now();
+
 
       // Generate a random end time between 1 and 3 hours after the start time
       final int duration = random.nextInt(2) + 1;
@@ -915,7 +916,7 @@ class HomeCubit extends Cubit<HomeState> {
         print('Failed to add schedule to coach collection due to error: $error');
         emit(AddScheduleToCoachCollectionErrorState(error: error.toString()));
       });
-    }
+
   }
 
   clearNotificationsfromcache() {
@@ -964,7 +965,10 @@ class HomeCubit extends Cubit<HomeState> {
 // - *admins*: A collection to store the information of all admins.
 // - Document ID: unique admin ID
 // - Fields: *`name`, *`email`*, *`branch_id`** (the ID of the branch they're responsible for)
-//
+
+
+  List<SchedulesModel> globalSchedules = [];
+
   Future<List<SchedulesModel>> getSchedulesForToday() async {
     final prefs = await SharedPreferences.getInstance();
     final cachedSchedules = prefs.getStringList('schedules');
@@ -980,9 +984,14 @@ class HomeCubit extends Cubit<HomeState> {
             scheduleStartTime.day == startOfToday.day) {
           todaySchedules.add(SchedulesModel.fromJson(data));
         }
+        //delete old schedules
+        if (scheduleStartTime.isBefore(startOfToday)) {
+          cachedSchedules.remove(json);
+        }
       }
       if (todaySchedules.isNotEmpty) {
         // Return cached schedules if available and start time is today
+        globalSchedules = todaySchedules;
         return todaySchedules;
       }
     }
@@ -1002,15 +1011,22 @@ class HomeCubit extends Cubit<HomeState> {
       final schedulesSnapshot = await schedulesQuery.get();
       schedules.addAll(schedulesSnapshot.docs.map((doc) {
         final data = doc.data();
-        data['start_time'] = data['start_time'].toDate();
-        data['end_time'] = data['end_time'].toDate();
-        return SchedulesModel.fromJson(data);
+       // data['start_time'] = data['start_time'].toDate();
+       // data['end_time'] = data['end_time'].toDate();
+        return SchedulesModel.fromJson2(data);
+
       }));
     }
 
     // Cache schedules for future use
     prefs.setStringList(
         'schedules', schedules.map((s) => jsonEncode(s.toJson())).toList());
+    //print all schedules
+    for (final schedule in schedules) {
+      print(schedule.toJson());
+    }
+
+    globalSchedules = schedules;
 
     return schedules;
   }

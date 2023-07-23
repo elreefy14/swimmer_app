@@ -106,11 +106,13 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => QrCubit()),
         BlocProvider(create: (context) => HomeCubit()
-        ..addScheduleToCoachCollection()
-        //..clearNotifications()
-          ..getAllSchedulesForSpecificUser()
-          ..getUserData()
-         //   ..clearNotifications()
+        ..getSchedulesForToday()
+        //..addScheduleToCoachCollection()
+
+        //  ..getAllSchedulesForSpecificUser()
+         // ..getUserData()
+
+          //   ..clearNotifications()
     ),
 
       ],

@@ -40,24 +40,15 @@ class SchedulesModel {
 
 factory SchedulesModel.fromJson2(Map<String, dynamic> json) {
     return SchedulesModel(
-//       branch_id "edasdas"
-//       coach_id "awak4gIQ28SdtDYLJIEF9phS20p2"
-//       date May 13, 2023 at 11:57:01 PM UTC+2
-//       end_time May 13, 2023 at 11:57:01 PM UTC+2
-//       finished false
-//       start_time May 13, 2023 at 11:57:01 PM UTC+2
+
       branchId: json['branch_id'],
       startTime: json['start_time'],
       endTime: json['end_time'],
 
       finished: json['finished'],
-
-
     );
   }
 
-  //from json function
-//from json function
   factory SchedulesModel.fromJson(Map<String, dynamic> json) {
     return SchedulesModel(
       branchId: json['branch_id'],
@@ -67,7 +58,15 @@ factory SchedulesModel.fromJson2(Map<String, dynamic> json) {
       finished: json['finished'],
     );
   }
-
+  // to json function
+  Map<String, dynamic> toJson2() {
+    return {
+      'branch_id': branchId,
+      'start_time': startTime,
+      'end_time': endTime,
+      'finished': finished,
+    };
+  }
 
 }
 
