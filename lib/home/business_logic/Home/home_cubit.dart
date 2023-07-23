@@ -939,4 +939,106 @@ class HomeCubit extends Cubit<HomeState> {
     await notificationsCollection.add(notification);
 
   }
+
+//  make flutter function .i want to get all schedules which start time = today by looping all users then subcollection schedules use where start time = today .function will do following . first get list of schedules frim shared pref check if start time= today return list  else get list from firebase order them descending . save list in cache  .// ****this is my firestore Collections and Documents:**
+// - *users*: A collection to store the information of all coaches.
+// - Document ID: unique coach ID
+// - Fields: *`name`, *`level`*, *`hourly_rate`*, *`total_hours`*, *`total_salary`*, *`current_month_hours`*, *`current_month_salary`**
+// - Subcollection: *`schedules`*
+// - Document ID: unique schedule ID
+// - Fields: *`branch_id`, *`start_time`*, *`end_time`*, *`date`*, *`finished`**
+// - Subcollection: *`attendance`*
+// - Document ID: unique attendance ID (usually just the coach ID)
+// - Fields: *`attended`, *`qr_code`**
+// - Subcollection: *`salaryHistory`*
+// - Document ID: unique salary history ID (usually just the month and year)
+// - Fields: *`month`, *`year`*, *`total_hours`*, *`total_salary`**
+// - Fields: *`branches`* (array of branch IDs that the coach works at)
+//
+// - *branches*: A collection to store the information of all branches.
+// - Document ID: unique branch ID
+// - Fields: *`name`, *`address`**
+// - Subcollection: *`coaches`*
+// - Document ID: unique coach ID who works at this branch
+//
+// - *admins*: A collection to store the information of all admins.
+// - Document ID: unique admin ID
+// - Fields: *`name`, *`email`*, *`branch_id`** (the ID of the branch they're responsible for)
+//
+  Future<List<SchedulesModel>> getSchedulesForToday() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedSchedules = prefs.getStringList('schedules');
+    if (cachedSchedules != null) {
+      final todaySchedules = <SchedulesModel>[];
+      final now = DateTime.now();
+      final startOfToday = DateTime(now.year, now.month, now.day);
+      for (final json in cachedSchedules) {
+        final data = jsonDecode(json);
+        final scheduleStartTime = DateTime.parse(data['start_time']);
+        if (scheduleStartTime.year == startOfToday.year &&
+            scheduleStartTime.month == startOfToday.month &&
+            scheduleStartTime.day == startOfToday.day) {
+          todaySchedules.add(SchedulesModel.fromJson(data));
+        }
+      }
+      if (todaySchedules.isNotEmpty) {
+        // Return cached schedules if available and start time is today
+        return todaySchedules;
+      }
+    }
+
+    final now = DateTime.now();
+    final startOfToday = DateTime(now.year, now.month, now.day);
+    final schedules = <SchedulesModel>[];
+
+    final usersQuery = FirebaseFirestore.instance.collection('users');
+    final usersSnapshot = await usersQuery.get();
+    for (final userDoc in usersSnapshot.docs) {
+      final schedulesQuery = userDoc.reference
+          .collection('schedules')
+          .where('start_time', isGreaterThanOrEqualTo: startOfToday)
+          .where('start_time', isLessThan: startOfToday.add(Duration(days: 1)))
+          .orderBy('start_time', descending: true);
+      final schedulesSnapshot = await schedulesQuery.get();
+      schedules.addAll(schedulesSnapshot.docs.map((doc) {
+        final data = doc.data();
+        data['start_time'] = data['start_time'].toDate();
+        data['end_time'] = data['end_time'].toDate();
+        return SchedulesModel.fromJson(data);
+      }));
+    }
+
+    // Cache schedules for future use
+    prefs.setStringList(
+        'schedules', schedules.map((s) => jsonEncode(s.toJson())).toList());
+
+    return schedules;
+  }
+
+
+  Future<void> writeRandomSchedules() async {
+    final batch = FirebaseFirestore.instance.batch();
+    final now = DateTime.now();
+    final rng = Random();
+    for (int i = 0; i < 100; i++) {
+      final branchId = 'branch_${rng.nextInt(10)}';
+      final startOfToday = DateTime(now.year, now.month, now.day);
+      final startTime = startOfToday.add(Duration(hours: rng.nextInt(24)));
+      final endTime = startTime.add(Duration(hours: rng.nextInt(24)));
+      final finished = rng.nextBool();
+      final schedule = SchedulesModel(
+        branchId: branchId,
+        startTime: Timestamp.fromDate(startTime),
+        endTime: Timestamp.fromDate(endTime),
+        finished: finished,
+      );
+      final scheduleRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc('user_${rng.nextInt(10)}')
+          .collection('schedules')
+          .doc();
+      batch.set(scheduleRef, schedule.toJson());
+    }
+    await batch.commit();
+  }
 }
