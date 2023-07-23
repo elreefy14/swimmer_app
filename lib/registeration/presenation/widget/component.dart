@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 
 Widget BuildTextFormField(
@@ -39,9 +40,10 @@ Widget BuildTextFormField(
   )
       : null,
   suffixIcon: suffixIconPath != null
-  ? ImageIcon(
-  AssetImage(suffixIconPath),
+  ? SvgPicture.asset(
+  suffixIconPath,
   color: Color(0xFF333333),
+
   )
       : null,
   hintText: hintText,

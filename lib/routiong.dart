@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swimmer_app/home/presenation/home_lauout.dart';
@@ -12,7 +14,7 @@ import 'core/constants/routes_manager.dart';
 import 'core/constants/strings.dart';
 
 class RouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic>? generateRoute(RouteSettings settings) {
     var args = settings.arguments;
     switch (settings.name) {
     //HomeScreen
@@ -29,20 +31,15 @@ class RouteGenerator {
     //EditProfile
       case AppRoutes.editProfile:
         return MaterialPageRoute(builder: (_) => EditProfile());
-      default:
-        return _errorRoute();
+      // default:
+      //   return _errorRoute();
     }
   }
   static Route<dynamic> _errorRoute() {
+    // Exit the app if there is no route defined for the given route settings
     return MaterialPageRoute(builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text(AppStrings.noRoutes),
-        ),
-        body: const Center(
-          child: Text(AppStrings.noRoutes),
-        ),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) => exit(0));
+      return Container();
     });
   }
 }

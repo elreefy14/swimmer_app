@@ -99,10 +99,10 @@ class SignInScreen extends StatelessWidget {
                           state: ToastStates.ERROR,
                         );
                       } else if (state is LoginLoadingState) {
-                        showToast(
-                          msg: 'جاري تسجيل الدخول',
-                          state: ToastStates.WARNING,
-                        );
+                        // showToast(
+                        //   msg: 'جاري تسجيل الدخول',
+                        //   state: ToastStates.WARNING,
+                        // );
                       }
                     },
                     builder: (context, state) {

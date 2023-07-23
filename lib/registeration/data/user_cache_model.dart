@@ -13,6 +13,7 @@ class UserCacheModel {
    int? currentMonthSalary;
    String? fname;
    String? lname;
+   String? role;
 //list of strings contain branches names
   List<String>? branches;
   UserCacheModel({
@@ -32,6 +33,7 @@ class UserCacheModel {
     this.fname,
     this.lname,
     this.branches,
+    this.role,
   });
 
   factory UserCacheModel.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class UserCacheModel {
       currentMonthSalary: json['current_month_salary'],
       image: json['image'],
       branches: json['branches'] != null ? List<String>.from(json['branches']) : null,
+      role: json['role'],
     );
   }
 
@@ -70,5 +73,6 @@ class UserCacheModel {
     'current_month_hours': currentMonthHours,
     'current_month_salary': currentMonthSalary,
     'branches': branches,
+    'role': role,
   };
 }

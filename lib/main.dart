@@ -17,7 +17,6 @@ import 'package:swimmer_app/routiong.dart';
 import 'core/bloc_observer.dart';
 import 'core/cashe_helper.dart';
 import 'core/constants/routes_manager.dart';
-import 'core/network/web_services.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message:\n\n\n ${message.messageId}');
@@ -57,13 +56,13 @@ Future<void> main() async {
   );
   //if frebase login is null
   //late String mainRoute;
-  if (FirebaseAuth.instance.currentUser != null) {
+  if (FirebaseAuth.instance.currentUser == null) {
     mainRoute = AppRoutes.welcome;
   } else {
     mainRoute = AppRoutes.home;
 
   }
-  await DioHelper.init();
+  //await DioHelper.init();
   FirebaseMessaging.onMessage.listen((event) {
     print('onMessage\n\n\n');
     print(event.notification!.title);
@@ -107,6 +106,8 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => QrCubit()),
         BlocProvider(create: (context) => HomeCubit()
+        //..addScheduleToCoachCollection()
+        //..clearNotifications()
           ..getAllSchedulesForSpecificUser()
           ..getUserData()
          //   ..clearNotifications()

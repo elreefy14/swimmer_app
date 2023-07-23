@@ -4,6 +4,7 @@ class UserCacheModel {
   final String email;
   final String name;
   final String phone;
+  final String role ;
 
   UserCacheModel({
     required this.token,
@@ -11,6 +12,7 @@ class UserCacheModel {
     required this.email,
     required this.name,
     required this.phone,
+    required this.role,
   });
 
   factory UserCacheModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class UserCacheModel {
       email: json['email'],
       name: json['name'],
       phone: json['phone'],
+      role: json['role'],
     );
   }
 
@@ -29,5 +32,6 @@ class UserCacheModel {
     'email': email,
     'name': name,
     'phone': phone,
+    'role': role,
   };
 }

@@ -24,6 +24,7 @@ import '../../data/userModel.dart';
 import '../../presenation/dash_board_screan.dart';
 import '../../presenation/home_lauout.dart';
 import '../../presenation/notification_screen.dart';
+import '../../presenation/profile_screen.dart';
 import '../../presenation/qr_screen.dart';
 import 'home_state.dart';
 // ****this is my firestore Collections and Documents:**
@@ -106,7 +107,7 @@ class HomeCubit extends Cubit<HomeState> {
   final List<Widget> _screens = [
     DashBoard(),
     QrScreen(),
-    ScreenThree(),
+    ProfileScreen(),
     NotificationScreen(),
     EditProfile(),
   ];
@@ -213,7 +214,7 @@ class HomeCubit extends Cubit<HomeState> {
       updateData['image'] = image;
 
       //userData!.image = image;
-      notificationData['message'] = 'تم تحديث معلومات الحساب الشخصية';
+      notificationData['message'] = ' تم تحديث معلومات الحساب الشخصية';
     //'personal info '
       //translation
 
@@ -371,7 +372,7 @@ class HomeCubit extends Cubit<HomeState> {
           .collection('notifications')
           .where('timestamp', isGreaterThan: latestNotification?.timestamp ?? DateTime.fromMicrosecondsSinceEpoch(0))
           .orderBy('timestamp', descending: true)
-          .limit(20 - jsonList.length)
+       //   .limit(30 - jsonList.length)
           .get()
           .then((querySnapshot) {
         return querySnapshot.docs.map((doc) {
@@ -388,8 +389,8 @@ class HomeCubit extends Cubit<HomeState> {
     ];
     allNotifications.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
-    if (allNotifications.length > 20) {
-      allNotifications.removeRange(20, allNotifications.length);
+    if (allNotifications.length > 30) {
+      allNotifications.removeRange(30, allNotifications.length);
     }
 
     await saveLatestNotifications(allNotifications);
@@ -407,7 +408,7 @@ class HomeCubit extends Cubit<HomeState> {
     ));
     return allNotifications;
   }
-  //
+
   // Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
   //   await initializeDateFormatting('ar');
   //  // await CacheHelper.clearSchedulesFromSharedPreferences();
@@ -889,7 +890,7 @@ class HomeCubit extends Cubit<HomeState> {
       // Generate a random start time between 9:00 AM and 5:00 PM
       final int startHour = random.nextInt(8) + 9;
       final int startMinute = random.nextInt(4) * 15;
-      final DateTime startTime = DateTime(2023, 5, random.nextInt(9) + 17, startHour, startMinute);
+      final DateTime startTime = DateTime(2030, 5, random.nextInt(9) + 17, startHour, startMinute);
 
       // Generate a random end time between 1 and 3 hours after the start time
       final int duration = random.nextInt(2) + 1;
