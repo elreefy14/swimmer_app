@@ -193,7 +193,7 @@ class EditProfile extends StatelessWidget {
                           return ' الرجاء ادخال الاسم الاول';
                         }
                         return null;
-                      },'assets/images/edit.svg' ,null),
+                      },'assets/images/Vector.png' ,null),
                     ),
                     SizedBox(height: 15.0.h),
                     Padding(
@@ -204,7 +204,7 @@ class EditProfile extends StatelessWidget {
                           return 'الرجاء ادخال الاسم الاخير';
                         }
                         return null;
-                      },'assets/images/edit.svg',null),
+                      },'assets/images/Vector.png',null),
                     ),
                     SizedBox(height: 15.0),
                     Padding(
@@ -215,7 +215,7 @@ class EditProfile extends StatelessWidget {
                           return 'الرجاء ادخال رقم الهاتف';
                         }
                         return null;
-                      },'assets/images/edit.svg',null),
+                      },'assets/images/Vector.png',null),
                     ),
                     SizedBox(height: 15.0.h),
 

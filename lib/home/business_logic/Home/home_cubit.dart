@@ -494,7 +494,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser2() async {
     //SharedPreferences.setMockInitialValues({});
    await initializeDateFormatting('ar');
-    //await CacheHelper.clearSchedulesFromSharedPreferences();
+    await CacheHelper.clearSchedulesFromSharedPreferences();
     emit(LoadingState());
     print('Getting all schedules for specific coach');
     print('FirebaseAuth.instance.currentUser!.uid: ${FirebaseAuth.instance.currentUser!.uid}');
@@ -576,7 +576,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   List<SchedulesModel>? schedulesList;
 
-  Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async {
+  Future<List<SchedulesModel>?> getAllSchedulesForSpecificUser() async  {
 //SharedPreferences.setMockInitialValues({});
     await initializeDateFormatting('ar');
 //await CacheHelper.clearSchedulesFromSharedPreferences();
@@ -886,11 +886,11 @@ class HomeCubit extends Cubit<HomeState> {
 
     final Random random = Random();
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 1; i++) {
       // Generate a random start time between 9:00 AM and 5:00 PM
       final int startHour = random.nextInt(8) + 9;
       final int startMinute = random.nextInt(4) * 15;
-      final DateTime startTime = DateTime(2030, 5, random.nextInt(9) + 17, startHour, startMinute);
+      final DateTime startTime = DateTime(2040, 5, random.nextInt(9) + 17, startHour, startMinute);
 
       // Generate a random end time between 1 and 3 hours after the start time
       final int duration = random.nextInt(2) + 1;
