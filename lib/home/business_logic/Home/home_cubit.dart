@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+//import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swimmer_app/core/cashe_helper.dart';
 import '../../../registeration/data/user_cache_model.dart';
@@ -65,6 +66,9 @@ class HomeCubit extends Cubit<HomeState> {
    // _listenToConnectivityChanges();
     //initControllers();
   }
+  //get all users from firestore and save them in a list of users
+
+
   Future<void> getUserData() async {
     emit(GetUserDataLoadingState());
     if (await checkInternetConnection()) {
@@ -77,31 +81,31 @@ class HomeCubit extends Cubit<HomeState> {
         if (value.exists) {
           var data = value.data();
           userCacheModel = UserCacheModel(
-            image: data?['image']??'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-            email: user.email??'${data?['phone']}@placeholder.com',
+            image: data?['image'] ??
+                'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
+            email: user.email ?? '${data?['phone']}@placeholder.com',
             phone: data?['phone'],
-            token:data?['deviceToken'][0],
+            token: data?['deviceToken'][0],
             uId: user.uid,
             fname: data?['fname'],
             lname: data?['lname'],
             name: data?['name'],
             level: data?['level'],
-            hourlyRate: data?['hourlyRate']??30,
-            totalHours: data?['totalHours']??0,
-            totalSalary: data?['totalSalary']??0,
-            currentMonthHours: data?['currentMonthHours']??0,
-            currentMonthSalary: data?['currentMonthSalary']??0,
-            branches: (data?['branches'] as List<dynamic>).map((branch) => branch.toString()).toList(),
+            hourlyRate: data?['hourlyRate'] ?? 30,
+            totalHours: data?['totalHours'] ?? 0,
+            totalSalary: data?['totalSalary'] ?? 0,
+            currentMonthHours: data?['currentMonthHours'] ?? 0,
+            currentMonthSalary: data?['currentMonthSalary'] ?? 0,
+            branches: (data?['branches'] as List<dynamic>).map((branch) =>
+                branch.toString()).toList(),
           );
           CacheHelper.saveUser(userCacheModel);
-          emit(GetUserDataSuccessState());}
-      }).catchError((error) {
-        print(error.toString());
-        emit(GetUserDataErrorState(error: error.toString()));
-      });
+          //emit(GetUserDataSuccessState());}
+        }
+        });
     } else {
       userCacheModel = await CacheHelper.getUser();
-      emit(GetUserDataSuccessState());
+      //emit(GetUserDataSuccessState());
     }
   }
   final List<Widget> _screens = [
@@ -802,83 +806,84 @@ class HomeCubit extends Cubit<HomeState> {
  //   size: 200.0,
   //);
   //TODO;subtract now - start time get first schedule
-  Future<void> generateQrImageBasedOnNearestSchedule() async {
-    emit(GenerateQrImageLoadingState());
-
-    // Get the current timestamp
-    DateTime timestamp = DateTime.now();
-    Timestamp now = Timestamp.fromDate(timestamp);
-
-
-    // Query Firestore for the nearest schedule
-    QuerySnapshot scheduleQuerySnapshot = await FirebaseFirestore.instance
-        .collection('schedules')
-        .where('finished', isEqualTo: false)
-        //.where('start_time', isGreaterThan: now)
-        //.orderBy('start_time', descending: false)
-        .get();
-
-    // Check if any schedules were found
-    QrImage qrImage;
-    if (scheduleQuerySnapshot.docs.isNotEmpty) {
-      // Get the ID of the first schedule document
-      String scheduleId = scheduleQuerySnapshot.docs.first.id;
-
-      // Generate a QR code image with the schedule ID as data
-
-      print('\n\n\n\n\n');
-      print('$scheduleId');
-      print('$scheduleId');
-      print('$scheduleId');
-      print('$scheduleId');
-      print('$scheduleId');
-      print('\n\n\n\n\n\n\n');
-
-      qrImage = QrImage(
-        data: scheduleId,
-        version: QrVersions.auto,
-        size: 200.0,
-      );
-      emit(GenerateQrImageSuccessState());
-    } else {
-      // Handle case where no schedules were found
-      qrImage = QrImage(
-        data: "No schedules found",
-        version: QrVersions.auto,
-        size: 200.0,
-      );
-      emit(GenerateQrImageErrorState(
-          error:'error'
-      ));
-    }
-
-
-    // // If there are any unfinished schedules
-    // if (querySnapshot.docs.isNotEmpty) {
-    //   // Find the schedule closest to the current time
-    //   DocumentSnapshot closestSchedule = querySnapshot.docs.first;
-    //   Duration smallestDuration = timestamp
-    //       .difference(closestSchedule['start_time'].toDate().millisecondsSinceEpoch)
-    //       .abs();
-    //
-    //   for (DocumentSnapshot doc in querySnapshot.docs) {
-    //     Duration currentDuration = timestamp
-    //         .difference(doc['start_time'].toDate().millisecondsSinceEpoch)
-    //         .abs();
-    //     if (currentDuration < smallestDuration) {
-    //       smallestDuration = currentDuration;
-    //       closestSchedule = doc;
-    //     }
-    //   }
-
-      // Generate a QR code for the schedule using the UUID
-
-
-      // Update the QR image
-
-
-
-    }
+  //todo : remove comments
+  // Future<void> generateQrImageBasedOnNearestSchedule() async {
+  //   emit(GenerateQrImageLoadingState());
+  //
+  //   // Get the current timestamp
+  //   DateTime timestamp = DateTime.now();
+  //   Timestamp now = Timestamp.fromDate(timestamp);
+  //
+  //
+  //   // Query Firestore for the nearest schedule
+  //   QuerySnapshot scheduleQuerySnapshot = await FirebaseFirestore.instance
+  //       .collection('schedules')
+  //       .where('finished', isEqualTo: false)
+  //       //.where('start_time', isGreaterThan: now)
+  //       //.orderBy('start_time', descending: false)
+  //       .get();
+  //
+  //   // Check if any schedules were found
+  //   QrImage qrImage;
+  //   if (scheduleQuerySnapshot.docs.isNotEmpty) {
+  //     // Get the ID of the first schedule document
+  //     String scheduleId = scheduleQuerySnapshot.docs.first.id;
+  //
+  //     // Generate a QR code image with the schedule ID as data
+  //
+  //     print('\n\n\n\n\n');
+  //     print('$scheduleId');
+  //     print('$scheduleId');
+  //     print('$scheduleId');
+  //     print('$scheduleId');
+  //     print('$scheduleId');
+  //     print('\n\n\n\n\n\n\n');
+  //
+  //     qrImage = QrImage(
+  //       data: scheduleId,
+  //       version: QrVersions.auto,
+  //       size: 200.0,
+  //     );
+  //     emit(GenerateQrImageSuccessState());
+  //   } else {
+  //     // Handle case where no schedules were found
+  //     qrImage = QrImage(
+  //       data: "No schedules found",
+  //       version: QrVersions.auto,
+  //       size: 200.0,
+  //     );
+  //     emit(GenerateQrImageErrorState(
+  //         error:'error'
+  //     ));
+  //   }
+  //
+  //
+  //   // // If there are any unfinished schedules
+  //   // if (querySnapshot.docs.isNotEmpty) {
+  //   //   // Find the schedule closest to the current time
+  //   //   DocumentSnapshot closestSchedule = querySnapshot.docs.first;
+  //   //   Duration smallestDuration = timestamp
+  //   //       .difference(closestSchedule['start_time'].toDate().millisecondsSinceEpoch)
+  //   //       .abs();
+  //   //
+  //   //   for (DocumentSnapshot doc in querySnapshot.docs) {
+  //   //     Duration currentDuration = timestamp
+  //   //         .difference(doc['start_time'].toDate().millisecondsSinceEpoch)
+  //   //         .abs();
+  //   //     if (currentDuration < smallestDuration) {
+  //   //       smallestDuration = currentDuration;
+  //   //       closestSchedule = doc;
+  //   //     }
+  //   //   }
+  //
+  //     // Generate a QR code for the schedule using the UUID
+  //
+  //
+  //     // Update the QR image
+  //
+  //
+  //
+  //   }
   Future<void> addScheduleToCoachCollection() async {
     emit(LoadingState());
     print('Adding schedule to coach collection');
@@ -1056,5 +1061,163 @@ class HomeCubit extends Cubit<HomeState> {
       batch.set(scheduleRef, schedule.toJson());
     }
     await batch.commit();
+  }
+
+  void generateRandomData() async {
+    final CollectionReference adminsCollection =
+    FirebaseFirestore.instance.collection('admins');
+    final CollectionReference branchesCollection =
+    FirebaseFirestore.instance.collection('branches');
+
+    final List<String> adminNames = ['Alice', 'Bob', 'Charlie', 'David'];
+    final List<String> branchNames = [
+      'Branch A',
+      'Branch B',
+      'Branch C',
+      'Branch D'
+    ];
+    final List<String> branchAddresses = [
+      '123 Main St',
+      '456 Elm St',
+      '789 Oak St',
+      '321 Pine St'
+    ];
+
+    // Generate 4 random admins
+    for (int i = 0; i < 4; i++) {
+      final Random random = Random();
+
+      final String name = adminNames[random.nextInt(adminNames.length)];
+      final String email = '$name@example.com';
+      final int branchId = random.nextInt(4) + 1; // Random branch ID between 1-4
+
+      final Map<String, dynamic> adminData = {
+        'name': name,
+        'email': email,
+        'branch_id': branchId,
+      };
+
+      final DocumentReference adminDocRef =
+      await adminsCollection.add(adminData);
+
+      // Generate 2 random schedules for this admin
+      for (int j = 0; j < 2; j++) {
+        final int branchId = random.nextInt(4) + 1; // Random branch ID between 1-4
+        final DateTime now = DateTime.now();
+        final DateTime startDate =
+        now.add(Duration(days: random.nextInt(7))); // Random start date within the next 7 days
+        final DateTime endDate = startDate.add(Duration(
+            hours: 4 + random.nextInt(4))); // Random end date within 4-7 hours of start date
+
+        final Map<String, dynamic> scheduleData = {
+          'branch_id': branchId,
+          'start_time': Timestamp.fromDate(startDate),
+          'end_time': Timestamp.fromDate(endDate),
+          'date': Timestamp.fromDate(startDate),
+          'finished': false,
+        };
+
+        final DocumentReference scheduleDocRef =
+        await adminDocRef.collection('schedules').add(scheduleData);
+
+        // Generate 3 random users for this schedule
+        for (int k = 0; k < 3; k++) {
+          final String name = 'User ${k + 1}';
+          final int level = random.nextInt(3) + 1; // Random level between 1-3
+          final int hourlyRate = 10 + random.nextInt(20); // Random hourly rate between 10-30
+          final int totalHours = random.nextInt(50); // Random total hours between 0-50
+          final int currentMonthHours = random.nextInt(20); // Random current month hours between 0-20
+          final int currentMonthSalary = currentMonthHours * hourlyRate;
+
+          final Map<String, dynamic> userData = {
+            'name': name,
+            'finished': false,
+            'phone': '123-456-7890',
+            'hourly_rate': hourlyRate,
+            'total_hours': totalHours,
+            'total_salary': totalHours * hourlyRate,
+            'current_month_hours': currentMonthHours,
+            'current_month_salary': currentMonthSalary,
+          };
+
+          await scheduleDocRef.collection('users').add(userData);
+        }
+      }
+
+      // Generate a random salary history for this admin
+      final int year = 2021;
+      final int month = random.nextInt(12) + 1; // Random month between 1-12
+      final int totalHours = random.nextInt(100); // Random total hours between 0-100
+      final int totalSalary = totalHours * 20; // Random total salary between 0-2000
+
+      final Map<String, dynamic> salaryHistoryData = {
+        'month': month,
+        'year': year,
+        'total_hours': totalHours,
+        'total_salary': totalSalary,
+      };
+
+      await adminDocRef.collection('salaryHistory').add(salaryHistoryData);
+    }
+
+    // Generate 4 random branches
+    for (int i = 0; i < 4; i++) {
+      final Random random = Random();
+
+      final String name = branchNames[random.nextInt(branchNames.length)];
+      final String address =
+      branchAddresses[random.nextInt(branchAddresses.length)];
+
+      final Map<String, dynamic> branchData = {
+        'name': name,
+        'address': address,
+      };
+
+      final DocumentReference branchDocRef =
+      await branchesCollection.add(branchData);
+
+      // Generate 3 random coaches for this branch
+      for (int j = 0; j < 3; j++) {
+        final String coachId = 'Coach ${j + 1}';
+
+        final Map<String,dynamic> coachData = {
+          'coach_id': coachId,
+        };
+
+        await branchDocRef.collection('coaches').add(coachData);
+      }
+    }
+  }
+
+  final List<Map<String, dynamic>> schedulesList2 = [];
+
+  Future<void> getSchedulesForAdmin(String adminUid) async {
+    final QuerySnapshot schedulesQuerySnapshot = await FirebaseFirestore.instance
+        .collection('admins')
+        .doc(adminUid)
+        .collection('schedules')
+        .get();
+
+    for (final QueryDocumentSnapshot scheduleDoc in schedulesQuerySnapshot.docs) {
+      final Map<String, dynamic> scheduleData =
+      scheduleDoc.data() as Map<String, dynamic>;
+
+      final QuerySnapshot usersQuerySnapshot = await scheduleDoc.reference
+          .collection('users')
+          .get();
+
+      final List<Map<String, dynamic>> usersList = usersQuerySnapshot.docs
+          .map<Map<String, dynamic>>(
+              (QueryDocumentSnapshot documentSnapshot) =>
+          documentSnapshot.data() as Map<String, dynamic>)
+          .toList();
+
+      final Map<String, dynamic> scheduleWithUserData = {
+        ...scheduleData,
+        'users': usersList,
+      };
+
+      schedulesList2.add(scheduleWithUserData);
+    }
   }
 }

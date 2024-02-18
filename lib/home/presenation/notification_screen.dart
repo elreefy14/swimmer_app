@@ -1,361 +1,390 @@
-
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swimmer_app/home/data/Notification.dart';
-
-import '../business_logic/Home/home_cubit.dart';
-import '../business_logic/Home/home_state.dart';
 
 class NotificationScreen extends StatelessWidget {
+ // const NotificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: HomeCubit.get(context).getNotifications(),
-      builder: (context, snapshot) {
-        //if loading
-        if (snapshot.connectionState == ConnectionState.waiting)
-          return Center(child: CircularProgressIndicator());
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-
-                padding: EdgeInsets.only(top: 50.h),
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(color: Colors.white),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 30.w),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Container(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'اليوم',
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                          color: Color(0xFF333333),
-                                          fontSize: 20,
-                                          fontFamily: 'Montserrat-Arabic',
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                 SizedBox(height: 15.h),
-                               BlocConsumer<HomeCubit, HomeState>(
-  listener: (context, state) {
-          // TODO: implement listener
-  },
-  builder: (context, state) {
-    return ListView.separated(
-      separatorBuilder: (context, index) => SizedBox(height: 10.0.h),
-      //   physics: NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-         if ( HomeCubit
-              .get(context)
-              .todayNotifications
-              .length > 0) {
-            NotificationModel notifications = HomeCubit
-                .get(context)
-                .todayNotifications[index];
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      notifications.message ?? '',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        color: Color(0xFF333333),
-                        fontSize: 12,
-                        fontFamily: 'IBM Plex Sans Arabic',
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      //i want to get only day from timestamp
-                      notifications.timestamp?.toIso8601String().substring(
-                          0, 10) ?? '',
-                      //  notifications.timestamp?.toIso8601String().substring(11,16)??'',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        color: Color(0xFFB9B9B9),
-                        fontSize: 10,
-                        fontFamily: 'IBM Plex Sans Arabic',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 5.w),
-                ImageIcon(
-                  AssetImage('assets/images/icon.png'),
-                  color: Color(0xFF000000),
-                  size: 16,
-                ),
-
-              ],
-            );
-          }
-          else return
-             //Text(
-        //     'لاتوجد اشعارات اليوم',
-        //     textAlign: TextAlign.right,
-        //     style: TextStyle(
-        //         color: Color(0xFF333333),
-        //         fontSize: 12,
-        //         fontFamily: 'IBM Plex Sans Arabic',
-        //         fontWeight: FontWeight.w300,
-        //     ),
-        // )
-        Text(
-          'لاتوجد اشعارات اليوم',
-          textAlign: TextAlign.right,
-          style: TextStyle(
-            color: Color(0xFF333333),
-            fontSize: 12,
-            fontFamily: 'IBM Plex Sans Arabic',
-            fontWeight: FontWeight.w300,
-          ),
-        );
-      },
-      itemCount:
-
-      HomeCubit
-          .get(context)
-          .todayNotifications
-          .length == 0
-          ? 1
-          : HomeCubit
-              .get(context)
-              .todayNotifications
-              .length,
-
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-    );
-  },
-),
-
-                              ],
-                            ),
-                          ),
-                         SizedBox(height: 23.h),
-                          Container(
-
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Transform(
-                                  transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(3.14),
-                                  child: Container(
-
-                                    decoration: ShapeDecoration(
-                                      color: Color(0xFFB9B9B9),
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                          width: 0.50,
-                                          strokeAlign: BorderSide.strokeAlignCenter,
-                                          color: Color(0xFFF3F3F3),
-                                        ),
-                                      ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: const CustomAppBar(
+        text: 'الاشعارات',
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 50.h),
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(color: Colors.white),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 30.w),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    //last 24 hours
+                                    'اليوم',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: Color(0xFF333333),
+                                      fontSize: 20,
+                                      fontFamily: 'Montserrat-Arabic',
+                                      fontWeight: FontWeight.w300,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                             SizedBox(height: 10.h),
-                          Container(
-
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Transform(
-                                  transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(3.14),
-                                  child: Container(
-
-                                    decoration: ShapeDecoration(
-                                      color: Color(0xFFB9B9B9),
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                          width: 0.50,
-                                          strokeAlign: BorderSide.strokeAlignCenter,
-                                          color: Color(0xFFF3F3F3),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                           SizedBox(height: 23.h),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: 30.w,
-                              right: 30.w,
-                            ),
-                            child: Container(
-                              child: Text(
-                                'سابقا',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  color: Color(0xFF333333),
-                                  fontSize: 20,
-                                  fontFamily: 'Montserrat-Arabic',
-                                  fontWeight: FontWeight.w300,
-                                ),
+                                ],
                               ),
-                            ),
-                          ),
-                           SizedBox(height: 15.h),
-                          BlocConsumer<HomeCubit, HomeState>(
-                            listener: (context, state) {
-                              // TODO: implement listener
-                            },
-                            builder: (context, state) {
-                              return ListView.separated(
-                                separatorBuilder: (context, index) => SizedBox(height: 10.0.h),
-                                //   physics: NeverScrollableScrollPhysics(),
-                                itemBuilder:(context, index) {
-                                  if(state is GetNotificationsLoadingState)
-                                    return Center(child: CircularProgressIndicator());
-                                  else if(state is GetNotificationsSuccessState || HomeCubit.get(context).oldNotifications.length >0)
-                                  {
-
-                                    NotificationModel notifications = HomeCubit.get(context).oldNotifications[index] ;
-                                    return Padding(
-
-                                      padding: EdgeInsets.only(
-                                        left: 30.w,
-                                        right: 30.w,
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
+                              SizedBox(height: 15.h),
+                              FirestoreListView(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  pageSize: 5,
+                                  query: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(FirebaseAuth
+                                      .instance.currentUser?.uid)
+                                      .collection('notifications')
+                                      .where('timestamp',
+                                      isGreaterThan: DateTime.now()
+                                          .subtract(
+                                          const Duration(days: 1)))
+                                      .orderBy('timestamp', descending: true),
+                                  emptyBuilder: (context) => Container(
+                                    // padding:EdgeInsets.only(top: 6, left: 8, bottom: 6),
+                                    padding: EdgeInsets.only(
+                                      top: 6.h,
+                                      left: 8.w,
+                                      bottom: 6.h,
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'لاتوجد اشعارات اليوم',
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(
+                                            color: Color(0xFF333333),
+                                            fontSize: 12,
+                                            fontFamily:
+                                            'IBM Plex Sans Arabic',
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  itemBuilder: (context, doc) {
+                                    return Row(
+                                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                                      //   mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        SizedBox(
+                                          width: 300.w,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                             children: [
                                               Text(
-                                                notifications.message??'',
+                                                //snapshot['message'] ?? '',
+                                                doc['message'] ?? '',
                                                 textAlign: TextAlign.right,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: Color(0xFF333333),
                                                   fontSize: 12,
-                                                  fontFamily: 'IBM Plex Sans Arabic',
+                                                  fontFamily:
+                                                  'IBM Plex Sans Arabic',
                                                   fontWeight: FontWeight.w300,
                                                 ),
                                               ),
                                               SizedBox(height: 5.h),
                                               Text(
-                                                //i want to get only day from timestamp
-                                                notifications.timestamp?.toIso8601String().substring(0,10)??'',
-                                                //  notifications.timestamp?.toIso8601String().substring(11,16)??'',
+                                                //get the doc['timestamp'] which is time stamp and convert it to string
+                                                //first convet it to date time
+                                                //then use toIso8601String() to convert it to string
+                                                '${doc['timestamp']?.toDate().toIso8601String().substring(0, 10)}',
                                                 textAlign: TextAlign.right,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: Color(0xFFB9B9B9),
                                                   fontSize: 10,
-                                                  fontFamily: 'IBM Plex Sans Arabic',
+                                                  fontFamily:
+                                                  'IBM Plex Sans Arabic',
                                                   fontWeight: FontWeight.w400,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          SizedBox(width: 5.w),
-                                          ImageIcon(
-                                            AssetImage('assets/images/icon.png'),
-                                            color: Color(0xFF000000),
-                                            size: 16,
-                                          ),
-
-                                        ],
-                                      ),
+                                        ),
+                                        SizedBox(width: 5.w),
+                                        const ImageIcon(
+                                          AssetImage('assets/images/icon.png'),
+                                          color: Color(0xFF000000),
+                                          size: 16,
+                                        ),
+                                      ],
                                     );
-                                  }
-                                  else
-                                    return  Container(
-                                      // padding:EdgeInsets.only(top: 6, left: 8, bottom: 6),
-                                      padding: EdgeInsets.only(
-                                        top: 6.h,
-                                        left: 8.w,
-                                        bottom: 6.h,
-                                      ),
-
-
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'لاتوجد اشعارات اليوم',
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(
-                                              color: Color(0xFF333333),
-                                              fontSize: 12,
-                                              fontFamily: 'IBM Plex Sans Arabic',
-                                              fontWeight: FontWeight.w300,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ) ;
-                                },
-                                itemCount: HomeCubit.get(context).oldNotifications.length,
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                              );
-                            },
+                                  }),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: 23.h),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Transform(
+                              transform: Matrix4.identity()
+                                ..translate(0.0, 0.0)
+                                ..rotateZ(3.14),
+                              child: Container(
+                                decoration: const ShapeDecoration(
+                                  color: Color(0xFFB9B9B9),
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                      width: 0.50,
+                                      strokeAlign: BorderSide.strokeAlignCenter,
+                                      color: Color(0xFFF3F3F3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Transform(
+                              transform: Matrix4.identity()
+                                ..translate(0.0, 0.0)
+                                ..rotateZ(3.14),
+                              child: Container(
+                                decoration: const ShapeDecoration(
+                                  color: Color(0xFFB9B9B9),
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                      width: 0.50,
+                                      strokeAlign: BorderSide.strokeAlignCenter,
+                                      color: Color(0xFFF3F3F3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 23.h),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: 30.w,
+                            right: 30.w,
+                          ),
+                          child: const Text(
+                            'سابقا',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: Color(0xFF333333),
+                              fontSize: 20,
+                              fontFamily: 'Montserrat-Arabic',
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 15.h),
+                        FirestoreListView(
+                            pageSize: 2,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            query: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser?.uid)
+                                .collection('notifications')
+                            //i want to query notification which day is not today
+                                .where('timestamp',
+                                isLessThan: DateTime.now()
+                                    .subtract(const Duration(days: 1)))
+                                .orderBy('timestamp', descending: true),
+                            emptyBuilder: (context) => Container(
+                              // padding:EdgeInsets.only(top: 6, left: 8, bottom: 6),
+                              padding: EdgeInsets.only(
+                                top: 6.h,
+                                left: 8.w,
+                                bottom: 6.h,
+                                right: 30.w,
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'لاتوجد اشعارات اليوم',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: Color(0xFF333333),
+                                      fontSize: 12,
+                                      fontFamily:
+                                      'IBM Plex Sans Arabic',
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemBuilder: (context, doc) {
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  left: 30.w,
+                                  right: 30.w,
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SizedBox(
+                                        width: 300.w,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              //snapshot['message'] ?? '',
+                                              doc['message'] ?? '',
+                                              textAlign: TextAlign.right,
+                                              style: const TextStyle(
+                                                color: Color(0xFF333333),
+                                                fontSize: 12,
+                                                fontFamily:
+                                                'IBM Plex Sans Arabic',
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Text(
+                                              // doc['timestamp']?.toIso8601String().substring(
+                                              //   0, 10) ?? '',
+                                              doc['timestamp']
+                                                  ?.toDate()
+                                                  .toIso8601String()
+                                                  .substring(0, 10) ??
+                                                  '',
+                                              textAlign: TextAlign.right,
+                                              style: const TextStyle(
+                                                color: Color(0xFFB9B9B9),
+                                                fontSize: 10,
+                                                fontFamily:
+                                                'IBM Plex Sans Arabic',
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      const ImageIcon(
+                                        AssetImage('assets/images/icon.png'),
+                                        color: Color(0xFF000000),
+                                        size: 16,
+                                      ),
+                                    ]),
+                              );
+                            }),
+                        SizedBox(height: 50.h),
+                      ],
                     ),
-
-
+                  ),
                 ],
               ),
             ),
           ],
-          ),
-        );
-      }
+        ),
+      ),
     );
   }
 }
 
 
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String text;
 
+  const CustomAppBar({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+
+      backgroundColor: Colors.white,
+      shadowColor: Colors.transparent,
+      leading: InkWell(
+        onTap: () async {
+          Navigator.pop(context);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            'assets/images/back.png',
+            width: 50,
+            height: 50,
+            fit: BoxFit.none,
+          ),
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(
+            top: 40.h,
+            right: 12.w,
+          ),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFF333333),
+              fontSize: 24,
+              fontFamily: 'Montserrat-Arabic',
+              fontWeight: FontWeight.w400,
+              height: 0.04,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}

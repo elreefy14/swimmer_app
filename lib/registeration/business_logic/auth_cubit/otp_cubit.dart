@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
+//import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
@@ -39,29 +39,29 @@ class OtpCubit extends Cubit<OtpState> {
   //   );
   //   emit(OtpVerified());
   // } catch error in otpSubmitted
-  Future<void> otpSubmitted({required String otp}) async {
-    emit(OTPLoading());
-    try {
-      final AuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationIdd!,
-        smsCode: otp,
-      );
-      user = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      ).catchError((e) {
-        print('ERROR');
-        print(e);
-        emit(VerificationFailed(e.message));
-        emit(AuthErrorOccur(e.message));
-      });
-      emit(OtpVerified());
-    } on DioError catch (e) {
-      print('DIO ERROR');
-
-      print(e.message);
-      emit(AuthErrorOccur(e.message??''));
-    }
-  }
+  // Future<void> otpSubmitted({required String otp}) async {
+  //   emit(OTPLoading());
+  //   try {
+  //     final AuthCredential credential = PhoneAuthProvider.credential(
+  //       verificationId: verificationIdd!,
+  //       smsCode: otp,
+  //     );
+  //     user = await FirebaseAuth.instance.signInWithCredential(
+  //       credential,
+  //     ).catchError((e) {
+  //       print('ERROR');
+  //       print(e);
+  //       emit(VerificationFailed(e.message));
+  //       emit(AuthErrorOccur(e.message));
+  //     });
+  //     emit(OtpVerified());
+  //   } on DioError catch (e) {
+  //     print('DIO ERROR');
+  //
+  //     print(e.message);
+  //     emit(AuthErrorOccur(e.message??''));
+  //   }
+  // }
 
   _codeSent() async {
     return (String verificationId, [int? forceResendingToken]) {

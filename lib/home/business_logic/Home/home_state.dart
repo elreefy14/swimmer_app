@@ -64,7 +64,7 @@ class ChangeBottomNavState extends HomeState {}
 //GetUserDataLoadingState
 class GetUserDataLoadingState extends HomeState {}
 //GetUserDataSuccessState
-class GetUserDataSuccessState extends HomeState {}
+//class GetUserDataSuccessState extends HomeState {}
 //GetUserDataErrorState
 class GetUserDataErrorState extends HomeState {
   final String error;

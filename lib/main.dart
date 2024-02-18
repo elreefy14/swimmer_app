@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -10,13 +11,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swimmer_app/home/business_logic/Home/home_cubit.dart';
 import 'package:swimmer_app/home/business_logic/Home/qr_cubit.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/otp_cubit.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/sign_up_cubit.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
 import 'package:swimmer_app/routiong.dart';
 import 'core/bloc_observer.dart';
 import 'core/cashe_helper.dart';
 import 'core/constants/routes_manager.dart';
+import 'home/business_logic/Home/dash_board_cubit.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message:\n\n\n ${message.messageId}');
@@ -24,7 +23,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 final remoteConfig = //firabase remote config
 FirebaseRemoteConfig.instance;
 Future<void> main() async {
-  //await initializeDateFormatting('ar', null);
+  //aw1ait initializeDateFormatting('ar', null);
 
   //wait widget tree to be built
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +52,13 @@ Future<void> main() async {
   // );
   await Firebase.initializeApp(
     //options: DefaultFirebaseOptions.currentPlatform,
+  );
+  //enable persistence
+  //await FirebaseFirestore.instance.enablePersistence();
+  //firrebase options enable persistence
+  FirebaseFirestore.instance.settings = Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED
   );
   //if frebase login is null
   //late String mainRoute;
@@ -104,20 +110,39 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => QrCubit()),
+    //    BlocProvider(create: (context) => QrCubit()),
+        BlocProvider(create: (context) => DashBoardCubit()
+            ..getUserData()
+        ),
         BlocProvider(create: (context) => HomeCubit()
-        ..getSchedulesForToday()
+  // .. getSchedulesForAdmin('3nVYM0ovCwdbqAXfSkGb')
+    //     .then((List<Map<String, dynamic>> schedulesList) {
+    // print('Schedules:');
+    // schedulesList.forEach((Map<String, dynamic> schedule) {
+    // print(' - ${schedule['start_time']}');
+    // print('   Users:');
+    // schedule['users'].forEach((Map<String, dynamic> user) {
+    // print('     * ${user['name']}, hourly rate: ${user['hourly_rate']}');
+    // });
+    // });
+    // })
+    //     .catchError((error) {
+    // print('Failed to get schedules: $error');
+    // })
+          // ..generateRandomData()
+          //..getSchedulesForToday()
         //..addScheduleToCoachCollection()
-
-        //  ..getAllSchedulesForSpecificUser()
-         // ..getUserData()
-
+/////////////////////////////////////////////////////////
+         //..getAllSchedulesForSpecificUser()
+        // ..getUserData()
+//////////////////////////////////////////////////////////
           //   ..clearNotifications()
     ),
 
       ],
       child: ScreenUtilInit(
-        designSize: const Size(360, 690),
+      //  designSize: const Size(360, 690),
+        designSize: const Size(390, 845),
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context , child) => MaterialApp(

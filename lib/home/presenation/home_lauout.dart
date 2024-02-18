@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+//import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+//import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:swimmer_app/home/business_logic/Home/qr_cubit.dart';
 import 'package:swimmer_app/home/presenation/widget/widget.dart';
 import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
@@ -301,7 +301,7 @@ class QrScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GlobalKey qrKey = GlobalKey();
-    QRViewController qrController;
+    //QRViewController qrController;
     return Builder(
       builder: (context) {
         QrCubit.get(context).qrCodeScanned =false;
@@ -459,30 +459,33 @@ class QrScreen extends StatelessWidget {
                       width: 250.w,
                       child: BlocBuilder<QrCubit, QrState>(
   builder: (context, state) {
-        return MobileScanner(
-          startDelay: true,
+        return Container(
 
-          onDetect: (BarcodeCapture barcodes) {
-          if(QrCubit.get(context).qrCodeScanned == true) {
-            return;}else{
-            String? displayValue = barcodes.barcodes[0].displayValue;
-            QrCubit.get(context).onQRCodeScanned(
-                hourlyRate: HomeCubit
-                    .get(context)
-                    .userCacheModel!
-                    .hourlyRate ?? 0,
-                coachId: HomeCubit
-                    .get(context)
-                    .userCacheModel!
-                    .uId ?? '',
-                scheduleId: displayValue.toString()).then((value) =>
-                HomeCubit.get(context).getUserData());
-                 QrCubit.get(context).qrCodeScanned =true;
-          //  HomeCubit.get(context).changeBottomNav(0);
-          }
-        },
-                      fit: BoxFit.cover,
-                      );
+        );
+        //   MobileScanner(
+        //   startDelay: true,
+        //
+        //   onDetect: (BarcodeCapture barcodes) {
+        //   if(QrCubit.get(context).qrCodeScanned == true) {
+        //     return;}else{
+        //     String? displayValue = barcodes.barcodes[0].displayValue;
+        //     QrCubit.get(context).onQRCodeScanned(
+        //         hourlyRate: HomeCubit
+        //             .get(context)
+        //             .userCacheModel!
+        //             .hourlyRate ?? 0,
+        //         coachId: HomeCubit
+        //             .get(context)
+        //             .userCacheModel!
+        //             .uId ?? '',
+        //         scheduleId: displayValue.toString()).then((value) =>
+        //         HomeCubit.get(context).getUserData());
+        //          QrCubit.get(context).qrCodeScanned =true;
+        //   //  HomeCubit.get(context).changeBottomNav(0);
+        //   }
+        // },
+        //               fit: BoxFit.cover,
+        //               );
   },
 ),
                     ),
@@ -656,41 +659,41 @@ Future checkForAppUpdate(context) async {
 }
 
 
-class QRScanner extends StatefulWidget {
-  const QRScanner({Key? key}) : super(key: key);
+// class QRScanner extends StatefulWidget {
+//   const QRScanner({Key? key}) : super(key: key);
+//
+//   @override
+//   //_QRScannerState createState() => _QRScannerState();
+// }
 
-  @override
-  _QRScannerState createState() => _QRScannerState();
-}
-
-class _QRScannerState extends State<QRScanner> {
-  final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
-  late QRViewController _controller;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return QRView(
-      key: _qrKey,
-      onQRViewCreated: _onQRViewCreated,
-    );
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      _controller = controller;
-    });
-
-    _controller.scannedDataStream.listen((scannedData) {
-      if (scannedData.code != null) {
-        // Do something with the scanned data, e.g. display it on the screen
-        print(scannedData.code);
-      }
-    });
-  }
-}
+// class _QRScannerState extends State<QRScanner> {
+//   final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
+//   late QRViewController _controller;
+//
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return QRView(
+//       key: _qrKey,
+//       onQRViewCreated: _onQRViewCreated,
+//     );
+//   }
+//
+//   void _onQRViewCreated(QRViewController controller) {
+//     setState(() {
+//       _controller = controller;
+//     });
+//
+//     _controller.scannedDataStream.listen((scannedData) {
+//       if (scannedData.code != null) {
+//         // Do something with the scanned data, e.g. display it on the screen
+//         print(scannedData.code);
+//       }
+//     });
+//   }
+// }

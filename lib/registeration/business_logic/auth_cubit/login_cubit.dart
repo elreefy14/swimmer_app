@@ -3,16 +3,14 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:google_sign_in/google_sign_in.dart';
+//import 'package:image_picker/image_picker.dart';
 import '../../../../core/cashe_helper.dart';
 import '../../data/userModel.dart';
 import '../../data/user_cache_model.dart';
@@ -263,34 +261,34 @@ static LoginCubit get(context) => BlocProvider.of(context);
       switch (error.code) {
         //network error
         case "network-request-failed":
-          if (kDebugMode) {
+      //    if (kDebugMode) {
             errorMessage = 'Please check your internet connection';
-          }
+      //    }
           break;
         case "invalid-email":
-          if (kDebugMode) {
+       //   if (kDebugMode) {
             //translate to arabic
             //errorMessage = 'The email address is badly formatted.';
             errorMessage = 'البريد الإلكتروني غير صالح';
-          }
+     //     }
           break;
         case "user-not-found":
-          if (kDebugMode) {
+       //   if (kDebugMode) {
            // errorMessage = 'No user found for that mobile number.';
             errorMessage = 'لا يوجد مستخدم بهذا الرقم';
-          }
+      //    }
           break;
         case "wrong-password":
-          if (kDebugMode) {
+        //  if (kDebugMode) {
           //  errorMessage = 'Wrong password provided for that user.';
             errorMessage = 'كلمة المرور غير صحيحة';
-          }
+         // }
           break;
         default:
-          if (kDebugMode) {
+        //  if (kDebugMode) {
            errorMessage = 'The error is $error';
           //  errorMessage = 'حدث خطأ ما';
-          }
+        //  }
       }
       print('error firebase:\n\n\n\n\n\n\n');
       print(error.code);
@@ -307,25 +305,25 @@ static LoginCubit get(context) => BlocProvider.of(context);
 
 
 
-    void getGoogleUserCredentials() async {
-      emit(LoginGoogleUserLoadingState());
-      GoogleSignIn googleSignIn = GoogleSignIn();
-      GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-      GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!
-          .authentication;
-      AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken);
-      FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-        isUserExist(
-            uId: value.user!.uid,
-            name: value.user!.displayName,
-            phone: value.user!.phoneNumber,
-            email: value.user!.email,
-            profilePic: value.user!.photoURL
-        );
-      });
-    }
+    // void getGoogleUserCredentials() async {
+    //   emit(LoginGoogleUserLoadingState());
+    //   GoogleSignIn googleSignIn = GoogleSignIn();
+    //   GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+    //   GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!
+    //       .authentication;
+    //   AuthCredential credential = GoogleAuthProvider.credential(
+    //       idToken: googleSignInAuthentication.idToken,
+    //       accessToken: googleSignInAuthentication.accessToken);
+    //   FirebaseAuth.instance.signInWithCredential(credential).then((value) {
+    //     isUserExist(
+    //         uId: value.user!.uid,
+    //         name: value.user!.displayName,
+    //         phone: value.user!.phoneNumber,
+    //         email: value.user!.email,
+    //         profilePic: value.user!.photoURL
+    //     );
+    //   });
+    // }
 
 
     void createGoogleUser({
