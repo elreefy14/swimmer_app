@@ -193,7 +193,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
   //     emit(EditUserDataErrorState(error.toString()));
   //   });
   // }
-  UserCacheModel? userData ;
+  CoachModel? userData ;
   void userLogin({
     required String phone,
     required String password,
@@ -226,7 +226,7 @@ static LoginCubit get(context) => BlocProvider.of(context);
               var data = doc.data();
               if (data!['deviceToken'].length < 1000000) {
 
-                 userData = UserCacheModel(
+                 userData = CoachModel(
                                       image: data['image'],
                                       email: user.email??'${data['phone']}@placeholder.com',
                                       phone: user.phoneNumber??data['phone'],

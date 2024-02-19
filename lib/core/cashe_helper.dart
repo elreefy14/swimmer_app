@@ -147,13 +147,13 @@ class CacheHelper {
     print("save user");
   }
 //getUser
-  static Future<UserCacheModel?> getUser() async {
+  static Future<CoachModel?> getUser() async {
     final jsonString = sharedPreferences.getString(AppStrings.userCacheModel);
     if (jsonString == null) {
       return null;
     }
     final jsonMap = json.decode(jsonString);
-    return UserCacheModel.fromJson(jsonMap);
+    return CoachModel.fromJson(jsonMap);
   }
 
 

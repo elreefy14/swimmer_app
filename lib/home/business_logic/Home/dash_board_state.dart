@@ -13,3 +13,7 @@ class GetUserDataErrorState extends DashBoardState {
   final String error;
   GetUserDataErrorState({required this.error});
 }
+//UpdateFirstScheduleState
+class UpdateFirstScheduleState extends DashBoardState {}
+//ChangeIndexState
+class ChangeIndexState extends DashBoardState {}

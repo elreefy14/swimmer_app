@@ -1,4 +1,4 @@
-class UserCacheModel {
+class CoachModel {
    String? token;
    String? uId;
    String? email;
@@ -16,7 +16,7 @@ class UserCacheModel {
    String? role;
 //list of strings contain branches names
   List<String>? branches;
-  UserCacheModel({
+  CoachModel({
 
    this.token,
    this.uId,
@@ -36,8 +36,8 @@ class UserCacheModel {
     this.role,
   });
 
-  factory UserCacheModel.fromJson(Map<String, dynamic> json) {
-    return UserCacheModel(
+  factory CoachModel.fromJson(Map<String, dynamic> json) {
+    return CoachModel(
       fname: json['fname'],
       lname: json['lname'],
       token: json['token'],
