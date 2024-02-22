@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../core/helpers/spacing.dart';
 import '../../business_logic/Home/dash_board_cubit.dart';
 import '../../business_logic/Home/home_cubit.dart';
 import '../../business_logic/Home/home_state.dart';
@@ -95,7 +96,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 4),
+                   // SizedBox(height: 4),
+                    verticalSpace(4),
+
                     // Text(
                     //   HomeCubit.get(context).listOfTitles[index],
                     //   style: TextStyle(
@@ -107,8 +110,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     //   ),
                     // ),
                     //SizedBox(
-                    //     width: 64,
-                    //     height: 16,
+                    //     width: 64,//     height: 16,
                     //     child: Text(
                     //         'لوحة التحكم',
                     //         textAlign: TextAlign.center,
@@ -123,8 +125,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     //     ),
                     // )
                     SizedBox(
-                      width: 64,
-                      height: 16,
+                      width: 64.w,
+                      height: 16.h,
                       child: Text(
                         //HomeCubit.get(context).listOfTitles[index],
                         DashBoardCubit.get(context).listOfTitles[index],

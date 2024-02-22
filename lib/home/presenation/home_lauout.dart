@@ -1,36 +1,11 @@
-import 'dart:developer';
-import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-//import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:swimmer_app/home/business_logic/Home/dash_board_cubit.dart';
-//import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:swimmer_app/home/business_logic/Home/qr_cubit.dart';
-import 'package:swimmer_app/home/presenation/profile_screen.dart';
 import 'package:swimmer_app/home/presenation/widget/bottom_nav_bar.dart';
-import 'package:swimmer_app/registeration/business_logic/auth_cubit/login_cubit.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../../core/cashe_helper.dart';
-import '../../main.dart';
-import '../../registeration/data/user_cache_model.dart';
-import '../../registeration/presenation/widget/component.dart';
-import '../../registeration/presenation/widget/widget.dart';
-import '../business_logic/Home/home_cubit.dart';
-import '../business_logic/Home/home_state.dart';
+import 'package:swimmer_app/home/presenation/widget/default_dialog_to_ask_user_to_exit_app_or_not.dart';
 import 'dash_board_screan.dart';
 import 'notification_screen.dart';
-//call
 class HomeLayout extends StatefulWidget {
   @override
   State<HomeLayout> createState() => _HomeLayoutState();
@@ -43,49 +18,40 @@ class _HomeLayoutState extends State<HomeLayout> {
 
 
     return FutureBuilder(
-      // checkForAppUpdate(
-     //   context,
-     // ),
+    //   checkForAppUpdate(
+    //    context,
+    //  ),
       builder: (context, snapshot) {
-
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: BlocBuilder<DashBoardCubit, DashBoardState>(
-            builder: (context, state) {
-              return //HomeCubit.get(context).currentScreen;
-              DashBoardCubit.get(context).currentIndex == 0
-                  ? DashBoardScreen()
-                  : DashBoardCubit.get(context).currentIndex == 1
-                  ? NotificationScreen()
-                  : DashBoardCubit.get(context).currentIndex == 2
-                  ? NotificationScreen()
-                  : NotificationScreen();
-            },
-          ),
-          bottomNavigationBar: //BottomNavBar(),
-          BlocBuilder<DashBoardCubit, DashBoardState>(
+        return  WillPopScope(
+          onWillPop: () async {
+            bool shouldExit = await DefaultDialogToAskUserToExitAppOrNot.show(context) ?? false;
+            if (shouldExit) SystemNavigator.pop();
+            return shouldExit;
+          },
+          //if shouldExit is true, then exit the app
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: BlocBuilder<DashBoardCubit, DashBoardState>(
+              builder: (context, state) {
+                return //HomeCubit.get(context).currentScreen;
+                DashBoardCubit.get(context).currentIndex == 0
+                    ? DashBoardScreen()
+                    : DashBoardCubit.get(context).currentIndex == 1
+                    ? NotificationScreen()
+               //     : DashBoardCubit.get(context).currentIndex == 2
+                 //   ? NotificationScreen()
+                    : NotificationScreen();
+              },
+            ),
+            bottomNavigationBar: //BottomNavBar(),
+            BlocBuilder<DashBoardCubit, DashBoardState>(
   builder: (context, state) {
-        return
-          //  Container(
-        //padding:const EdgeInsets.only(bottom: 30, right: 32, left: 32),
-        // child: BottomBarFloating(
-        //   items: HomeCubit.get(context).items,
-        //
-        //     color: Colors.blue,
-        //     backgroundColor: Colors.white,
-        //     colorSelected: Colors.blue,
-        //   //  backgroundSelected: Colors.blue,
-        //   indexSelected: HomeCubit.get(context).currentIndex,
-        // paddingVertical: 24,
-        //   onTap: (index) {
-        //         HomeCubit.get(context).changeBottomNav(index);
-        //       },
-        // ),
-        // );
-          BottomNavBar();
+          return
+            BottomNavBar();
   },
 ),
 
+          ),
         );
       }
     );

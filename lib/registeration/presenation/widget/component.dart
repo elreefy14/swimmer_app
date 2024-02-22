@@ -26,11 +26,14 @@ Widget BuildTextFormField(
   ),
   SizedBox(height: 8),
   TextFormField(
+    //make the text direction good for user when he write in arabic
+    textDirection: TextDirection.ltr,
+    textAlign: TextAlign.right,
   //  scrollPadding: //50 from bottom of screen
  //   EdgeInsets.only(bottom: 50.h),
   controller: controller,
   keyboardType: input,
-  obscureText: labelText == 'كلمة المرور' ? true : false,
+  //obscureText: labelText == 'كلمة المرور' ? true : false,
   decoration: InputDecoration(
   prefixIcon: prefixIconPath != null
   ? ImageIcon(

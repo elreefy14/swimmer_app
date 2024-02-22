@@ -9,7 +9,7 @@ import 'package:swimmer_app/registeration/presenation/welcome_screen.dart';
 import 'package:swimmer_app/registeration/presenation/login_screen.dart';
 
 
-import 'core/constants/routes_manager.dart';
+import 'routes_manager.dart';
 
 class RouteGenerator {
   static Route<dynamic>? generateRoute(RouteSettings settings) {

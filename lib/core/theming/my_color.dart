@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
- const defaultColor = Color(0xFF4CAF50);
+
+
+
+
+const defaultColor = Color(0xFF4CAF50);
  const mainColor = Color(0xFF4CAF50);
  const primaryFontColor = Color(0xFF333333);
  const secondaryFontColor = Color(0xFF7c7d7e);
  const placeholder = Color(0xFF959696);
-class MyColors {
+class ColorsManager {
+  //(0xFF333333),
+
+  static var mainBlue = Color(0xFF2196F3);
+  //0xFF333333
+  static const Color myBlack = Color(0xFF333333);
   static const Color blue = Color(0xff0666EB);
   static const Color lightBlue = Color(0xffE5EFFD);
   static const Color lightGrey = Color(0xffE1E1E1);
@@ -54,4 +63,9 @@ class MyColors {
   };
 
   static MaterialColor primaryColor = MaterialColor(0xFFFFFFFF, swatch);
+
+  static var white = Color(0xFFFFFFFF);
+
+
+
 }

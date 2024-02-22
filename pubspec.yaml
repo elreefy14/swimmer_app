@@ -70,6 +70,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   #  dio: ^5.2.1+1   image_picker: ^0.8.9image_picker_android: ^0.8.7+3image_picker_platform_interface: ^2.8.0
   dio: ^5.2.1+1
+  get_it: ^7.6.7
   image_picker: ^0.8.9
   image_picker_android: ^0.8.7+3
   image_picker_platform_interface: ^2.8.0
