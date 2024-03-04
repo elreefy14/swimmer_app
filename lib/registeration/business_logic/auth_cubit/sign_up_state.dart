@@ -1,35 +1,35 @@
-abstract class SocialStates {}
+abstract class SignUpState {}
 //InitialState
-class InitialState extends SocialStates {}
+class InitialState extends SignUpState {}
 //ChangePasswordVisibilityState
-class ChangePasswordVisibilityState extends SocialStates {}
+class ChangePasswordVisibilityState extends SignUpState {}
 //SignUpLoadingState
-class SignUpLoadingState extends SocialStates {}
+class SignUpLoadingState extends SignUpState {}
 //SignUpSuccessState
-class SignUpSuccessState extends SocialStates {
+class SignUpSuccessState extends SignUpState {
   final String uId;
   SignUpSuccessState(this.uId);
 }
 //SignUpErrorState
-class SignUpErrorState extends SocialStates {
+class SignUpErrorState extends SignUpState {
   final String? error;
   SignUpErrorState({this.error});
 }
 //CreateUserLoadingState
-class CreateUserLoadingState extends SocialStates {}
+class CreateUserLoadingState extends SignUpState {}
 //CreateUserSuccessState
-class CreateUserSuccessState extends SocialStates {
+class CreateUserSuccessState extends SignUpState {
   final String uId;
   CreateUserSuccessState(this.uId);
 }
 //CreateUserErrorState
-class CreateUserErrorState extends SocialStates {}
+class CreateUserErrorState extends SignUpState {}
 //UpdatePasswordLoadingState
-class UpdatePasswordLoadingState extends SocialStates {}
+class UpdatePasswordLoadingState extends SignUpState {}
 //UpdatePasswordSuccessState
-class UpdatePasswordSuccessState extends SocialStates {}
+class UpdatePasswordSuccessState extends SignUpState {}
 //UpdatePasswordErrorState
-class UpdatePasswordErrorState extends SocialStates {
+class UpdatePasswordErrorState extends SignUpState {
   final String? error;
   UpdatePasswordErrorState({this.error});
 }

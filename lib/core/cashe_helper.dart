@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../home/data/schedules.dart';
 import '../registeration/data/user_cache_model.dart';
 import 'constants/strings.dart';
 
@@ -11,21 +12,26 @@ class CacheHelper {
   static init() async {
     sharedPreferences = await SharedPreferences.getInstance();
   }
-  //  static const String COURSES_KEY = 'courses';
-  //
-  //   final SharedPreferences _prefs;
-  //
-  //   CoursePreferences(this._prefs);
-  //
-  //   List<Course> get courses {
-  //     List<String> courseJsonList = _prefs.getStringList(COURSES_KEY);
-  //     if (courseJsonList == null) {
-  //       return [];
-  //     }
-  //     return courseJsonList.map((courseJson) => Course.fromJson(json.decode(courseJson))).toList();
-  //   }
+//  static clearSchedulesFromSharedPreferences() {}
+  static Future<void> clearSchedulesFromSharedPreferences() async {
+    await sharedPreferences.remove('schedules');
+  }
+  static Future<void> storeSchedulesInSharedPreferences(List<SchedulesModel> schedules) async {
+    List<String> encodedSchedules = schedules.map((schedule) => jsonEncode(schedule.toJson())).toList();
+    sharedPreferences.setStringList('schedules', encodedSchedules);
+  }
 
 
+  static Future<List<SchedulesModel>> getSchedulesFromSharedPreferences() async {
+    List<SchedulesModel> schedules = [];
+    List<String>? encodedSchedules = sharedPreferences.getStringList('schedules');
+    if (encodedSchedules != null) {
+      encodedSchedules.forEach((schedule) {
+        schedules.add(SchedulesModel.fromJson(jsonDecode(schedule)));
+      });
+    }
+    return schedules;
+  }
 
   static setBool(
       {required String key, required bool value}) async {
@@ -141,13 +147,13 @@ class CacheHelper {
     print("save user");
   }
 //getUser
-  static Future<UserCacheModel?> getUser() async {
+  static Future<CoachModel?> getUser() async {
     final jsonString = sharedPreferences.getString(AppStrings.userCacheModel);
     if (jsonString == null) {
       return null;
     }
     final jsonMap = json.decode(jsonString);
-    return UserCacheModel.fromJson(jsonMap);
+    return CoachModel.fromJson(jsonMap);
   }
 
 
@@ -155,6 +161,12 @@ class CacheHelper {
   static void clearUser() {
     sharedPreferences.remove(AppStrings.userCacheModel);
   }
+
+  static void clearNotificationsFromSharedPreferences() {
+    sharedPreferences.remove('latest_notifications');
+  }
+
+
 
 
 

@@ -1,6 +1,6 @@
-class UserCacheModel {
+class CoachModel {
    String? token;
-   String? uid;
+   String? uId;
    String? email;
    String? name;
    String? phone;
@@ -11,10 +11,15 @@ class UserCacheModel {
    int? totalSalary;
    int? currentMonthHours;
    int? currentMonthSalary;
+   String? fname;
+   String? lname;
+   String? role;
+//list of strings contain branches names
+  List<String>? branches;
+  CoachModel({
 
-  UserCacheModel({
    this.token,
-   this.uid,
+   this.uId,
    this.email,
    this.name,
    this.phone,
@@ -25,12 +30,18 @@ class UserCacheModel {
    this.currentMonthHours,
    this.currentMonthSalary,
     this.image,
+    this.fname,
+    this.lname,
+    this.branches,
+    this.role,
   });
 
-  factory UserCacheModel.fromJson(Map<String, dynamic> json) {
-    return UserCacheModel(
+  factory CoachModel.fromJson(Map<String, dynamic> json) {
+    return CoachModel(
+      fname: json['fname'],
+      lname: json['lname'],
       token: json['token'],
-      uid: json['uid'],
+      uId: json['uid'],
       email: json['email'],
       name: json['name'],
       phone: json['phone'],
@@ -41,13 +52,17 @@ class UserCacheModel {
       currentMonthHours: json['current_month_hours'],
       currentMonthSalary: json['current_month_salary'],
       image: json['image'],
+      branches: json['branches'] != null ? List<String>.from(json['branches']) : null,
+      role: json['role'],
     );
   }
 
   Map<String, dynamic> toJson() => {
+    'fname': fname,
+    'lname': lname,
     'image': image,
     'token': token,
-    'uid': uid,
+    'uid': uId,
     'email': email,
     'name': name,
     'phone': phone,
@@ -57,5 +72,7 @@ class UserCacheModel {
     'total_salary': totalSalary,
     'current_month_hours': currentMonthHours,
     'current_month_salary': currentMonthSalary,
+    'branches': branches,
+    'role': role,
   };
 }

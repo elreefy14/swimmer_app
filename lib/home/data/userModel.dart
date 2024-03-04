@@ -1,13 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-//    UserModel model = UserModel(
-//         name: 'Write your name...',
-//         level: 3,
-//         hourlyRate: 0,
-//         totalHours: 0,
-//         totalSalary: 0,
-//         currentMonthHours: 0,
-//         currentMonthSalary: 0,
-//     );
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// //    UserModel model = UserModel(
+// //         name: 'Write your name...',
+// //         level: 3,
+// //         hourlyRate: 0,
+// //         totalHours: 0,
+// //         totalSalary: 0,
+// //         currentMonthHours: 0,
+// //         currentMonthSalary: 0,
+// //     );
 class UserModel
 {
 //    UserModel model = UserModel(
@@ -29,6 +29,9 @@ class UserModel
   int? currentMonthSalary;
   String? uId;
   String? phone;
+  String? role;
+  //role
+
 
 
   UserModel({
@@ -42,6 +45,7 @@ class UserModel
     this.currentMonthSalary,
     this.uId,
     this.phone,
+    this.role,
 
   });
 
@@ -56,6 +60,7 @@ class UserModel
     currentMonthSalary = json['currentMonthSalary'];
     uId = json['uId'];
     phone = json['phone'];
+    role = json['role'];
 
   }
 
@@ -71,6 +76,7 @@ class UserModel
     data['currentMonthSalary'] = this.currentMonthSalary;
     data['uId'] = this.uId;
     data['phone'] = this.phone;
+    data['role'] = this.role;
     return data;
 
   }
@@ -88,11 +94,12 @@ return {
   'currentMonthSalary': currentMonthSalary,
   'uId': uId,
   'phone': phone,
+  'role': role,
 
     };
 
   }
 }
-
-
-
+//
+//
+//

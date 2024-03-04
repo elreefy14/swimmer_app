@@ -32,6 +32,8 @@ class UserModel
   String? fname;
   String? lname;
   String? image;
+  String? token;
+  List<String>? branches;
 
 
 
@@ -49,6 +51,8 @@ class UserModel
     this.fname,
     this.lname,
 this.image,
+    this.token,
+    this.branches,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +69,8 @@ this.image,
     fname = json['fname'];
     lname = json['lname'];
 image = json['image'];
+    token = json['token'];
+    branches = json['branches'] != null ? List<String>.from(json['branches']) : null;
 
   }
 
@@ -83,6 +89,9 @@ image = json['image'];
     data['fname'] = this.fname;
     data['lname'] = this.lname;
 data['image'] = this.image;
+    data['token'] = this.token;
+    data['branches'] = this.branches;
+
     return data;
 
   }
@@ -102,6 +111,9 @@ return {
   'phone': phone,
   'fname': fname,
   'lname': lname,
+  'image': image,
+  'token': token,
+  'branches': branches,
 
     };
 
